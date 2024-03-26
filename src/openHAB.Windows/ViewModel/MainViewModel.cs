@@ -165,6 +165,7 @@ namespace openHAB.Windows.ViewModel
                         SetWidgetsOnScreen(SelectedSitemap.Widgets);
                     }
 
+                    BreadcrumbItems.Clear();
                     SelectedMenuItem = value;
                 }
             }
