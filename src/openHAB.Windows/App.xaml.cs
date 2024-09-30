@@ -1,16 +1,12 @@
 using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.AppLifecycle;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
 using openHAB.Windows.Services;
-using openHAB.Windows.View;
 
 namespace openHAB.Windows
 {
@@ -82,7 +78,7 @@ namespace openHAB.Windows
 
             // Initialize MainWindow here
             MainWindow = new MainWindow();
-            //Frame rootFrame = MainWindow.RootFrame;
+            //Frame rootFrame = MainWindow.Content;
 
             //if (rootFrame == null)
             //{

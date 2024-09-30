@@ -24,9 +24,6 @@
                       SelectionMode="None">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <!--<VariableSizedWrapGrid ItemWidth="335"
-                                               ItemHeight="106"
-                                               Orientation="Horizontal" />-->
                         <controls:WrapPanel Orientation="Horizontal"
                                             VerticalSpacing="10"
                                             HorizontalSpacing="10" />

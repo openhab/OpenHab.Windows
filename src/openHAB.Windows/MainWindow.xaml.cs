@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
@@ -15,8 +17,6 @@ using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
-using System;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -54,8 +54,6 @@ namespace openHAB.Windows
 
             Vm.LoadSitemapsAndItemData();
         }
-
-
 
         /// <summary>
         /// Gets the root frame.
@@ -222,5 +220,10 @@ namespace openHAB.Windows
         }
 
         #endregion
+
+        private void NavigationViewItemMainUI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(MainUIPage));
+        }
     }
 }
