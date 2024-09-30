@@ -60,8 +60,7 @@
             <converters:MenuItemTemplateSelector x:Key="Selector">
                 <converters:MenuItemTemplateSelector.DefaultItemTemlate>
                     <DataTemplate x:DataType="muxc:NavigationViewItem">
-                        <muxc:NavigationViewItem Content="{x:Bind Content}"
-                                                 Icon="{x:Bind Icon}"></muxc:NavigationViewItem>
+                        <muxc:NavigationViewItem Margin="-15,0,0,0" Content="{Binding}" />
                     </DataTemplate>
                 </converters:MenuItemTemplateSelector.DefaultItemTemlate>
                 <converters:MenuItemTemplateSelector.SiteMapMenuItemTemplate>
@@ -247,22 +246,17 @@
                     </Grid>
                     <TextBlock Margin="10,10,10,0"
                                x:Uid="NoItemsOrOpenHabNotAvailable"
-                               Visibility="{Binding Path=Sitemaps.Count, Converter={StaticResource ZeroToVisibility}, Mode=OneWay}"
+                               Visibility="{Binding DataContext.Sitemaps.Count, Converter={StaticResource ZeroToVisibility}, Mode=OneWay, ElementName=ContentFrame}"
                                TextWrapping="Wrap"
                                Foreground="{StaticResource TextFillColorPrimaryBrush}"
                                Style="{StaticResource FlyoutPickerTitleTextBlockStyle}" />
                 </StackPanel>
             </muxc:NavigationView.PaneCustomContent>
             <muxc:NavigationView.FooterMenuItems>
-                <NavigationViewItem Icon="Home"
-                                    Content="MainUI"
-                                    Tag="openHAB.Windows.View.WinUIPage">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SettingsPage" />
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </NavigationViewItem>
+                <muxc:NavigationViewItem Icon="Home"
+                                         x:Uid="MenuItemMainUI"
+                                         Tag="openHAB.Windows.View.MainUIPage"
+                                         Tapped="NavigationViewItemMainUI_Tapped" />
             </muxc:NavigationView.FooterMenuItems>
             <Frame x:Name="ContentFrame" />
         </muxc:NavigationView>

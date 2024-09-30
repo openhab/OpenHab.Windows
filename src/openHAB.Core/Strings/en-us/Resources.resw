@@ -348,4 +348,7 @@ Please select demo mode or configure local/remote connection.</value>
   <data name="SVGIcons.Header" xml:space="preserve">
     <value>High resolution icons</value>
   </data>
+  <data name="MenuItemMainUI.Content" xml:space="preserve">
+    <value>MainUI</value>
+  </data>
 </root>

@@ -341,4 +341,7 @@ Bitte wählen Sie den Demomodus oder die Lokale-/Remote-Verbindungsinformation z
   <data name="SVGIcons.Header" xml:space="preserve">
     <value>Hochauflösende Icons</value>
   </data>
+  <data name="MenuItemMainUI.Content" xml:space="preserve">
+    <value>MainUI</value>
+  </data>
 </root>
