@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
@@ -17,6 +15,8 @@ using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
+using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -148,6 +148,8 @@ namespace openHAB.Windows
             NavigationView sender,
             NavigationViewSelectionChangedEventArgs args)
         {
+
+            NavigationViewItem item = args.SelectedItem as NavigationViewItem;
             if (args.IsSettingsSelected)
             {
                 sender.AlwaysShowHeader = false;
@@ -156,6 +158,7 @@ namespace openHAB.Windows
             else
             {
                 sender.AlwaysShowHeader = true;
+                SitemapNavigation.Header = Vm;
                 Sitemap sitemap = args.SelectedItem as Sitemap;
                 if (sitemap != null)
                 {
@@ -223,6 +226,12 @@ namespace openHAB.Windows
 
         private void NavigationViewItemMainUI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            SitemapNavigation.IsPaneOpen = false;
+            SitemapNavigation.AlwaysShowHeader = false;
+
+            SitemapNavigation.Header = null;
+            Vm.SelectedSitemap = null;
+
             ContentFrame.Navigate(typeof(MainUIPage));
         }
     }
