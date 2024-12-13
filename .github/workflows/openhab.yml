@@ -64,7 +64,7 @@ jobs:
           }
     
   build:
-    uses: .github/workflows/build.yml
+    uses: ./.github/workflows/build.yml
     name: Build
     needs: configure
     with:
@@ -74,7 +74,7 @@ jobs:
     secrets: inherit
 
   create_release:
-    uses: .github/workflows/release.yml
+    uses: ./.github/workflows/release.yml
     needs: 
       - build
       - configure
@@ -83,7 +83,7 @@ jobs:
       build_number: ${{ needs.configure.outputs.buildNumber }}
   
   publish_beta:
-    uses: .github/workflows/publish.yml
+    uses: ./.github/workflows/publish.yml
     needs: 
       - build
       - configure
@@ -93,7 +93,7 @@ jobs:
     secrets: inherit
 
   publish_prod:
-    uses: .github/workflows/publish.yml
+    uses: ./.github/workflows/publish.yml
     needs: 
       - publish_beta
       - configure
