@@ -111,7 +111,7 @@ namespace openHAB.Windows.ViewModel
 
             set
             {
-                if (_selectedSitemap != value)
+                if (_selectedSitemap != value && value != null)
                 {
                     StrongReferenceMessenger.Default.Unregister<WidgetNavigationMessage, string>(this, value.Name);
                 }
@@ -131,6 +131,8 @@ namespace openHAB.Windows.ViewModel
                     BreadcrumbItems.Clear();
                     SelectedMenuItem = value;
                 }
+
+                OnPropertyChanged(nameof(SelectedSitemap));
             }
         }
 

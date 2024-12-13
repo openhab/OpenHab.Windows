@@ -54,13 +54,15 @@
             <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground"
                              Color="#FFFF5722" />
             <!-- Converters -->
+            <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
             <converters:ObjectToSitemapConverter x:Key="ObjectToSitemapConverter" />
             <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibility" />
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:MenuItemTemplateSelector x:Key="Selector">
                 <converters:MenuItemTemplateSelector.DefaultItemTemlate>
                     <DataTemplate x:DataType="muxc:NavigationViewItem">
-                        <muxc:NavigationViewItem Margin="-15,0,0,0" Content="{Binding}" />
+                        <muxc:NavigationViewItem Margin="-15,0,0,0"
+                                                 Content="{Binding}" />
                     </DataTemplate>
                 </converters:MenuItemTemplateSelector.DefaultItemTemlate>
                 <converters:MenuItemTemplateSelector.SiteMapMenuItemTemplate>
@@ -83,7 +85,7 @@
             </converters:MenuItemTemplateSelector>
             <!-- Data Template -->
             <DataTemplate x:Key="NavMenuHeaderTemplate">
-                <Grid>
+                <Grid  Visibility="{Binding Vm.SelectedSitemap, ElementName=Window, Converter={StaticResource NullToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -93,8 +95,6 @@
                         <TextBlock Style="{StaticResource SitemapHeader}"
                                    Text="{Binding Vm.SelectedSitemap.Label, ElementName=Window, Mode=OneWay}"
                                    Tapped="SitemapTextBlock_Tapped" />
-                        <!--<Button Margin="10,0,0,0"
-                                Command="{Binding Vm.SelectedSitemap.ReloadSitemapCommand, ElementName=Window}">-->
                         <Button Margin="10,0,0,0">
                             <SymbolIcon Symbol="Refresh"
                                         Foreground="{StaticResource TextFillColorPrimaryBrush}"
@@ -122,13 +122,8 @@
             </DataTemplate>
             <DataTemplate x:Key="NavHeaderTemplate">
                 <StackPanel Orientation="Horizontal"
-                            Margin="10">
-                    <!--<Button Command="{Binding Vm.SelectedSitemap.ReloadSitemapCommand, ElementName=Window}">-->
-                    <!--<Button>
-                        <SymbolIcon Symbol="Refresh"
-                                    Foreground="{StaticResource TextFillColorPrimaryBrush}"
-                                    VerticalAlignment="Center" />
-                    </Button>-->
+                            Margin="10"
+                            Visibility="{Binding Vm.SelectedSitemap, ElementName=Window, Converter={StaticResource NullToVisibility}}">
                     <BreadcrumbBar ItemsSource="{Binding Vm.BreadcrumbItems, ElementName=Window, Mode=TwoWay}">
                         <BreadcrumbBar.ItemTemplate>
                             <DataTemplate x:DataType="model:Widget">
@@ -144,17 +139,6 @@
                     </BreadcrumbBar>
                 </StackPanel>
             </DataTemplate>
-            <!--<DataTemplate x:Key="WaitListTemplate">
-                <StackPanel Orientation="Horizontal"
-                            Padding="12">
-                    <ProgressRing IsActive="True"
-                                  Margin="0,0,12,0"
-                                  Foreground="{StaticResource TextFillColorPrimaryBrush}" />
-                    <TextBlock x:Uid="Loading"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource TextFillColorPrimaryBrush}" />
-                </StackPanel>
-            </DataTemplate>-->
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -194,7 +178,7 @@
                        Text="App title"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Grid.Column="2"
-                       VerticalAlignment="Center"></TextBlock>
+                       VerticalAlignment="Center" />
             <AutoSuggestBox x:Name="TitleBarSearchBox"
                             Grid.Column="4"
                             QueryIcon="Find"
@@ -216,7 +200,7 @@
                              AlwaysShowHeader="True"
                              IsSettingsVisible="True"
                              OpenPaneLength="250"
-                             CompactPaneLength="45"
+                             CompactPaneLength="55"
                              PaneDisplayMode="Left"
                              IsPaneOpen="True"
                              SelectionChanged="SitemapNavigation_SelectionChanged">
