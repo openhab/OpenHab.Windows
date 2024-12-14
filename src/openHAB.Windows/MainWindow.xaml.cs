@@ -155,10 +155,9 @@ namespace openHAB.Windows
                 sender.AlwaysShowHeader = false;
                 ContentFrame.Navigate(typeof(SettingsPage));
             }
-            else
+            else if(args.SelectedItem is Sitemap)
             {
                 sender.AlwaysShowHeader = true;
-                SitemapNavigation.Header = Vm;
                 Sitemap sitemap = args.SelectedItem as Sitemap;
                 if (sitemap != null)
                 {
@@ -227,10 +226,9 @@ namespace openHAB.Windows
         private void NavigationViewItemMainUI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             SitemapNavigation.IsPaneOpen = false;
-            SitemapNavigation.AlwaysShowHeader = false;
 
-            SitemapNavigation.Header = null;
             Vm.SelectedSitemap = null;
+            SitemapNavigation.AlwaysShowHeader = false;
 
             ContentFrame.Navigate(typeof(MainUIPage));
         }
