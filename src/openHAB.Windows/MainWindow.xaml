@@ -55,6 +55,7 @@
                              Color="#FFFF5722" />
             <!-- Converters -->
             <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
+            <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
             <converters:ObjectToSitemapConverter x:Key="ObjectToSitemapConverter" />
             <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibility" />
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -83,62 +84,6 @@
                     </DataTemplate>
                 </converters:MenuItemTemplateSelector.SiteMapMenuItemTemplate>
             </converters:MenuItemTemplateSelector>
-            <!-- Data Template -->
-            <DataTemplate x:Key="NavMenuHeaderTemplate">
-                <Grid  Visibility="{Binding Vm.SelectedSitemap, ElementName=Window, Converter={StaticResource NullToVisibility}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0"
-                                Orientation="Horizontal">
-                        <TextBlock Style="{StaticResource SitemapHeader}"
-                                   Text="{Binding Vm.SelectedSitemap.Label, ElementName=Window, Mode=OneWay}"
-                                   Tapped="SitemapTextBlock_Tapped" />
-                        <Button Margin="10,0,0,0">
-                            <SymbolIcon Symbol="Refresh"
-                                        Foreground="{StaticResource TextFillColorPrimaryBrush}"
-                                        VerticalAlignment="Center" />
-                        </Button>
-                    </StackPanel>
-                    <BreadcrumbBar Grid.Row="1"
-                                   Margin="0,0,0,10"
-                                   ItemsSource="{Binding Vm.BreadcrumbItems, ElementName=Window, Mode=TwoWay}"
-                                   ItemClicked="BreadcrumbBar_ItemClicked">
-                        <BreadcrumbBar.ItemTemplate>
-                            <DataTemplate x:DataType="model:Widget">
-                                <BreadcrumbBarItem Content="{Binding }">
-                                    <BreadcrumbBarItem.ContentTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Style="{StaticResource BreakcrumbItemText}"
-                                                       Text="{Binding Label}" />
-                                        </DataTemplate>
-                                    </BreadcrumbBarItem.ContentTemplate>
-                                </BreadcrumbBarItem>
-                            </DataTemplate>
-                        </BreadcrumbBar.ItemTemplate>
-                    </BreadcrumbBar>
-                </Grid>
-            </DataTemplate>
-            <DataTemplate x:Key="NavHeaderTemplate">
-                <StackPanel Orientation="Horizontal"
-                            Margin="10"
-                            Visibility="{Binding Vm.SelectedSitemap, ElementName=Window, Converter={StaticResource NullToVisibility}}">
-                    <BreadcrumbBar ItemsSource="{Binding Vm.BreadcrumbItems, ElementName=Window, Mode=TwoWay}">
-                        <BreadcrumbBar.ItemTemplate>
-                            <DataTemplate x:DataType="model:Widget">
-                                <BreadcrumbBarItem Content="{Binding }">
-                                    <BreadcrumbBarItem.ContentTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Name}" />
-                                        </DataTemplate>
-                                    </BreadcrumbBarItem.ContentTemplate>
-                                </BreadcrumbBarItem>
-                            </DataTemplate>
-                        </BreadcrumbBar.ItemTemplate>
-                    </BreadcrumbBar>
-                </StackPanel>
-            </DataTemplate>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -191,19 +136,57 @@
                              Grid.RowSpan="2"
                              MenuItemsSource="{x:Bind Vm.Sitemaps, Mode=OneWay}"
                              MenuItemTemplateSelector="{StaticResource Selector}"
-                             Header="{x:Bind Vm}"
-                             HeaderTemplate="{StaticResource NavMenuHeaderTemplate}"
                              SelectedItem="{x:Bind Vm.SelectedMenuItem, Mode=TwoWay}"
                              Foreground="{StaticResource TextFillColorPrimaryBrush}"
                              Background="{StaticResource AcrylicBackgroundFillColorBaseBrush}"
                              IsBackButtonVisible="Collapsed"
-                             AlwaysShowHeader="True"
+                             AlwaysShowHeader="False"
                              IsSettingsVisible="True"
                              OpenPaneLength="250"
                              CompactPaneLength="55"
                              PaneDisplayMode="Left"
                              IsPaneOpen="True"
                              SelectionChanged="SitemapNavigation_SelectionChanged">
+            <muxc:NavigationView.Header>
+                <Grid Visibility="{Binding SelectedSitemap, Converter={StaticResource NullToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0"
+                                Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource SitemapHeader}"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Path=SelectedSitemap.Label, Mode=OneWay}"
+                                   Tapped="SitemapTextBlock_Tapped" />
+                        <Button Margin="10,10,0,0"
+                                MaxHeight="35"
+                                MaxWidth="35"
+                                VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE72C;"
+                                      FontSize="12"
+                                      Foreground="{StaticResource TextFillColorPrimaryBrush}" />
+                        </Button>
+                    </StackPanel>
+                    <BreadcrumbBar Grid.Row="1"
+                                   Margin="0,0,0,10"
+                                   ItemsSource="{Binding BreadcrumbItems, Mode=TwoWay}"
+                                   ItemClicked="BreadcrumbBar_ItemClicked">
+                        <BreadcrumbBar.ItemTemplate>
+                            <DataTemplate x:DataType="model:Widget">
+                                <BreadcrumbBarItem Content="{Binding }">
+                                    <BreadcrumbBarItem.ContentTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource BreakcrumbItemText}"
+                                                       Text="{Binding Label}" />
+                                        </DataTemplate>
+                                    </BreadcrumbBarItem.ContentTemplate>
+                                </BreadcrumbBarItem>
+                            </DataTemplate>
+                        </BreadcrumbBar.ItemTemplate>
+                    </BreadcrumbBar>
+                </Grid>
+            </muxc:NavigationView.Header>
             <muxc:NavigationView.PaneCustomContent>
                 <StackPanel Orientation="Vertical"
                             Visibility="{Binding IsPaneOpen, ElementName=SitemapNavigation}">
@@ -214,7 +197,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="textBlock"
                                    Grid.Column="0"
-                                   Margin="5,-3,0,0"
+                                   Margin="10,-3,0,0"
                                    VerticalAlignment="Center"
                                    Style="{StaticResource MenuSubHeader}"
                                    Foreground="{StaticResource TextFillColorPrimaryBrush}"
@@ -223,9 +206,9 @@
                                 Margin="0,0,10,0"
                                 HorizontalAlignment="Right"
                                 Command="{Binding Vm.RefreshCommand, ElementName=Window}">
-                            <SymbolIcon Symbol="Refresh"
-                                        Foreground="{StaticResource TextFillColorPrimaryBrush}"
-                                        VerticalAlignment="Center" />
+                            <FontIcon Glyph="&#xE72C;"
+                                      FontSize="12"
+                                      Foreground="{StaticResource TextFillColorPrimaryBrush}" />
                         </Button>
                     </Grid>
                     <TextBlock Margin="10,10,10,0"
