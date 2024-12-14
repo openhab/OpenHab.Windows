@@ -84,14 +84,12 @@ jobs:
 
     - name: Restore nuget packages
       shell: pwsh
-      run: |
-            Write-Host "==== Restore Nuget packages ====" -ForegroundColor Green
+      run: | 
             dotnet restore ${{github.workspace}}\repo\OpenHAB.Windows.sln --force --no-cache
 
     - name: Build OpenHab Windows App
       shell: pwsh
       run: |
-          Write-Host "==== Build app package ====" -ForegroundColor Green
           dotnet msbuild ${{github.workspace}}\repo\OpenHAB.Windows.sln `
               -property:Platform="x86" `
               -property:AppxBundlePlatforms="${{inputs.bundle_Platforms}}" `
