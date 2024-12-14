@@ -102,10 +102,11 @@ jobs:
       run: |
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
-    - shell: pwsh
+    - name: List files in output directory
+      shell: pwsh
       working-directory: ${{env.output_directory}}
       run: |
-        ls
+        Get-ChildItem -Path ${{env.output_directory}}
 
     - name: Upload App Package
       uses: actions/upload-artifact@v4
