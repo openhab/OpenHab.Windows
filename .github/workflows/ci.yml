@@ -1,26 +1,14 @@
-name: "openHAB Build and Release app"
-run-name: app-${{github.run_id }}
+name: 'openHAB Build CI Build'
+run-name: app-ci-${{github.run_id }}
 
 env:
   BuildDirectory: '${{github.workspace}}\build'
-  ACTIONS_RUNNER_DEBUG: true
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      BuildConfiguration:
-        description: "Specifices if a release or debug package should be created."
-        type: choice
-        options: ["release", "debug"]
-        default: "release"
-      IsBetaRelease:
-        description: "Specifices if a beta release should be created."
-        type: "boolean"
-        default: false
-
+  
 jobs:
   configure:
     name: Configure Build
@@ -49,7 +37,7 @@ jobs:
             Write-Output  "BuildConfiguration=debug" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
             Write-Output  "BundlePlatforms=x86" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           }
-
+       
       - name: Set build number and release name
         id: buildnumber
         shell: pwsh
@@ -65,7 +53,7 @@ jobs:
             Write-Host  "Set release name to $CURRENTDATE"
             Write-Output  "RELEASE_NAME=$CURRENTDATE" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           }
-
+    
   build:
     uses: ./.github/workflows/build.yml
     name: Build
@@ -75,32 +63,3 @@ jobs:
       bundle_Platforms: ${{ needs.configure.outputs.bundlePlatforms}}
       build_number: ${{ needs.configure.outputs.buildNumber}}
     secrets: inherit
-
-  create_release:
-    uses: ./.github/workflows/release.yml
-    needs:
-      - build
-      - configure
-    with:
-      beta_release: ${{ inputs.IsBetaRelease }}
-      build_number: ${{ needs.configure.outputs.buildNumber }}
-
-  # publish_beta:
-  #   uses: ./.github/workflows/publish.yml
-  #   needs:
-  #     - build
-  #     - configure
-  #   with:
-  #     environment: BETA
-  #     package_name: "openHAB.Windows_${{needs.configure.outputs.buildNumber}}_x86_x64_arm_bundle"
-  #   secrets: inherit
-
-  # publish_prod:
-  #   uses: ./.github/workflows/publish.yml
-  #   needs:
-  #     - publish_beta
-  #     - configure
-  #   with:
-  #     environment: PROD
-  #     package_name: "openHAB.Windows_${{needs.configure.outputs.buildNumber}}_x86_x64_arm_bundle"
-  #   secrets: inherit
