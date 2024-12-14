@@ -102,6 +102,11 @@ jobs:
       run: |
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+    - shell: pwsh
+      working-directory: ${{env.output_directory}}
+      run: |
+        ls
+
     - name: Upload App Package
       uses: actions/upload-artifact@v4
       with:
