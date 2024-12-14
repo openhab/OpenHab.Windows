@@ -86,7 +86,7 @@ jobs:
       shell: pwsh
       run: |
             Write-Host "==== Restore Nuget packages ====" -ForegroundColor Green
-            nuget restore ${{github.workspace}}\repo\OpenHAB.Windows.sln    
+            dotnet restore ${{github.workspace}}\repo\OpenHAB.Windows.sln  
 
     - name: Build OpenHab Windows App
       shell: pwsh
@@ -97,8 +97,8 @@ jobs:
               -property:AppxBundlePlatforms="${{inputs.bundle_Platforms}}" `
               -property:AppxPackageDir="${{env.output_directory}}" `
               -property:AppxBundle=Always `
-              -property:UapAppxPackageBuildMode=StoreUpload ` 
-              -property:Configuration="${{inputs.build_configuration}}" ` 
+              -property:UapAppxPackageBuildMode=StoreUpload `
+              -property:Configuration="${{inputs.build_configuration}}" `
               -target:Rebuild
     
     - name: End SonarQube analyze
