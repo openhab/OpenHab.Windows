@@ -13,11 +13,6 @@ on:
         description: 'Defines the platforms for the app package.'
         required: false
         default: ' x86|x64|ARM'
-      output_directory:
-        type: string
-        description: 'Defines the output directory for the app package'
-        required: false
-        default: '${{github.workspace}}\build'
       build_number:
         type: string
         description: 'The build number to use'
@@ -27,7 +22,8 @@ jobs:
   build:
     name: 'Build App Package'
     runs-on: windows-latest
-
+    env:
+      output_directory: ${{github.workspace}}/build
     steps:
     - name: Checkout main code
       uses: actions/checkout@v2
@@ -96,7 +92,7 @@ jobs:
       shell: pwsh
       run: |
           Write-Host "==== Build app package ====" -ForegroundColor Green
-          msbuild.exe ${{github.workspace}}\repo\OpenHAB.Windows.sln /p:Platform="x86" /p:AppxBundlePlatforms="${{inputs.bundle_Platforms}}" /p:AppxPackageDir="${{inputs.output_directory}}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /p:configuration="${{inputs.build_configuration}}" /t:rebuild
+          msbuild.exe ${{github.workspace}}\repo\OpenHAB.Windows.sln /p:Platform="x86" /p:AppxBundlePlatforms="${{inputs.bundle_Platforms}}" /p:AppxPackageDir="${{env.output_directory}}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /p:configuration="${{inputs.build_configuration}}" /t:rebuild
     
     - name: End SonarQube analyze
       env:
@@ -110,4 +106,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app
-        path: ${{inputs.output_directory}}
+        path: ${{env.output_directory}}
