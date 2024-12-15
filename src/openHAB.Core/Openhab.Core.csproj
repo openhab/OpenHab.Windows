@@ -2,7 +2,6 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
 		<OutputType>Library</OutputType>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<UseWinUI>true</UseWinUI>
 		<ApplicationManifest>
@@ -10,7 +9,7 @@
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 		<Platforms>x86;x64;arm64</Platforms>
 		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
-		<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<WindowsPackageType>MSIX</WindowsPackageType>
