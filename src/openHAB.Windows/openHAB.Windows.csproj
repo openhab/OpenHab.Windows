@@ -1,28 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-		<Platform Condition=" '$(Platform)' == '' ">x86</Platform>
 		<OutputType>WinExe</OutputType>
-		<PackageCertificateKeyFile>OpenHAB.Windows_StoreKey.pfx</PackageCertificateKeyFile>
-		<PackageCertificateThumbprint>
-		</PackageCertificateThumbprint>
-		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-		<AppxBundle>Always</AppxBundle>
-		<AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-		<GenerateTestArtifacts>True</GenerateTestArtifacts>
-		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-		<UseWinUI>true</UseWinUI>
-		<EnableMsixTooling>true</EnableMsixTooling>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Platforms>x86;x64;arm64</Platforms>
-		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
-		<StartupObject></StartupObject>
-		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Platforms>x86;x64;ARM64</Platforms>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
+		<UseWinUI>true</UseWinUI>
+		<EnableMsixTooling>true</EnableMsixTooling>
+		<Nullable>enable</Nullable>
+		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PRIResource Include="..\Openhab.Core\Strings\de-DE\Resources.resw">
@@ -90,6 +79,7 @@
 	  <None Remove="View\SitemapPage.xaml" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\openHAB.Core.Client\openHAB.Core.Client.csproj" />
 	  <ProjectReference Include="..\openHAB.Core\openHAB.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
