@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       beta_release:
-        description: 'Specifices if a beta release should be created.'
+        description: 'Specifies if a beta release should be created.'
         type: boolean
         default: false
         required: false
