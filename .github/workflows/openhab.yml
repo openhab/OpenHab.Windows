@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       BuildConfiguration:
-        description: "Specifices if a release or debug package should be created."
+        description: "Specifies if a release or debug package should be created."
         type: choice
         options: ["release", "debug"]
         default: "release"
