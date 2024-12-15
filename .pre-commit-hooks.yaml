@@ -1,5 +1,5 @@
 - id: sign-off
   name: Sign-off commits
-  entry: bash -c 'git commit --amend --no-edit --signoff'
+  entry: pwsh -c 'git commit --amend --no-edit --signoff'
   language: system
   stages: [commit-msg]
