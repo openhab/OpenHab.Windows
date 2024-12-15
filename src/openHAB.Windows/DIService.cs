@@ -49,7 +49,7 @@ namespace openHAB.Windows.Services
              {
                  // configure Logging with NLog
                  loggingBuilder.ClearProviders();
-                 loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+                 loggingBuilder.SetMinimumLevel(LogLevel.Information);
                  loggingBuilder.AddNLog(GetLoggingConfiguration());
              });
 
@@ -87,7 +87,6 @@ namespace openHAB.Windows.Services
             JsonLayout layout = new JsonLayout()
             {
                 IncludeEventProperties = true,
-
             };
 
             layout.Attributes.Add(new JsonAttribute("time", @"${date:format=HH\:mm\:ss}"));
@@ -99,7 +98,7 @@ namespace openHAB.Windows.Services
 
             FileTarget fileTarget = new FileTarget("file")
             {
-                FileName = "${var:LogPath}/logs/${shortdate}.log",
+                FileName = "${var:LogPath}/logs/${shortdate}.json",
                 Layout = layout,
                 MaxArchiveFiles = 3,
                 ArchiveEvery = FileArchivePeriod.Day,
