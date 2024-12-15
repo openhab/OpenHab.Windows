@@ -17,7 +17,7 @@ on:
         options: ["release", "debug"]
         default: "release"
       IsBetaRelease:
-        description: "Specifices if a beta release should be created."
+        description: "Specifies if a beta release should be created."
         type: "boolean"
         default: false
 
