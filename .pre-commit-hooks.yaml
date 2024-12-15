@@ -1,5 +1,5 @@
 - id: sign-off
   name: Sign-off commits
-  entry: pwsh -c 'git commit --amend --no-edit --signoff'
+  entry: "pwsh -c 'git interpret-trailers --in-place --trailer \"Signed-off-by: $(git config user.name) <$(git config user.email)>\" .git/COMMIT_EDITMSG'"
   language: system
   stages: [commit-msg]
