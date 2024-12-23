@@ -1,5 +1,4 @@
 using Microsoft.UI.Xaml.Controls;
-using openHAB.Windows.Services;
 using openHAB.Windows.ViewModel;
 
 namespace openHAB.Windows.View

@@ -18,7 +18,7 @@ using openHAB.Core.Services;
 using openHAB.Core.Services.Contracts;
 using openHAB.Windows.ViewModel;
 
-namespace openHAB.Windows.Services
+namespace openHAB.Windows
 {
     /// <summary>
     /// Dependency Injection Service.
@@ -56,7 +56,7 @@ namespace openHAB.Windows.Services
             services.AddSingleton<IMessenger>(StrongReferenceMessenger.Default);
             services.AddSingleton<IOpenHABClient, OpenHABClient>();
             services.AddSingleton<ISettingsService, SettingsService>();
-            services.AddTransient<Settings>(x =>
+            services.AddTransient(x =>
             {
                 ISettingsService settingsService = x.GetService<ISettingsService>();
                 return settingsService.Load();

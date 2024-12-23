@@ -11,7 +11,7 @@ namespace openHAB.Core.Model
     [System.Runtime.InteropServices.Guid("6AF3A86A-9AAA-400B-AB7F-E42A780D5ECF")]
     public class Settings
     {
-        private static List<IConnectionProfile> _connectionProfiles;
+        private static List<IConnectionProfile> _connectionProfiles = Client.Connection.Models.ConnectionProfiles.GetProfiles();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Settings"/> class.
@@ -26,24 +26,7 @@ namespace openHAB.Core.Model
 
         /// <summary>Gets the list of available connection profiles.</summary>
         /// <value>The connection profiles.</value>
-        public static List<IConnectionProfile> ConnectionProfiles
-        {
-            get
-            {
-                if (_connectionProfiles == null)
-                {
-                    _connectionProfiles = new List<IConnectionProfile>
-                    {
-                        new LocalConnectionProfile(),
-                        new DefaultConnectionProfile(),
-                        new RemoteConnectionProfile(),
-                        new CloudConnectionProfile()
-                    };
-                }
-
-                return _connectionProfiles;
-            }
-        }
+        public static List<IConnectionProfile> ConnectionProfiles => _connectionProfiles;
 
         /// <summary>
         /// Gets or sets the application language.
@@ -70,7 +53,10 @@ namespace openHAB.Core.Model
         /// <value>
         /// The last sitemap.
         /// </value>
-        public string LastSitemap { get; set; }
+        public string LastSitemap
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Gets or sets the configuration to the OpenHAB remote instance.

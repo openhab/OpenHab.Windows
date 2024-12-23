@@ -2,11 +2,12 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.Json;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
 using Windows.System.UserProfile;
+using System.Text.Json.Serialization;
 
 namespace openHAB.Core.Services
 {
@@ -18,10 +19,6 @@ namespace openHAB.Core.Services
         private readonly AppPaths _applicationContext;
         private readonly ILogger<SettingsService> _logger;
         private Settings _settings;
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsService"/> class.
@@ -67,7 +64,7 @@ namespace openHAB.Core.Services
                 fileContent = fileContent.Replace("OpenHAB.Core.Model.Connection", "openHAB.Core.Connection");
             }
 
-            _settings = JsonConvert.DeserializeObject<Settings>(fileContent, _serializerSettings);
+            _settings = JsonSerializer.Deserialize<Settings>(fileContent);
             return _settings;
         }
 
@@ -79,7 +76,7 @@ namespace openHAB.Core.Services
                 _logger.LogInformation("Save settings to disk");
                 _settings = settings;
 
-                string settingsContent = JsonConvert.SerializeObject(settings, _serializerSettings);
+                string settingsContent = JsonSerializer.Serialize(settings);
                 File.WriteAllText(_applicationContext.SettingsFilePath, settingsContent, Encoding.UTF8);
 
                 return true;

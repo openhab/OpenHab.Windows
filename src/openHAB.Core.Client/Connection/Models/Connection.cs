@@ -1,4 +1,5 @@
 using openHAB.Core.Client.Connection.Contracts;
+using System.Text.Json.Serialization;
 
 namespace openHAB.Core.Client.Connection.Models
 {
@@ -9,10 +10,27 @@ namespace openHAB.Core.Client.Connection.Models
     {
         /// <summary>Gets or sets the connection profile.</summary>
         /// <value>The profile.</value>
+        [JsonIgnore]
         public IConnectionProfile Profile
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets or sets the connection profile identifier.
+        /// </summary>
+        /// <value>The identifier of the connection profile.</value>
+        public int ProfileId
+        {
+            get
+            {
+                return this.Profile.Id;
+            }
+            set
+            {
+                Profile = ConnectionProfiles.GetProfile(value);
+            }
         }
 
         /// <summary>Gets or sets the type of the connection.</summary>

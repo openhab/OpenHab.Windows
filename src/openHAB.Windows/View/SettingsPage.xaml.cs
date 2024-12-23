@@ -11,7 +11,6 @@ using openHAB.Core;
 using openHAB.Core.Messages;
 using openHAB.Core.Services.Contracts;
 using openHAB.Windows.Controls;
-using openHAB.Windows.Services;
 using openHAB.Windows.ViewModel;
 
 namespace openHAB.Windows.View

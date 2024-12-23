@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using openHAB.Windows.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

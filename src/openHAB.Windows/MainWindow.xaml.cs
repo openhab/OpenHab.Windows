@@ -12,7 +12,6 @@ using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
 using openHAB.Windows.Messages;
-using openHAB.Windows.Services;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
 using System;
@@ -44,7 +43,7 @@ namespace openHAB.Windows
             this.AppWindow.TitleBar.ButtonForegroundColor = Colors.Black;
             AppTitleBar.Loaded += AppTitleBar_Loaded;
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-            TitleBarTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName;
+            //TitleBarTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName; //TODO: Replace with
 
             Vm = DIService.Instance.GetService<MainViewModel>();
             Root.DataContext = Vm;

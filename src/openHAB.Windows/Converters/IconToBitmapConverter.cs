@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using openHAB.Windows.Services;
 using openHAB.Windows.ViewModel;
 
 namespace openHAB.Windows.Converters

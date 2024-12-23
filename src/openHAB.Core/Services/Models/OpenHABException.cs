@@ -1,6 +1,7 @@
+using openHAB.Core.Client.Models;
 using System;
 
-namespace openHAB.Core.Client.Models
+namespace openHAB.Core.Services.Models
 {
     /// <summary>
     /// An Exception class used to throw unexpected errors.

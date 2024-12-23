@@ -11,6 +11,7 @@ using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
+using openHAB.Core.Services.Models;
 
 namespace openHAB.Core.Services
 {

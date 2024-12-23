@@ -8,7 +8,6 @@ using openHAB.Common;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Common;
-using openHAB.Core.Contracts;
 using openHAB.Core.Model;
 
 namespace openHAB.Windows.ViewModel

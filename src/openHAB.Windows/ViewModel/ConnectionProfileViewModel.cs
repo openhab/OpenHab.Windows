@@ -1,8 +1,7 @@
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
-using openHAB.Windows.ViewModel;
 
-namespace openHAB.Core.Contracts
+namespace openHAB.Windows.ViewModel
 {
     /// <summary>
     /// ViewModel for connection profile.

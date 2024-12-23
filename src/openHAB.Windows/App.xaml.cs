@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
-using openHAB.Windows.Services;
 
 namespace openHAB.Windows
 {

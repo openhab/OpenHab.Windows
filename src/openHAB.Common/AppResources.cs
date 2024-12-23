@@ -1,4 +1,5 @@
-using Windows.ApplicationModel.Resources;
+using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace openHAB.Common
 {
@@ -19,7 +20,7 @@ namespace openHAB.Common
             {
                 if (_resourceLoader == null)
                 {
-                    _resourceLoader = ResourceLoader.GetForViewIndependentUse("Resources");
+                    _resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
                 }
 
                 return _resourceLoader;
@@ -35,7 +36,7 @@ namespace openHAB.Common
             {
                 if (_errorResourceLoader == null)
                 {
-                    _errorResourceLoader = ResourceLoader.GetForViewIndependentUse("Errors");
+                    _errorResourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
                 }
 
                 return _errorResourceLoader;
