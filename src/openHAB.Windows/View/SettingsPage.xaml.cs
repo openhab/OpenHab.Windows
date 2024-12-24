@@ -21,19 +21,19 @@ namespace openHAB.Windows.View
     public sealed partial class SettingsPage : Page
     {
         private IAppManager _appManager;
-        private ILogger<SettingsViewModel> _logger;
+        private ILogger<SettingsPage> _logger;
         private SettingsViewModel _settingsViewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage"/> class.
         /// </summary>
-        public SettingsPage()
+        public SettingsPage(SettingsViewModel settingsViewModel, IAppManager appManager, ILogger<SettingsPage> logger)
         {
             InitializeComponent();
 
-            _settingsViewModel = DIService.Instance.GetService<SettingsViewModel>();
-            _logger = DIService.Instance.GetService<ILogger<SettingsViewModel>>();
-            _appManager = DIService.Instance.GetService<IAppManager>();
+            _settingsViewModel = settingsViewModel;
+            _logger = logger;
+            _appManager = appManager;
 
             DataContext = _settingsViewModel;
         }

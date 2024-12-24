@@ -1,4 +1,4 @@
-using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.UI.Dispatching;
@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
+using System;
 
 namespace openHAB.Windows
 {
@@ -14,28 +15,35 @@ namespace openHAB.Windows
     /// </summary>
     public partial class App : Application
     {
-        private ILogger<App> _logger;
-        private ISettingsService _settingsService;
+        private readonly ILogger<App> _logger;
+        private readonly ISettingsService _settingsService;
+        private readonly INotificationManager _notificationManager;
+        private MainWindow _mainWindow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="App" /> class.
         /// </summary>
-        public App()
+        public App(ISettingsService settingsService, INotificationManager notificationManage, ILogger<App> logger)
         {
             InitializeComponent();
             UnhandledException += App_UnhandledException;
 
             DispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-            _logger = DIService.Instance.GetService<ILogger<App>>();
-            _settingsService = DIService.Instance.GetService<ISettingsService>();
-
-            INotificationManager notificationManager = DIService.Instance.GetService<INotificationManager>();
+            _logger = logger;
+            _settingsService = settingsService;
+            _notificationManager = notificationManage;
         }
 
-        public static DispatcherQueue DispatcherQueue { get; private set; }
+        public static DispatcherQueue DispatcherQueue
+        {
+            get; private set;
+        }
 
-        public static Window MainWindow { get; private set; }
+        public Window MainWindow
+        {
+            get => _mainWindow;
+        }
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -76,7 +84,7 @@ namespace openHAB.Windows
             }
 
             // Initialize MainWindow here
-            MainWindow = new MainWindow();
+            _mainWindow = Program.Host.Services.GetRequiredService<MainWindow>();
             //Frame rootFrame = MainWindow.Content;
 
             //if (rootFrame == null)

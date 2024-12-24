@@ -43,13 +43,17 @@ namespace openHAB.Core.Client.Connection.Models
             get => HttpClientType.Local;
         }
 
+        public string Url => "https://openhab:8443";
+
+        public string MainUIUrl => Url;
+
         /// <inheritdoc/>
         public Connection CreateConnection()
         {
             return new Connection()
             {
-                Url = "https://openhab:8443",
-                Type = HttpClientType.Local,
+                Url = Url,
+                Type = Type,
                 WillIgnoreSSLCertificate = true,
                 WillIgnoreSSLHostname = true,
             };

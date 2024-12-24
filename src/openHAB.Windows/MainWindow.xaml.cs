@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
@@ -14,9 +16,6 @@ using openHAB.Core.Messages;
 using openHAB.Windows.Messages;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
-using System;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Graphics;
 
@@ -32,9 +31,9 @@ namespace openHAB.Windows
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
         /// </summary>
-        public MainWindow()
+        public MainWindow(MainViewModel mainViewModel, ILogger<MainPage> logger)
         {
-            _logger = DIService.Instance.GetService<ILogger<MainPage>>();
+            _logger = logger;
 
             this.InitializeComponent();
 
@@ -45,13 +44,13 @@ namespace openHAB.Windows
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
             //TitleBarTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName; //TODO: Replace with
 
-            Vm = DIService.Instance.GetService<MainViewModel>();
+            Vm = mainViewModel;
             Root.DataContext = Vm;
 
             StrongReferenceMessenger.Default.Register<ConnectionErrorMessage>(this, async (recipient, msg) => await ShowErrorMessage(recipient, msg));
             StrongReferenceMessenger.Default.Register<FireInfoMessage>(this, async (recipient, msg) => await ShowInfoMessage(recipient, msg));
 
-            Vm.LoadSitemapsAndItemData();
+            _ = Vm.LoadSitemapsAndItemData();
         }
 
         /// <summary>

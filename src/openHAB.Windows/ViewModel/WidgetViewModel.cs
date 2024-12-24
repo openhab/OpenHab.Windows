@@ -1,14 +1,15 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Windows.UI;
 
 namespace openHAB.Windows.ViewModel
@@ -20,17 +21,21 @@ namespace openHAB.Windows.ViewModel
     {
         private ObservableCollection<WidgetViewModel> _children;
         private string _iconPath;
+        private IServiceProvider _serviceProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WidgetViewModel"/> class.
         /// </summary>
         /// <param name="model">The underlying model for the widget.</param>
-        private WidgetViewModel(Widget model)
+        private WidgetViewModel(Widget model, IServiceProvider serviceProvider)
             : base(model)
         {
             Children = new ObservableCollection<WidgetViewModel>();
+            _serviceProvider = serviceProvider;
         }
 
         #region Properties
+
 
         /// <summary>
         /// Gets the collection of child widgets.
@@ -40,7 +45,6 @@ namespace openHAB.Windows.ViewModel
             get => _children;
             set => Set(ref _children, value);
         }
-
         /// <summary>
         /// Gets the encoding of the widget.
         /// </summary>
@@ -227,12 +231,24 @@ namespace openHAB.Windows.ViewModel
         /// </summary>
         /// <param name="model">The underlying model for the widget.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the created <see cref="WidgetViewModel"/>.</returns>
-        public static async Task<WidgetViewModel> CreateAsync(Widget model)
+        public static async Task<WidgetViewModel> CreateAsync(Widget model, IServiceProvider serviceProvider)
         {
-            WidgetViewModel viewModel = new WidgetViewModel(model);
+            WidgetViewModel viewModel = new WidgetViewModel(model, serviceProvider);
             viewModel.LoadData();
 
             return viewModel;
+        }
+
+        private async Task<string> CacheAndRetrieveLocalIconPath(string icon)
+        {
+            IIconCaching iconCaching = _serviceProvider.GetRequiredService<IIconCaching>();
+            ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+            Settings setting = settingsService.Load();
+
+            string iconFormat = setting.UseSVGIcons ? "svg" : "svg";
+            string path = await iconCaching.ResolveIconPath(icon, Model.State, iconFormat).ConfigureAwait(false);
+
+            return path;
         }
 
         /// <summary>
@@ -252,27 +268,14 @@ namespace openHAB.Windows.ViewModel
             }
 
             ObservableCollection<WidgetViewModel> widgets = new ObservableCollection<WidgetViewModel>();
-            foreach (Widget w in Model.Children)
+            foreach (Widget widget in Model.Children)
             {
-                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(w);
+                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(widget, _serviceProvider);
                 widgets.Add(viewModel);
             }
 
             Children = widgets;
         }
-
-        private async Task<string> CacheAndRetrieveLocalIconPath(string icon)
-        {
-            IIconCaching iconCaching = DIService.Instance.GetService<IIconCaching>();
-            ISettingsService settingsService = DIService.Instance.GetService<ISettingsService>();
-            Settings setting = settingsService.Load();
-
-            string iconFormat = setting.UseSVGIcons ? "svg" : "svg";
-            string path = await iconCaching.ResolveIconPath(icon, Model.State, iconFormat).ConfigureAwait(false);
-
-            return path;
-        }
-
         #endregion
 
         private Color ConvertColorCodeToColor(string value)

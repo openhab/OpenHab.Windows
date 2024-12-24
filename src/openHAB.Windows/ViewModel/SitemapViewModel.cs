@@ -1,5 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
+using Microsoft.Extensions.DependencyInjection;
 using openHAB.Common;
 using openHAB.Core.Client.Common;
 using openHAB.Core.Client.Messages;
@@ -9,11 +15,6 @@ using openHAB.Core.Messages;
 using openHAB.Core.Services;
 using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace openHAB.Windows.ViewModel
 {
@@ -25,6 +26,7 @@ namespace openHAB.Windows.ViewModel
         private readonly SitemapService _sitemapService;
 
         private ObservableCollection<WidgetViewModel> _currentWidgets;
+        private readonly IServiceProvider _serviceProvider;
         private WidgetViewModel _selectedWidget;
         private ObservableCollection<WidgetViewModel> _widgets;
         private bool disposedValue;
@@ -44,12 +46,13 @@ namespace openHAB.Windows.ViewModel
         /// </summary>
         /// <param name="model">Model class for view model.</param>
         /// <param name="serverInfo">openHAB Instance information.</param>
-        private SitemapViewModel(Sitemap model, List<WidgetViewModel> widgetViewModels)
+        private SitemapViewModel(Sitemap model, List<WidgetViewModel> widgetViewModels, SitemapService sitemapService, IServiceProvider serviceProvider)
              : base(model)
         {
             _widgets = new ObservableCollection<WidgetViewModel>(widgetViewModels ?? new List<WidgetViewModel>());
-            _sitemapService = DIService.Instance.GetService<SitemapService>();
+            _sitemapService = sitemapService;
             _currentWidgets = new ObservableCollection<WidgetViewModel>();
+            _serviceProvider = serviceProvider;
 
             StrongReferenceMessenger.Default.Register<WidgetClickedMessage>(this, async (recipient, msg)
                 =>
@@ -239,12 +242,12 @@ namespace openHAB.Windows.ViewModel
             StrongReferenceMessenger.Default.Send(new WidgetNavigationMessage(SelectedWidget, null, EventTriggerSource.Widget), Model.Name);
         }
 
-        private static async Task<List<WidgetViewModel>> GetWidgetViewModels(ICollection<Widget> widgets)
+        private static async Task<List<WidgetViewModel>> GetWidgetViewModels(ICollection<Widget> widgets, IServiceProvider serviceProvider)
         {
             List<WidgetViewModel> widgetViewModels = new List<WidgetViewModel>();
             foreach (Widget widget in widgets)
             {
-                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(widget).ConfigureAwait(false);
+                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(widget, serviceProvider).ConfigureAwait(false);
                 widgetViewModels.Add(viewModel);
             }
 
@@ -290,16 +293,16 @@ namespace openHAB.Windows.ViewModel
         /// </summary>
         /// <param name="sitemap">The OpenHABSitemap object.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the created SitemapViewModel.</returns>
-        public static async Task<SitemapViewModel> CreateAsync(Sitemap sitemap)
+        public static async Task<SitemapViewModel> CreateAsync(Sitemap sitemap, SitemapService sitemapService, IServiceProvider serviceProvider)
         {
             if (sitemap.Homepage?.Widgets == null ||
                 sitemap.Homepage.Widgets.Count == 0)
             {
-                return new SitemapViewModel(sitemap, new List<WidgetViewModel>());
+                return new SitemapViewModel(sitemap, new List<WidgetViewModel>(), sitemapService, serviceProvider);
             }
 
-            List<WidgetViewModel> widgetViewModels = await GetWidgetViewModels(sitemap.Homepage.Widgets).ConfigureAwait(false);
-            SitemapViewModel viewModel = new SitemapViewModel(sitemap, widgetViewModels);
+            List<WidgetViewModel> widgetViewModels = await GetWidgetViewModels(sitemap.Homepage.Widgets, serviceProvider).ConfigureAwait(false);
+            SitemapViewModel viewModel = new SitemapViewModel(sitemap, widgetViewModels, sitemapService, serviceProvider);
 
             return viewModel;
         }
@@ -320,7 +323,7 @@ namespace openHAB.Windows.ViewModel
             List<WidgetViewModel> widgetViewModels = new List<WidgetViewModel>();
             widgetModels.ToList().ForEach(async model =>
             {
-                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(model).ConfigureAwait(false);
+                WidgetViewModel viewModel = await WidgetViewModel.CreateAsync(model, _serviceProvider).ConfigureAwait(false);
                 widgetViewModels.Add(viewModel);
             });
 

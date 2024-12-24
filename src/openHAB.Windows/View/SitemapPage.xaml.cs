@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -18,19 +19,21 @@ namespace openHAB.Windows.View
     public sealed partial class SitemapPage : Microsoft.UI.Xaml.Controls.Page
     {
         private SitemapService _sitemapService;
+        private ServiceProvider _serviceProvider;
         private SitemapViewModel _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SitemapPage" /> class
         /// .</summary>
-        public SitemapPage()
+        public SitemapPage(SitemapService sitemapService, ServiceProvider serviceProvider)
         {
             this.InitializeComponent();
 
             StrongReferenceMessenger.Default.Register<SitemapChanged>(this, (obj, message)
                     => OnSitemapChangedEvent(message));
 
-            _sitemapService = DIService.Instance.GetService<SitemapService>();
+            _sitemapService = sitemapService;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace openHAB.Windows.View
             StrongReferenceMessenger.Default.Send<DataOperation>(new DataOperation(OperationState.Started));
 
             Sitemap sitemap = await _sitemapService.GetSitemapByUrlAsync(sitemapUrl);
-            _viewModel = await SitemapViewModel.CreateAsync(sitemap);
+            _viewModel = await SitemapViewModel.CreateAsync(sitemap, _sitemapService, _serviceProvider);
 
             DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             await dispatcherQueue.EnqueueAsync(async () =>

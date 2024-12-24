@@ -44,6 +44,10 @@ namespace openHAB.Core.Client.Connection.Models
             get => HttpClientType.Local;
         }
 
+        public string MainUIUrl => throw new System.NotImplementedException();
+
+        public string Url => throw new System.NotImplementedException();
+
         /// <inheritdoc/>
         public Connection CreateConnection()
         {

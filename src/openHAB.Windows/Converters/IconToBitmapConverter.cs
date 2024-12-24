@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Model;
@@ -15,7 +16,7 @@ namespace openHAB.Windows.Converters
         /// <inheritdoc/>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            ISettingsService settingsService = (ISettingsService)DIService.Instance.GetService<ISettingsService>();
+            ISettingsService settingsService = Program.Host.Services.GetRequiredService<ISettingsService>();
             Settings settings = settingsService.Load();
 
             WidgetViewModel widget = value as WidgetViewModel;

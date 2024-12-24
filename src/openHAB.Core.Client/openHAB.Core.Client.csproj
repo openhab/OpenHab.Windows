@@ -16,9 +16,9 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Helpers" Version="8.1.240916" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
-			<Version>9.0.0</Version>
+			<Version>8.0.0</Version>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>

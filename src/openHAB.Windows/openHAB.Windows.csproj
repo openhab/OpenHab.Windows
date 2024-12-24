@@ -13,6 +13,11 @@
 		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 		<WindowsPackageType>None</WindowsPackageType>
 	</PropertyGroup>
+	<PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<StartupObject>openHAB.Windows.Program</StartupObject>
+	</PropertyGroup>
 	<ItemGroup>
 		<PRIResource Include="..\Openhab.Core\Strings\de-DE\Resources.resw">
 			<Link>Strings\de-DE\Resources.resw</Link>
@@ -47,14 +52,14 @@
 		<PackageReference Include="Mapsui" Version="4.1.8" />
 		<PackageReference Include="Mapsui.WinUI" Version="4.1.8" />
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
-			<Version>9.0.0</Version>
+			<Version>8.0.0</Version>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection">
-			<Version>9.0.0</Version>
+			<Version>8.0.1</Version>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Services.Store.SDK" Version="10.1705.16001" />
 		<PackageReference Include="Microsoft.WindowsAppSDK">
 			<Version>1.6.241114003</Version>

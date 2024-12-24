@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -47,7 +48,7 @@ namespace openHAB.Windows.Controls
 
         internal override void SetState()
         {
-            IConnectionService connectionService = DIService.Instance.GetService<IConnectionService>();
+            IConnectionService connectionService = Program.Host.Services.GetRequiredService<IConnectionService>();
             var serverUrl = connectionService.CurrentConnection.Url;
 
             if (!serverUrl.EndsWith("/"))

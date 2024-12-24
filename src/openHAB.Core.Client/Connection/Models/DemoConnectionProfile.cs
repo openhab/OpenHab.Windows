@@ -43,13 +43,17 @@ namespace openHAB.Core.Client.Connection.Models
             get => HttpClientType.Remote;
         }
 
+        public string MainUIUrl => Url;
+
+        public string Url => Constants.API.DemoModeUrl;
+
         /// <inheritdoc/>
         public Connection CreateConnection()
         {
             return new Connection()
             {
                 Type = HttpClientType.Remote,
-                Url = Constants.API.DemoModeUrl,
+                Url = Url,
                 Username = Constants.API.DemoModeUser,
                 Password = Constants.API.DemoModeUserPwd
             };

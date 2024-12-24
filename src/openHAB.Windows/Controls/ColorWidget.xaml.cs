@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -27,7 +28,7 @@ namespace openHAB.Windows.Controls
             InitializeComponent();
             Loaded += OnLoaded;
 
-            _logger = DIService.Instance.GetService<ILogger<ColorWidget>>();
+            _logger = Program.Host.Services.GetRequiredService<ILogger<ColorWidget>>();
         }
 
         /// <summary>

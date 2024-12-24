@@ -85,5 +85,6 @@ namespace openHAB.Core.Client.Connection.Models
             get;
             set;
         }
+
     }
 }

@@ -6,6 +6,6 @@
       mc:Ignorable="d"
       NavigationCacheMode="Enabled">
     <Grid>
-        <WebView2 Source="http://containerhost:8081" />
+        <WebView2 Source="{Binding MainUIUrl}" />
     </Grid>
 </Page>

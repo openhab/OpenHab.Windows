@@ -43,13 +43,20 @@ namespace openHAB.Core.Client.Connection.Models
             get => HttpClientType.Remote;
         }
 
+        public string MainUIUrl
+        {
+            get => "https://home.myopenhab.org/";
+        }
+
+        public string Url => "https://myopenhab.org/";
+
         /// <inheritdoc/>
         public Connection CreateConnection()
         {
             return new Connection()
             {
                 Type = HttpClientType.Remote,
-                Url = "https://myopenhab.org/",
+                Url = Url
             };
         }
     }

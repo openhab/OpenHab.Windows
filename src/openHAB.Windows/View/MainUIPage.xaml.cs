@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using openHAB.Windows.ViewModel;
 
 namespace openHAB.Windows.View
 {
@@ -7,9 +8,18 @@ namespace openHAB.Windows.View
     /// </summary>
     public sealed partial class MainUIPage : Page
     {
-        public MainUIPage()
+        public MainUIPage(MainUIViewModel mainUIView)
         {
             InitializeComponent();
+            ViewModel = mainUIView;
+
+            DataContext = ViewModel;
+        }
+
+        public MainUIViewModel ViewModel
+        {
+            get;
+            set;
         }
     }
 }

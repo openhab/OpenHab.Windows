@@ -9,9 +9,9 @@ namespace openHAB.Windows.View
     public sealed partial class LogViewerPage : Page
     {
         /// <summary>Initializes a new instance of the <see cref="LogViewerPage" /> class.</summary>
-        public LogViewerPage()
+        public LogViewerPage(LogsViewModel viewModel)
         {
-            DataContext = DIService.Instance.GetService<LogsViewModel>();
+            DataContext = viewModel;
 
             this.InitializeComponent();
         }

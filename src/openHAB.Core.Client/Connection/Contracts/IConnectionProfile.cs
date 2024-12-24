@@ -2,7 +2,9 @@ using openHAB.Core.Client.Connection.Models;
 
 namespace openHAB.Core.Client.Connection.Contracts
 {
-    /// <summary>Interface for connection profiles.</summary>
+    /// <summary>
+    /// Interface for connection profiles.
+    /// </summary>
     public interface IConnectionProfile
     {
         /// <summary>Gets a value indicating whether [host URL] value can be modified.</summary>
@@ -29,8 +31,8 @@ namespace openHAB.Core.Client.Connection.Contracts
             get;
         }
 
-        /// <summary>Gets the connection profile îd.</summary>
-        /// <value>The îd.</value>
+        /// <summary>Gets the connection profile id.</summary>
+        /// <value>The id.</value>
         int Id
         {
             get;
@@ -46,6 +48,18 @@ namespace openHAB.Core.Client.Connection.Contracts
         /// <summary>Gets the profile type.</summary>
         /// <value>The type.</value>
         HttpClientType Type
+        {
+            get;
+        }
+        /// <summary>Gets the main UI URL.</summary>
+        /// <value>The main UI URL.</value>
+        string MainUIUrl
+        {
+            get;
+        }
+        /// <summary>Gets the URL.</summary>
+        /// <value>The URL.</value>
+        string Url
         {
             get;
         }
