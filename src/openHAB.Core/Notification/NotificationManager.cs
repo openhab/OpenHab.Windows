@@ -19,26 +19,26 @@ public class NotificationManager : INotificationManager
     private readonly IItemManager _itemManager;
     private readonly string _iconFormat;
     private readonly IIconCaching _iconCaching;
-    private readonly IOptions<Settings> _settingsOption;
+    private readonly IOptions<SettingOptions> _settingsOption;
 
     /// <summary>Initializes a new instance of the <see cref="NotificationManager" /> class.</summary>
     /// <param name="itemStateManager">The item state manager.</param>
     /// <param name="iconCaching">Service for Icon caching.</param>
     /// <param name="settings">Application Settings.</param>
-    public NotificationManager(IItemManager itemStateManager, IIconCaching iconCaching, IOptions<Settings> settingsOption)
+    public NotificationManager(IItemManager itemStateManager, IIconCaching iconCaching, IOptions<SettingOptions> settingsOption)
     {
         StrongReferenceMessenger.Default.Register<ItemStateChangedMessage>(this, HandleUpdateItemMessage);
         _itemManager = itemStateManager;
         _iconCaching = iconCaching;
 
         _settingsOption = settingsOption;
-        Settings settings = _settingsOption.Value;
+        SettingOptions settings = _settingsOption.Value;
         _iconFormat = settings.UseSVGIcons ? "svg" : "svg";
     }
 
     private async void HandleUpdateItemMessage(object receipts, ItemStateChangedMessage obj)
     {
-        Settings settings = _settingsOption.Value;
+        SettingOptions settings = _settingsOption.Value;
         if (settings.NotificationsEnable.HasValue && !settings.NotificationsEnable.Value)
         {
             return;

@@ -29,4 +29,9 @@ public class AppPaths
     /// Gets the file path for settings.
     /// </summary>
     public static string SettingsFilePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), _applicationName, "settings.json");
+
+    /// <summary>
+    /// Gets the file path for connection settings.
+    /// </summary>
+    public static string ConnectionFilePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), _applicationName, "connection.json");
 }

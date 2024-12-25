@@ -23,7 +23,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
     private ObservableCollection<WidgetViewModel> _children;
     private string _iconPath;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<Settings> _settingsOptions;
+    private readonly IOptions<SettingOptions> _settingsOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WidgetViewModel"/> class.
@@ -34,7 +34,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
     {
         Children = new ObservableCollection<WidgetViewModel>();
         _serviceProvider = serviceProvider;
-        _settingsOptions = _serviceProvider.GetRequiredService<IOptions<Settings>>();
+        _settingsOptions = _serviceProvider.GetRequiredService<IOptions<SettingOptions>>();
     }
 
     #region Properties
@@ -245,7 +245,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
     private async Task<string> CacheAndRetrieveLocalIconPath(string icon)
     {
         IIconCaching iconCaching = _serviceProvider.GetRequiredService<IIconCaching>();
-        Settings setting = _settingsOptions.Value;
+        SettingOptions setting = _settingsOptions.Value;
 
         string iconFormat = setting.UseSVGIcons ? "svg" : "svg";
         string path = await iconCaching.ResolveIconPath(icon, Model.State, iconFormat).ConfigureAwait(false);

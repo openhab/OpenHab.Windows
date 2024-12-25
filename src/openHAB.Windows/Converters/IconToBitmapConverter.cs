@@ -16,8 +16,8 @@ public class IconToBitmapConverter : IValueConverter
     /// <inheritdoc/>
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        IOptions<Settings> settingsOptions = Program.Host.Services.GetRequiredService<IOptions<Settings>>();
-        Settings settings = settingsOptions.Value;
+        IOptions<SettingOptions> settingsOptions = Program.Host.Services.GetRequiredService<IOptions<SettingOptions>>();
+        SettingOptions settings = settingsOptions.Value;
 
         WidgetViewModel? widget = value as WidgetViewModel;
         if (widget == null || string.IsNullOrEmpty(widget.IconPath))

@@ -15,13 +15,13 @@ namespace openHAB.Core.Services;
 public class AppManager : IAppManager
 {
     private readonly ILogger<AppManager> _logger;
-    private readonly IOptions<Settings> _options;
+    private readonly IOptions<SettingOptions> _options;
     private readonly string _startupId = "openHABStartupId";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppManager" /> class.
     /// </summary>
-    public AppManager(IOptions<Settings> options, ILogger<AppManager> logger)
+    public AppManager(IOptions<SettingOptions> options, ILogger<AppManager> logger)
     {
         _logger = logger;
         _options = options;
@@ -52,7 +52,7 @@ public class AppManager : IAppManager
     {
         if (string.IsNullOrEmpty(langcode))
         {
-            Settings settings = _options.Value;
+            SettingOptions settings = _options.Value;
             langcode = settings.AppLanguage;
         }
 

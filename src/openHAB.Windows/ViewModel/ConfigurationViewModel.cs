@@ -18,9 +18,9 @@ namespace openHAB.Windows.ViewModel;
 public class ConfigurationViewModel : ViewModelBase<object>
 {
     private readonly ILogger<ConfigurationViewModel> _logger;
-    private readonly Settings _settings;
+    private readonly SettingOptions _settings;
+    private readonly ConnectionOptions _connection;
     private readonly IAppManager _appManager;
-    private readonly ISettingsService _settingsService;
     private List<LanguageViewModel> _appLanguages;
     private bool? _canAppAutostartEnabled;
     private bool? _isAppAutostartEnabled;
@@ -34,28 +34,27 @@ public class ConfigurationViewModel : ViewModelBase<object>
     private bool _useSVGIcons;
     private bool? _notificationsEnable;
 
-    /// <summary>
 
     public ConfigurationViewModel(
-        ISettingsService settingsService,
         IAppManager appManager,
         IConnectionService connectionService,
         ILogger<ConfigurationViewModel> logger,
-        IOptions<Settings> settingsOptions)
+        IOptions<SettingOptions> settingsOptions,
+        IOptions<ConnectionOptions> connectionOptions)
         : base(new object())
     {
-        _settingsService = settingsService;
         _logger = logger;
         _settings = settingsOptions.Value;
+        _connection = connectionOptions.Value;
         _appManager = appManager;
 
-        _localConnection = new ConnectionDialogViewModel(_settings.LocalConnection, connectionService, HttpClientType.Local);
+        _localConnection = new ConnectionDialogViewModel(_connection.LocalConnection, connectionService, HttpClientType.Local);
         _localConnection.PropertyChanged += ConnectionPropertyChanged;
 
-        _remoteConnection = new ConnectionDialogViewModel(_settings.RemoteConnection, connectionService, HttpClientType.Remote);
+        _remoteConnection = new ConnectionDialogViewModel(_connection.RemoteConnection, connectionService, HttpClientType.Remote);
         _remoteConnection.PropertyChanged += ConnectionPropertyChanged;
 
-        _isRunningInDemoMode = _settings.IsRunningInDemoMode;
+        _isRunningInDemoMode = _connection.IsRunningInDemoMode;
         _showDefaultSitemap = _settings.ShowDefaultSitemap;
         _useSVGIcons = _settings.UseSVGIcons;
         _startAppMinimized = _settings.StartAppMinimized;
@@ -130,7 +129,7 @@ public class ConfigurationViewModel : ViewModelBase<object>
         {
             if (Set(ref _isRunningInDemoMode, value, true))
             {
-                _settings.IsRunningInDemoMode = value;
+                _connection.IsRunningInDemoMode = value;
             }
         }
     }
@@ -256,10 +255,10 @@ public class ConfigurationViewModel : ViewModelBase<object>
     /// <returns>True if settings saved successful, otherwise false.</returns>
     public bool Save()
     {
-        _settings.LocalConnection = _localConnection.Model;
-        _settings.RemoteConnection = _remoteConnection.Model;
+        _connection.LocalConnection = _localConnection.Model;
+        _connection.RemoteConnection = _remoteConnection.Model;
 
-        bool result = _settingsService.Save(_settings);
+        bool result = _settings.Save();
         _appManager.SetProgramLanguage(null);
 
         return result;

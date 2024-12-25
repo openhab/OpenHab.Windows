@@ -14,12 +14,9 @@ namespace openHAB.Windows;
 #if DISABLE_XAML_GENERATED_MAIN
 public static partial class Program
 {
-    private static IHost _host;
-
     public static IHost Host
     {
-        get => _host;
-        set => _host = value;
+        get; set;
     }
 
     /// <summary>
@@ -52,9 +49,9 @@ public static partial class Program
                 builder.Services.AddOpenHABViewModels();
                 builder.Services.AddViews();
 
-                _host = builder.Build();
+                Host = builder.Build();
 
-                App? app = _host.Services.GetRequiredService<App>();
+                App? app = Host.Services.GetRequiredService<App>();
             }
             catch (Exception ex)
             {

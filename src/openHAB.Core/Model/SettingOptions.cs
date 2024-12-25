@@ -1,46 +1,30 @@
-using System.Collections.Generic;
-using openHAB.Core.Client.Connection.Contracts;
-using openHAB.Core.Client.Connection.Models;
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using openHAB.Core.Services;
 
 namespace openHAB.Core.Model;
 
 /// <summary>
 /// Class that holds all the OpenHAB Windows app settings.
 /// </summary>
-[System.Runtime.InteropServices.Guid("6AF3A86A-9AAA-400B-AB7F-E42A780D5ECF")]
-public class Settings
+public class SettingOptions
 {
-    private static readonly List<IConnectionProfile> _connectionProfiles = Client.Connection.Models.ConnectionProfiles.GetProfiles();
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="Settings"/> class.
+    /// Initializes a new instance of the <see cref="SettingOptions"/> class.
     /// </summary>
-    public Settings()
+    public SettingOptions()
     {
-        IsRunningInDemoMode = false;
         ShowDefaultSitemap = false;
         UseSVGIcons = false;
         NotificationsEnable = false;
     }
-
-    /// <summary>Gets the list of available connection profiles.</summary>
-    /// <value>The connection profiles.</value>
-    public static List<IConnectionProfile> ConnectionProfiles => _connectionProfiles;
 
     /// <summary>
     /// Gets or sets the application language.
     /// </summary>
     /// <value>The application language.</value>
     public string AppLanguage
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the application is currently running in demo mode.
-    /// </summary>
-    public bool? IsRunningInDemoMode
     {
         get;
         set;
@@ -57,29 +41,12 @@ public class Settings
         get; set;
     }
 
-    /// <summary>
-    /// Gets or sets the configuration to the OpenHAB remote instance.
-    /// </summary>
-    public Connection LocalConnection
-    {
-        get;
-        set;
-    }
 
     /// <summary>
     /// Gets or sets the setting to enable notifications.
     /// </summary>
     /// <value>The enable notifications.</value>
     public bool? NotificationsEnable
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Gets or sets the configuration to the OpenHAB remote instance.
-    /// </summary>
-    public Connection RemoteConnection
     {
         get;
         set;
@@ -110,5 +77,24 @@ public class Settings
     {
         get;
         set;
+    }
+
+    /// <summary>
+    /// Saves the current settings to a file.
+    /// </summary>
+    /// <returns><c>true</c> if the settings were saved successfully; otherwise, <c>false</c>.</returns>
+    public bool Save()
+    {
+        try
+        {
+            string settingsContent = JsonSerializer.Serialize(this);
+            File.WriteAllText(AppPaths.SettingsFilePath, settingsContent, Encoding.UTF8);
+
+            return true;
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
     }
 }

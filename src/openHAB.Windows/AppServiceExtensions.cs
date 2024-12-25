@@ -42,7 +42,6 @@ public static class AppServiceExtensions
 
         services.AddSingleton<IMessenger>(StrongReferenceMessenger.Default);
         services.AddSingleton<IOpenHABClient, OpenHABClient>();
-        services.AddSingleton<ISettingsService, SettingsService>();
 
         services.AddSingleton<AppPaths>();
         services.AddSingleton<OpenHABHttpClient>();
@@ -92,7 +91,8 @@ public static class AppServiceExtensions
     public static void AddConfiguration(this IServiceCollection services, ConfigurationManager configuration)
     {
         IConfiguration config = configuration;
-        services.Configure<Settings>(config);
+        services.Configure<SettingOptions>(config);
+        services.Configure<ConnectionOptions>(config);
     }
 
     private static LoggingConfiguration GetLoggingConfiguration()

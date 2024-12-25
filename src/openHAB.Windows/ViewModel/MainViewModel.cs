@@ -15,7 +15,6 @@ using openHAB.Core.Common;
 using openHAB.Core.Messages;
 using openHAB.Core.Model;
 using openHAB.Core.Services;
-using openHAB.Core.Services.Contracts;
 using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
 
@@ -27,26 +26,23 @@ namespace openHAB.Windows.ViewModel;
 public class MainViewModel : ViewModelBase<object>
 {
     private readonly IOpenHABClient _openHABClient;
-    private readonly IOptions<Settings> _settingsOptions;
-    private readonly ISettingsService _settingsService;
+    private readonly IOptions<SettingOptions> _settingsOptions;
     private readonly ILogger<MainViewModel> _logger;
     private readonly SitemapService _sitemapManager;
 
     private ObservableCollection<WidgetViewModel> _breadcrumbItems;
     private bool _isDataLoading;
     private object _selectedMenuItem;
-    private Sitemap _selectedSitemap;
+    private Sitemap? _selectedSitemap;
     private ObservableCollection<Sitemap> _sitemaps;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
     /// <param name="openHABClient">The OpenHAB client.</param>
-    /// <param name="settingsService">Setting service instance.</param>
     /// <param name="logger">Logger class instance.</param>
     public MainViewModel(IOpenHABClient openHABClient,
-        ISettingsService settingsService,
-        IOptions<Settings> settingsOptions,
+        IOptions<SettingOptions> settingsOptions,
         SitemapService sitemapManager,
         ILogger<MainViewModel> logger)
         : base(new object())
@@ -55,7 +51,6 @@ public class MainViewModel : ViewModelBase<object>
 
         _openHABClient = openHABClient;
         _settingsOptions = settingsOptions;
-        _settingsService = settingsService;
         _breadcrumbItems = new ObservableCollection<WidgetViewModel>();
         _sitemapManager = sitemapManager;
 
@@ -109,7 +104,7 @@ public class MainViewModel : ViewModelBase<object>
     /// <summary>
     /// Gets or sets the sitemap currently selected by the user.
     /// </summary>
-    public Sitemap SelectedSitemap
+    public Sitemap? SelectedSitemap
     {
         get
         {
@@ -127,9 +122,9 @@ public class MainViewModel : ViewModelBase<object>
             {
                 if (_selectedSitemap != null)
                 {
-                    Settings settings = _settingsOptions.Value;
+                    SettingOptions settings = _settingsOptions.Value;
                     settings.LastSitemap = _selectedSitemap.Name;
-                    _settingsService.Save(settings);
+                    settings.Save();
 
                     StrongReferenceMessenger.Default.Register<WidgetNavigationMessage, string>(this, SelectedSitemap.Name, (obj, operation)
                          => WidgetNavigatedEvent());
@@ -248,9 +243,9 @@ public class MainViewModel : ViewModelBase<object>
         }
     }
 
-    private Sitemap OpenLastOrDefaultSitemap()
+    private Sitemap? OpenLastOrDefaultSitemap()
     {
-        Settings settings = _settingsOptions.Value;
+        SettingOptions settings = _settingsOptions.Value;
         string sitemapName = settings.LastSitemap;
 
         if (string.IsNullOrWhiteSpace(sitemapName))
@@ -260,10 +255,10 @@ public class MainViewModel : ViewModelBase<object>
             return Sitemaps.FirstOrDefault();
         }
 
-        Sitemap selectedSitemap = Sitemaps.FirstOrDefault(x => x.Name == sitemapName);
+        Sitemap? selectedSitemap = Sitemaps.FirstOrDefault(x => x.Name == sitemapName);
         if (selectedSitemap == null)
         {
-            _logger.LogInformation($"Unable to find sitemap '{sitemapName}' -> Pick first entry from list");
+            _logger.LogInformation("Unable to find sitemap '{sitemapName}' -> Pick first entry from list", sitemapName);
             return Sitemaps.FirstOrDefault();
         }
 

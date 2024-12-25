@@ -8,7 +8,6 @@ using openHAB.Common;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Common;
-using openHAB.Core.Model;
 
 namespace openHAB.Windows.ViewModel;
 
@@ -41,7 +40,9 @@ public class ConnectionDialogViewModel : ViewModelBase<Connection>
         _type = type;
 
         List<ConnectionProfileViewModel> list
-            = new List<ConnectionProfileViewModel>(Settings.ConnectionProfiles.Where(x => x.Type == _type).OrderBy(x => x.Id).Select(x => new ConnectionProfileViewModel(x)));
+            = new List<ConnectionProfileViewModel>(ConnectionProfiles.GetProfiles().Where(x => x.Type == _type)
+            .OrderBy(x => x.Id)
+            .Select(x => new ConnectionProfileViewModel(x)));
 
         _profiles = new ObservableCollection<ConnectionProfileViewModel>(list);
 

@@ -23,7 +23,8 @@ public class SitemapService
     private readonly ILogger<SitemapService> _logger;
     private readonly IAppManager _appManager;
     private readonly IOpenHABClient _openHABClient;
-    private readonly IOptions<Settings> _settingsOptions;
+    private readonly IOptions<ConnectionOptions> _connectionOptions;
+    private readonly IOptions<SettingOptions> _settingOptions;
     private ServerInfo _serverInfo;
 
     /// <summary>
@@ -33,12 +34,15 @@ public class SitemapService
     /// <param name="openHABClient">The openHAB client.</param>
     /// <param name="logger">The logger.</param>
     public SitemapService(
-        IOptions<Settings> settingsOptions,
+        IOptions<ConnectionOptions> connectionOptions,
+        IOptions<SettingOptions> settingOptions,
         IAppManager appManager,
         IOpenHABClient openHABClient,
         ILogger<SitemapService> logger)
     {
-        _settingsOptions = settingsOptions;
+        _connectionOptions = connectionOptions;
+        _settingOptions = settingOptions;
+
         _openHABClient = openHABClient;
         _logger = logger;
         _appManager = appManager;
@@ -104,7 +108,7 @@ public class SitemapService
                 return !sitemap.Name.Equals("_default", StringComparison.InvariantCultureIgnoreCase);
             };
 
-            Settings settings = _settingsOptions.Value;
+            SettingOptions settings = _settingOptions.Value;
             List<Func<Sitemap, bool>> filters = new List<Func<Sitemap, bool>>();
             if (!settings.ShowDefaultSitemap)
             {
@@ -153,7 +157,7 @@ public class SitemapService
 
     private async Task<ServerInfo> InitalizeConnectionAsync()
     {
-        Settings settings = _settingsOptions.Value;
+        ConnectionOptions settings = _connectionOptions.Value;
         if (settings.LocalConnection == null && settings.RemoteConnection == null &&
             (!settings.IsRunningInDemoMode.HasValue || !settings.IsRunningInDemoMode.Value))
         {

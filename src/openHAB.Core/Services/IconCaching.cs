@@ -21,7 +21,7 @@ public class IconCaching : IIconCaching
     private readonly OpenHABHttpClient _openHABHttpClient;
     private readonly IConnectionService _connectionService;
     private readonly IAppManager _appManager;
-    private readonly IOptions<Settings> _settingsOptions;
+    private readonly IOptions<ConnectionOptions> _connectionOptions;
     private readonly ILogger<IconCaching> _logger;
 
     /// <summary>
@@ -36,13 +36,13 @@ public class IconCaching : IIconCaching
         OpenHABHttpClient openHABHttpClient,
         IConnectionService connectionService,
         IAppManager appManager,
-        IOptions<Settings> settingsOptions,
+        IOptions<ConnectionOptions> settingsOptions,
         ILogger<IconCaching> logger)
     {
         _logger = logger;
         _openHABHttpClient = openHABHttpClient;
         _connectionService = connectionService;
-        _settingsOptions = settingsOptions;
+        _connectionOptions = settingsOptions;
         _appManager = appManager;
     }
 
@@ -94,7 +94,7 @@ public class IconCaching : IIconCaching
 
     private async Task<bool> DownloadAndSaveIconToCache(string iconUrl, string iconFilePath)
     {
-        Settings settings = _settingsOptions.Value;
+        ConnectionOptions settings = _connectionOptions.Value;
         bool isRunningInDemoMode = settings.IsRunningInDemoMode.HasValue && settings.IsRunningInDemoMode.Value;
         Connection connection = await _connectionService.DetectAndRetriveConnection(settings.LocalConnection, settings.RemoteConnection, isRunningInDemoMode)
             .ConfigureAwait(false);
