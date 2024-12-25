@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,21 +20,21 @@ namespace openHAB.Windows.View
     public sealed partial class SitemapPage : Microsoft.UI.Xaml.Controls.Page
     {
         private SitemapService _sitemapService;
-        private ServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
         private SitemapViewModel _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SitemapPage" /> class
         /// .</summary>
-        public SitemapPage(SitemapService sitemapService, ServiceProvider serviceProvider)
+        public SitemapPage()
         {
             this.InitializeComponent();
 
             StrongReferenceMessenger.Default.Register<SitemapChanged>(this, (obj, message)
                     => OnSitemapChangedEvent(message));
 
-            _sitemapService = sitemapService;
-            _serviceProvider = serviceProvider;
+            _sitemapService = Program.Host.Services.GetRequiredService<SitemapService>();
+            _serviceProvider = Program.Host.Services.GetRequiredService<IServiceProvider>();
         }
 
         /// <summary>

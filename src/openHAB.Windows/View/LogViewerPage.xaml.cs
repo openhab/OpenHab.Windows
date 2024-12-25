@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using openHAB.Windows.ViewModel;
 
@@ -9,9 +10,9 @@ namespace openHAB.Windows.View
     public sealed partial class LogViewerPage : Page
     {
         /// <summary>Initializes a new instance of the <see cref="LogViewerPage" /> class.</summary>
-        public LogViewerPage(LogsViewModel viewModel)
+        public LogViewerPage()
         {
-            DataContext = viewModel;
+            DataContext = Program.Host.Services.GetRequiredService<LogsViewModel>();
 
             this.InitializeComponent();
         }

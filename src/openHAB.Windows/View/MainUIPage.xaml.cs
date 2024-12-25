@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using openHAB.Windows.ViewModel;
 
@@ -8,10 +9,10 @@ namespace openHAB.Windows.View
     /// </summary>
     public sealed partial class MainUIPage : Page
     {
-        public MainUIPage(MainUIViewModel mainUIView)
+        public MainUIPage()
         {
             InitializeComponent();
-            ViewModel = mainUIView;
+            ViewModel = Program.Host.Services.GetRequiredService<MainUIViewModel>();
 
             DataContext = ViewModel;
         }

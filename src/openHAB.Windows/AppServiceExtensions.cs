@@ -66,11 +66,11 @@ public static class AppServiceExtensions
         services.AddSingleton<App>();
         services.AddSingleton<MainWindow>();
 
-        services.AddTransient<MainPage>();
-        services.AddTransient<MainUIPage>();
-        services.AddTransient<SettingsPage>();
-        services.AddTransient<LogViewerPage>();
-        services.AddTransient<SitemapPage>();
+        //services.AddTransient<MainPage>();
+        //services.AddTransient<MainUIPage>();
+        //services.AddTransient<SettingsPage>();
+        //services.AddTransient<LogViewerPage>();
+        //services.AddTransient<SitemapPage>();
     }
 
 

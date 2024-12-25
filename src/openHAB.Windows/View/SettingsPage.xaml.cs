@@ -1,6 +1,7 @@
 using System;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,13 +28,13 @@ namespace openHAB.Windows.View
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage"/> class.
         /// </summary>
-        public SettingsPage(SettingsViewModel settingsViewModel, IAppManager appManager, ILogger<SettingsPage> logger)
+        public SettingsPage()
         {
             InitializeComponent();
 
-            _settingsViewModel = settingsViewModel;
-            _logger = logger;
-            _appManager = appManager;
+            _settingsViewModel = Program.Host.Services.GetRequiredService<SettingsViewModel>();
+            _logger = Program.Host.Services.GetRequiredService<ILogger<SettingsPage>>();
+            _appManager = Program.Host.Services.GetRequiredService<IAppManager>();
 
             DataContext = _settingsViewModel;
         }
