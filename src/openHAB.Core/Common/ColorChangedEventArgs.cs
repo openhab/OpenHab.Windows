@@ -1,25 +1,27 @@
 using System;
 using Windows.UI;
 
-namespace openHAB.Core.Common
+namespace openHAB.Core.Common;
+
+/// <summary>
+/// Event arguments for a color changed event.
+/// </summary>
+public class ColorChangedEventArgs : EventArgs
 {
     /// <summary>
-    /// Event arguments for a color changed event.
+    /// Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.
     /// </summary>
-    public class ColorChangedEventArgs : EventArgs
+    /// <param name="selectedColor">The color that was just selected.</param>
+    public ColorChangedEventArgs(Color selectedColor)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="selectedColor">The color that was just selected.</param>
-        public ColorChangedEventArgs(Color selectedColor)
-        {
-            SelectedColor = selectedColor;
-        }
+        SelectedColor = selectedColor;
+    }
 
-        /// <summary>
-        /// Gets or sets the newly selected color.
-        /// </summary>
-        public Color SelectedColor { get; set; }
+    /// <summary>
+    /// Gets or sets the newly selected color.
+    /// </summary>
+    public Color SelectedColor
+    {
+        get; set;
     }
 }

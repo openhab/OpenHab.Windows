@@ -1,93 +1,96 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
+using System.Threading.Tasks;
 using Windows.Storage.Streams;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHAB Image.
+/// </summary>
+public sealed partial class ImageWidget : WidgetBase
 {
     /// <summary>
-    /// Widget control that represents an OpenHAB Image.
+    /// Initializes a new instance of the <see cref="ImageWidget"/> class.
     /// </summary>
-    public sealed partial class ImageWidget : WidgetBase
+    public ImageWidget()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageWidget"/> class.
-        /// </summary>
-        public ImageWidget()
+        InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+    {
+        SetState();
+    }
+
+    internal override async void SetState()
+    {
+        if (Widget.Item != null && Widget.Item.State.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
         {
-            InitializeComponent();
-            Loaded += OnLoaded;
+            await SetLocalData();
         }
-
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        else
         {
-            SetState();
+            SetUrl();
         }
+    }
 
-        internal override async void SetState()
+    private async Task SetLocalData()
+    {
+        string data = Widget.Item.State.Substring(Widget.Item.State.IndexOf(',') + 1);
+        byte[] binaryData = Convert.FromBase64String(data);
+
+        var image = new BitmapImage();
+        using (InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream())
         {
-            if (Widget.Item != null && Widget.Item.State.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            using (DataWriter writer = new DataWriter(ms.GetOutputStreamAt(0)))
             {
-                await SetLocalData();
-            }
-            else
-            {
-                SetUrl();
-            }
-        }
-
-        private async Task SetLocalData()
-        {
-            string data = Widget.Item.State.Substring(Widget.Item.State.IndexOf(',') + 1);
-            byte[] binaryData = Convert.FromBase64String(data);
-
-            var image = new BitmapImage();
-            using (InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream())
-            {
-                using (DataWriter writer = new DataWriter(ms.GetOutputStreamAt(0)))
-                {
-                    writer.WriteBytes(binaryData);
-                    await writer.StoreAsync();
-                }
-
-                await image.SetSourceAsync(ms);
-
-                ThumbImage.Source = image;
-                FullImage.Source = image;
-            }
-        }
-
-        private void SetUrl()
-        {
-            string url;
-            if (Widget.Item != null && Widget.Item.State.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-            {
-                url = Widget.Item.State;
-            }
-            else
-            {
-                url = Widget.Url;
+                writer.WriteBytes(binaryData);
+                await writer.StoreAsync();
             }
 
-            ThumbImage.Source = new BitmapImage(
-                    new Uri(url, UriKind.Absolute))
-            { CreateOptions = BitmapCreateOptions.IgnoreImageCache };
+            await image.SetSourceAsync(ms);
 
-            FullImage.Source = new BitmapImage(
-                    new Uri(url, UriKind.Absolute))
-            { CreateOptions = BitmapCreateOptions.IgnoreImageCache };
+            ThumbImage.Source = image;
+            FullImage.Source = image;
         }
+    }
 
-        private async void ImageWidget_OnTapped(object sender, TappedRoutedEventArgs e)
+    private void SetUrl()
+    {
+        string url;
+        if (Widget.Item != null && Widget.Item.State.StartsWith("http", StringComparison.OrdinalIgnoreCase))
         {
-            if (Widget.LinkedPage != null)
-            {
-                return;
-            }
-
-            await PopupDialog.ShowAsync();
+            url = Widget.Item.State;
         }
+        else
+        {
+            url = Widget.Url;
+        }
+
+        ThumbImage.Source = new BitmapImage(
+                new Uri(url, UriKind.Absolute))
+        {
+            CreateOptions = BitmapCreateOptions.IgnoreImageCache
+        };
+
+        FullImage.Source = new BitmapImage(
+                new Uri(url, UriKind.Absolute))
+        {
+            CreateOptions = BitmapCreateOptions.IgnoreImageCache
+        };
+    }
+
+    private async void ImageWidget_OnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        if (Widget.LinkedPage != null)
+        {
+            return;
+        }
+
+        await PopupDialog.ShowAsync();
     }
 }

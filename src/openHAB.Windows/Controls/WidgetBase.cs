@@ -1,69 +1,66 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using openHAB.Core.Client.Models;
-using openHAB.Core.Model;
 using openHAB.Windows.ViewModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// A base class for all OpenHAB widget controls.
+/// </summary>
+public abstract class WidgetBase : UserControl, INotifyPropertyChanged
 {
     /// <summary>
-    /// A base class for all OpenHAB widget controls.
+    /// A bindable property to bind the OpenHAB widget to the control.
     /// </summary>
-    public abstract class WidgetBase : UserControl, INotifyPropertyChanged
+    public static readonly DependencyProperty WidgetProperty = DependencyProperty.Register(
+        nameof(Widget), typeof(WidgetViewModel), typeof(WidgetBase), new PropertyMetadata(default(WidgetViewModel), CommonPropertyChangedCallback));
+
+    /// <summary>
+    /// Gets or sets the OpenHAB widget.
+    /// </summary>
+    public WidgetViewModel Widget
     {
-        /// <summary>
-        /// A bindable property to bind the OpenHAB widget to the control.
-        /// </summary>
-        public static readonly DependencyProperty WidgetProperty = DependencyProperty.Register(
-            nameof(Widget), typeof(WidgetViewModel), typeof(WidgetBase), new PropertyMetadata(default(WidgetViewModel), CommonPropertyChangedCallback));
+        get => (WidgetViewModel)GetValue(WidgetProperty);
+        set => SetValue(WidgetProperty, value);
+    }
 
-        /// <summary>
-        /// Gets or sets the OpenHAB widget.
-        /// </summary>
-        public WidgetViewModel Widget
+    private static void CommonPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+    {
+        var widgetBase = dependencyObject as WidgetBase;
+        widgetBase?.SetPropertyChangedHandler();
+    }
+
+    private void SetPropertyChangedHandler()
+    {
+        if (Widget.Item == null)
         {
-            get => (WidgetViewModel)GetValue(WidgetProperty);
-            set => SetValue(WidgetProperty, value);
+            return;
         }
 
-        private static void CommonPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        Widget.Item.PropertyChanged += Item_PropertyChanged;
+    }
+
+    private async void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var widget = sender as WidgetViewModel;
+        if (e.PropertyName != nameof(widget.Item.State))
         {
-            var widgetBase = dependencyObject as WidgetBase;
-            widgetBase?.SetPropertyChangedHandler();
+            return;
         }
 
-        private void SetPropertyChangedHandler()
-        {
-            if (Widget.Item == null)
-            {
-                return;
-            }
+        await App.DispatcherQueue.EnqueueAsync(SetState);
+    }
 
-            Widget.Item.PropertyChanged += Item_PropertyChanged;
-        }
+    internal abstract void SetState();
 
-        private async void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var widget = sender as WidgetViewModel;
-            if (e.PropertyName != nameof(widget.Item.State))
-            {
-                return;
-            }
+    /// <inheritdoc />
+    public event PropertyChangedEventHandler PropertyChanged;
 
-            await App.DispatcherQueue.EnqueueAsync(SetState);
-        }
-
-        internal abstract void SetState();
-
-        /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        internal void RaisePropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    internal void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

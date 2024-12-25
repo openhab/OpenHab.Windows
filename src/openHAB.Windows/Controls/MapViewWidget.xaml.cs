@@ -1,5 +1,3 @@
-using System;
-using System.Globalization;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Projections;
@@ -8,68 +6,69 @@ using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using System;
+using System.Globalization;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHAB Map.
+/// </summary>
+public sealed partial class MapViewWidget : WidgetBase
 {
     /// <summary>
-    /// Widget control that represents an OpenHAB Map.
+    /// Initializes a new instance of the <see cref="MapViewWidget"/> class.
     /// </summary>
-    public sealed partial class MapViewWidget : WidgetBase
+    public MapViewWidget()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MapViewWidget"/> class.
-        /// </summary>
-        public MapViewWidget()
+        InitializeComponent();
+
+        MapView.Map.Layers.Add(OpenStreetMap.CreateTileLayer());
+        MapViewFull.Map.Layers.Add(OpenStreetMap.CreateTileLayer());
+        MapViewFull.Map.Widgets.Add(new ScaleBarWidget(MapViewFull.Map));
+        MapViewFull.Map.Widgets.Add(new ZoomInOutWidget());
+
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SetState();
+    }
+
+    private async void OnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        e.Handled = true;
+
+        PopupDialog.XamlRoot = this.XamlRoot;
+        await PopupDialog.ShowAsync();
+    }
+
+    internal override void SetState()
+    {
+        if (!string.IsNullOrEmpty(Widget.Item.State))
         {
-            InitializeComponent();
-
-            MapView.Map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            MapViewFull.Map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            MapViewFull.Map.Widgets.Add(new ScaleBarWidget(MapViewFull.Map));
-            MapViewFull.Map.Widgets.Add(new ZoomInOutWidget());
-
-            Loaded += OnLoaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            SetState();
-        }
-
-        private async void OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-
-            PopupDialog.XamlRoot = this.XamlRoot;
-            await PopupDialog.ShowAsync();
-        }
-
-        internal override void SetState()
-        {
-            if (!string.IsNullOrEmpty(Widget.Item.State))
+            var latLong = Widget.Item.State.Split(',');
+            if (latLong?.Length == 2)
             {
-                var latLong = Widget.Item.State.Split(',');
-                if (latLong?.Length == 2)
-                {
-                    double latitude = double.Parse(latLong[0], CultureInfo.InvariantCulture);
-                    double longitude = double.Parse(latLong[1], CultureInfo.InvariantCulture);
+                double latitude = double.Parse(latLong[0], CultureInfo.InvariantCulture);
+                double longitude = double.Parse(latLong[1], CultureInfo.InvariantCulture);
 
-                    var coordinate = SphericalMercator.FromLonLat(longitude, latitude).ToMPoint();
+                var coordinate = SphericalMercator.FromLonLat(longitude, latitude).ToMPoint();
 
-                    Viewport viewport = new Viewport(longitude, latitude, 0, 0, Width, Height);
+                Viewport viewport = new Viewport(longitude, latitude, 0, 0, Width, Height);
 
-                    MapView.Map.Home = n => n.CenterOnAndZoomTo(coordinate, n.Viewport.Resolution);
-                    MapViewFull.Map.Home = n => n.CenterOnAndZoomTo(coordinate, n.Viewport.Resolution);
+                MapView.Map.Home = n => n.CenterOnAndZoomTo(coordinate, n.Viewport.Resolution);
+                MapViewFull.Map.Home = n => n.CenterOnAndZoomTo(coordinate, n.Viewport.Resolution);
 
-                    //TODO: Implement mapicon
-                    //MapIcon mapIcon = new MapIcon();
-                    //mapIcon.Location = MapView.Center;
-                    //mapIcon.NormalizedAnchorPoint = new Point(0.5, 0.5);
-                    //mapIcon.ZIndex = 0;
+                //TODO: Implement mapicon
+                //MapIcon mapIcon = new MapIcon();
+                //mapIcon.Location = MapView.Center;
+                //mapIcon.NormalizedAnchorPoint = new Point(0.5, 0.5);
+                //mapIcon.ZIndex = 0;
 
-                    //MapView.MapElements.Add(mapIcon);
-                    //MapViewFull.MapElements.Add(mapIcon);
-                }
+                //MapView.MapElements.Add(mapIcon);
+                //MapViewFull.MapElements.Add(mapIcon);
             }
         }
     }

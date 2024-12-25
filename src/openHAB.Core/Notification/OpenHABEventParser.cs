@@ -1,66 +1,65 @@
-using System;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using openHAB.Core.Client.Event;
 using openHAB.Core.Client.Event.Contracts;
+using System;
 
-namespace openHAB.Core.Notification
+namespace openHAB.Core.Notification;
+
+/// <inheritdoc/>
+public class OpenHABEventParser : IOpenHABEventParser
 {
-    /// <inheritdoc/>
-    public class OpenHABEventParser : IOpenHABEventParser
+    private readonly ILogger<OpenHABEventParser> _logger;
+
+    /// <summary>Initializes a new instance of the <see cref="OpenHABEventParser" /> class.</summary>
+    /// <param name="logger">The logger.</param>
+    public OpenHABEventParser(ILogger<OpenHABEventParser> logger)
     {
-        private ILogger<OpenHABEventParser> _logger;
+        _logger = logger;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="OpenHABEventParser" /> class.</summary>
-        /// <param name="logger">The logger.</param>
-        public OpenHABEventParser(ILogger<OpenHABEventParser> logger)
+    /// <inheritdoc/>
+    public OpenHABEvent Parse(string message)
+    {
+        try
         {
-            _logger = logger;
-        }
+            var data = JsonConvert.DeserializeObject<EventStreamData>(message.Remove(0, 6));
 
-        /// <inheritdoc/>
-        public OpenHABEvent Parse(string message)
-        {
-            try
+            if (data.Type == "ThingUpdatedEvent" || data.Type == "ThingStatusInfoChangedEvent" || data.Type == "ALIVE")
             {
-                var data = JsonConvert.DeserializeObject<EventStreamData>(message.Remove(0, 6));
-
-                if (data.Type == "ThingUpdatedEvent" || data.Type == "ThingStatusInfoChangedEvent" || data.Type == "ALIVE")
-                {
-                    _logger.LogWarning($"Event type is not supported '{data.Type}'.");
-                    return null;
-                }
-
-                var payload = JsonConvert.DeserializeObject<EventStreamPayload>(data.Payload);
-                string itemName = data.Topic
-                                        .Replace("openhab/items/", string.Empty) // openHAB V3
-                                        .Replace("smarthome/items/", string.Empty) // openHAB V2
-                                        .Replace("/statechanged", string.Empty).Replace("/state", string.Empty);
-
-                if (!Enum.TryParse(typeof(OpenHABEventType), data.Type, out object type))
-                {
-                    type = OpenHABEventType.Unknown;
-                }
-
-                OpenHABEvent openHABevent = new OpenHABEvent()
-                {
-                    ItemName = itemName,
-                    ValueType = payload.Type,
-                    Value = payload.Value,
-                    Topic = data.Topic,
-                    OldType = payload.OldType,
-                    OldValue = payload.OldValue,
-                    EventType = (OpenHABEventType)type,
-                };
-
-                return openHABevent;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to parse openHAB event.");
+                _logger.LogWarning($"Event type is not supported '{data.Type}'.");
+                return null;
             }
 
-            return null;
+            var payload = JsonConvert.DeserializeObject<EventStreamPayload>(data.Payload);
+            string itemName = data.Topic
+                                    .Replace("openhab/items/", string.Empty) // openHAB V3
+                                    .Replace("smarthome/items/", string.Empty) // openHAB V2
+                                    .Replace("/statechanged", string.Empty).Replace("/state", string.Empty);
+
+            if (!Enum.TryParse(typeof(OpenHABEventType), data.Type, out object type))
+            {
+                type = OpenHABEventType.Unknown;
+            }
+
+            OpenHABEvent openHABevent = new OpenHABEvent()
+            {
+                ItemName = itemName,
+                ValueType = payload.Type,
+                Value = payload.Value,
+                Topic = data.Topic,
+                OldType = payload.OldType,
+                OldValue = payload.OldValue,
+                EventType = (OpenHABEventType)type,
+            };
+
+            return openHABevent;
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse openHAB event.");
+        }
+
+        return null;
     }
 }

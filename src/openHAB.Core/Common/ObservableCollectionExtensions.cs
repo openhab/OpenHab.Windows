@@ -2,33 +2,32 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 // ReSharper disable once CheckNamespace
-namespace openHAB.Core.Common
+namespace openHAB.Core.Common;
+
+/// <summary>
+/// Collection of extensions for the ObservableCollection class.
+/// </summary>
+public static class ObservableCollectionExtensions
 {
     /// <summary>
-    /// Collection of extensions for the ObservableCollection class.
+    /// Adds a range of items to the observable collection.
     /// </summary>
-    public static class ObservableCollectionExtensions
+    /// <param name="target">The ObservableCollection.</param>
+    /// <param name="range">List of items to add.</param>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <returns>The ObservableCollection, including the new range of items.</returns>
+    public static ObservableCollection<T> AddRange<T>(this ObservableCollection<T> target, IEnumerable<T> range)
     {
-        /// <summary>
-        /// Adds a range of items to the observable collection.
-        /// </summary>
-        /// <param name="target">The ObservableCollection.</param>
-        /// <param name="range">List of items to add.</param>
-        /// <typeparam name="T">Type of items.</typeparam>
-        /// <returns>The ObservableCollection, including the new range of items.</returns>
-        public static ObservableCollection<T> AddRange<T>(this ObservableCollection<T> target, IEnumerable<T> range)
+        if (range == null)
         {
-            if (range == null)
-            {
-                return target;
-            }
-
-            foreach (var item in range)
-            {
-                target.Add(item);
-            }
-
             return target;
         }
+
+        foreach (var item in range)
+        {
+            target.Add(item);
+        }
+
+        return target;
     }
 }

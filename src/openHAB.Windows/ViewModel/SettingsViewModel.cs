@@ -1,121 +1,120 @@
-using System;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using openHAB.Core.Common;
 using openHAB.Core.Messages;
 using openHAB.Core.Services.Contracts;
+using System;
 using Windows.ApplicationModel;
 
-namespace openHAB.Windows.ViewModel
+namespace openHAB.Windows.ViewModel;
+
+/// <summary>
+/// Collects and formats all the data for user defined settings.
+/// </summary>
+public class SettingsViewModel : ViewModelBase<object>
 {
+    private readonly IIconCaching _iconCaching;
+    private readonly ILogger<SettingsViewModel> _logger;
+    private ActionCommand _clearIconCacheCommand;
+    private ConfigurationViewModel _configuration;
+    private ActionCommand _saveCommand;
+
     /// <summary>
-    /// Collects and formats all the data for user defined settings.
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
     /// </summary>
-    public class SettingsViewModel : ViewModelBase<object>
+    public SettingsViewModel(ConfigurationViewModel configurationViewModel, IIconCaching iconCaching, ILogger<SettingsViewModel> logger)
+        : base(new object())
     {
-        private readonly IIconCaching _iconCaching;
-        private readonly ILogger<SettingsViewModel> _logger;
-        private ActionCommand _clearIconCacheCommand;
-        private ConfigurationViewModel _configuration;
-        private ActionCommand _saveCommand;
+        _configuration = configurationViewModel;
+        _configuration.PropertyChanged += Configuration_PropertyChanged;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
-        /// </summary>
-        public SettingsViewModel(ConfigurationViewModel configurationViewModel, IIconCaching iconCaching, ILogger<SettingsViewModel> logger)
-            : base(new object())
+        _iconCaching = iconCaching;
+
+        _logger = logger;
+
+        StrongReferenceMessenger.Default.Register<ConnectionStatusChanged>(this, (recipient, msg) => SaveCommand.InvokeCanExecuteChanged(null));
+    }
+
+    /// <summary>
+    /// Gets the clear icon cache command to persist the settings.
+    /// </summary>
+    /// <value>The save command.</value>
+    public ActionCommand ClearIconCacheCommand => _clearIconCacheCommand ?? (_clearIconCacheCommand = new ActionCommand(ClearIcons, CanClearIcons));
+
+    /// <summary>
+    /// Gets the save command to persist the settings.
+    /// </summary>
+    /// <value>The save command.</value>
+    public ActionCommand SaveCommand => _saveCommand ?? (_saveCommand = new ActionCommand(PersistSettings, CanPersistSettings));
+
+    /// <summary>
+    /// Gets or sets the current user-defined settings.
+    /// </summary>
+    public ConfigurationViewModel Settings
+    {
+        get => _configuration;
+        set => Set(ref _configuration, value);
+    }
+
+    /// <summary>
+    /// Gets the application version number.
+    /// </summary>
+    /// <value>The version number.</value>
+    public string Version
+    {
+        get
         {
-            _configuration = configurationViewModel;
-            _configuration.PropertyChanged += Configuration_PropertyChanged;
+            Version version = new Version(
+                Package.Current.Id.Version.Major,
+                Package.Current.Id.Version.Minor,
+                Package.Current.Id.Version.Build,
+                Package.Current.Id.Version.Revision);
 
-            _iconCaching = iconCaching;
-
-            _logger = logger;
-
-            StrongReferenceMessenger.Default.Register<ConnectionStatusChanged>(this, (recipient, msg) => SaveCommand.InvokeCanExecuteChanged(null));
+            return version.ToString();
         }
+    }
 
-        /// <summary>
-        /// Gets the clear icon cache command to persist the settings.
-        /// </summary>
-        /// <value>The save command.</value>
-        public ActionCommand ClearIconCacheCommand => _clearIconCacheCommand ?? (_clearIconCacheCommand = new ActionCommand(ClearIcons, CanClearIcons));
+    /// <summary>
+    /// Save the user defined settings to the UWP settings storage.
+    /// </summary>
+    public void PersistSettings(object obj)
+    {
+        _logger.LogInformation("Execute save settings command");
 
-        /// <summary>
-        /// Gets the save command to persist the settings.
-        /// </summary>
-        /// <value>The save command.</value>
-        public ActionCommand SaveCommand => _saveCommand ?? (_saveCommand = new ActionCommand(PersistSettings, CanPersistSettings));
-
-        /// <summary>
-        /// Gets or sets the current user-defined settings.
-        /// </summary>
-        public ConfigurationViewModel Settings
+        bool validConnectionConfig = CheckForValidConnectionConfig();
+        if (validConnectionConfig)
         {
-            get => _configuration;
-            set => Set(ref _configuration, value);
+            bool savedSuccessful = _configuration.Save();
+            StrongReferenceMessenger.Default.Send(new SettingsUpdatedMessage(validConnectionConfig, savedSuccessful));
         }
+    }
 
-        /// <summary>
-        /// Gets the application version number.
-        /// </summary>
-        /// <value>The version number.</value>
-        public string Version
-        {
-            get
-            {
-                Version version = new Version(
-                    Package.Current.Id.Version.Major,
-                    Package.Current.Id.Version.Minor,
-                    Package.Current.Id.Version.Build,
-                    Package.Current.Id.Version.Revision);
+    private bool CheckForValidConnectionConfig()
+    {
+        return _configuration.IsConnectionConfigValid() ||
+           (_configuration.IsRunningInDemoMode.HasValue && _configuration.IsRunningInDemoMode.Value);
+    }
 
-                return version.ToString();
-            }
-        }
+    private bool CanClearIcons(object arg)
+    {
+        return true;
+    }
 
-        /// <summary>
-        /// Save the user defined settings to the UWP settings storage.
-        /// </summary>
-        public void PersistSettings(object obj)
-        {
-            _logger.LogInformation("Execute save settings command");
+    private bool CanPersistSettings(object arg)
+    {
+        bool validConnectionConfig = CheckForValidConnectionConfig();
+        StrongReferenceMessenger.Default.Send(new SettingsValidationMessage(validConnectionConfig));
 
-            bool validConnectionConfig = CheckForValidConnectionConfig();
-            if (validConnectionConfig)
-            {
-                bool savedSuccessful = _configuration.Save();
-                StrongReferenceMessenger.Default.Send(new SettingsUpdatedMessage(validConnectionConfig, savedSuccessful));
-            }
-        }
+        return validConnectionConfig && _configuration.IsDirty;
+    }
 
-        private bool CheckForValidConnectionConfig()
-        {
-            return _configuration.IsConnectionConfigValid() ||
-               (_configuration.IsRunningInDemoMode.HasValue && _configuration.IsRunningInDemoMode.Value);
-        }
+    private void ClearIcons(object obj)
+    {
+        _iconCaching.ClearIconCache();
+    }
 
-        private bool CanClearIcons(object arg)
-        {
-            return true;
-        }
-
-        private bool CanPersistSettings(object arg)
-        {
-            bool validConnectionConfig = CheckForValidConnectionConfig();
-            StrongReferenceMessenger.Default.Send(new SettingsValidationMessage(validConnectionConfig));
-
-            return validConnectionConfig && _configuration.IsDirty;
-        }
-
-        private void ClearIcons(object obj)
-        {
-            _iconCaching.ClearIconCache();
-        }
-
-        private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            SaveCommand.InvokeCanExecuteChanged(null);
-        }
+    private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        SaveCommand.InvokeCanExecuteChanged(null);
     }
 }

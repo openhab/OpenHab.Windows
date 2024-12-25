@@ -1,36 +1,35 @@
 using System;
 
-namespace openHAB.Core.Client.Models
+namespace openHAB.Core.Client.Models;
+
+/// <summary>
+/// An Exception class used to throw unexpected errors.
+/// </summary>
+public class OpenHABException : Exception
 {
     /// <summary>
-    /// An Exception class used to throw unexpected errors.
+    /// Initializes a new instance of the <see cref="OpenHABException"/> class.
     /// </summary>
-    public class OpenHABException : Exception
+    /// <param name="message">The error message.</param>
+    public OpenHABException(string message)
+        : base(message)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OpenHABException"/> class.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        public OpenHABException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OpenHABException"/> class.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        /// <param name="exception">The original exception.</param>
-        public OpenHABException(string message, Exception exception)
-            : base(message, exception)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenHABException"/> class.
+    /// </summary>
+    /// <param name="message">The error message.</param>
+    /// <param name="exception">The original exception.</param>
+    public OpenHABException(string message, Exception exception)
+        : base(message, exception)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OpenHABException"/> class.
-        /// </summary>
-        public OpenHABException()
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenHABException"/> class.
+    /// </summary>
+    public OpenHABException()
+    {
     }
 }

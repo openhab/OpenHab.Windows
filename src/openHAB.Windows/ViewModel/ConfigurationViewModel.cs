@@ -1,361 +1,360 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ConnectionState = openHAB.Core.Client.Connection.Models.ConnectionState;
 
-namespace openHAB.Windows.ViewModel
+namespace openHAB.Windows.ViewModel;
+
+/// <summary>
+/// Class that holds all the OpenHAB Windows application settings.
+/// </summary>
+public class ConfigurationViewModel : ViewModelBase<object>
 {
+    private readonly ILogger<ConfigurationViewModel> _logger;
+    private readonly Settings _settings;
+    private readonly IAppManager _appManager;
+    private readonly ISettingsService _settingsService;
+    private List<LanguageViewModel> _appLanguages;
+    private bool? _canAppAutostartEnabled;
+    private bool? _isAppAutostartEnabled;
+    private bool? _isRunningInDemoMode;
+    private ConnectionDialogViewModel _localConnection;
+    private ConnectionDialogViewModel _remoteConnection;
+    private LanguageViewModel _selectedAppLanguage;
+
+    private bool _showDefaultSitemap;
+    private bool? _startAppMinimized;
+    private bool _useSVGIcons;
+    private bool? _notificationsEnable;
+
     /// <summary>
-    /// Class that holds all the OpenHAB Windows application settings.
+    /// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class.
     /// </summary>
-    public class ConfigurationViewModel : ViewModelBase<object>
+    public ConfigurationViewModel(ISettingsService settingsService, IAppManager appManager, IConnectionService connectionService, ILogger<ConfigurationViewModel> logger, Settings settings)
+        : base(new object())
     {
-        private readonly ILogger<ConfigurationViewModel> _logger;
-        private readonly Settings _settings;
-        private readonly IAppManager _appManager;
-        private readonly ISettingsService _settingsService;
-        private List<LanguageViewModel> _appLanguages;
-        private bool? _canAppAutostartEnabled;
-        private bool? _isAppAutostartEnabled;
-        private bool? _isRunningInDemoMode;
-        private ConnectionDialogViewModel _localConnection;
-        private ConnectionDialogViewModel _remoteConnection;
-        private LanguageViewModel _selectedAppLanguage;
+        _settingsService = settingsService;
+        _logger = logger;
+        _settings = settings;
+        _appManager = appManager;
 
-        private bool _showDefaultSitemap;
-        private bool? _startAppMinimized;
-        private bool _useSVGIcons;
-        private bool? _notificationsEnable;
+        _localConnection = new ConnectionDialogViewModel(_settings.LocalConnection, connectionService, HttpClientType.Local);
+        _localConnection.PropertyChanged += ConnectionPropertyChanged;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class.
-        /// </summary>
-        public ConfigurationViewModel(ISettingsService settingsService, IAppManager appManager, IConnectionService connectionService, ILogger<ConfigurationViewModel> logger, Settings settings)
-            : base(new object())
+        _remoteConnection = new ConnectionDialogViewModel(_settings.RemoteConnection, connectionService, HttpClientType.Remote);
+        _remoteConnection.PropertyChanged += ConnectionPropertyChanged;
+
+        _isRunningInDemoMode = _settings.IsRunningInDemoMode;
+        _showDefaultSitemap = _settings.ShowDefaultSitemap;
+        _useSVGIcons = _settings.UseSVGIcons;
+        _startAppMinimized = _settings.StartAppMinimized;
+        _notificationsEnable = _settings.NotificationsEnable;
+
+        Task<bool> taskCanEnableAutostart = _appManager.CanEnableAutostart();
+        taskCanEnableAutostart.ContinueWith(async result =>
         {
-            _settingsService = settingsService;
-            _logger = logger;
-            _settings = settings;
-            _appManager = appManager;
+            CanAppAutostartEnabled = result.Result;
+        });
 
-            _localConnection = new ConnectionDialogViewModel(_settings.LocalConnection, connectionService, HttpClientType.Local);
-            _localConnection.PropertyChanged += ConnectionPropertyChanged;
+        Task<bool> taskStartupEnbabled = _appManager.IsStartupEnabled();
+        taskStartupEnbabled.ContinueWith(async result =>
+        {
+            IsAppAutostartEnabled = result.Result;
+        });
 
-            _remoteConnection = new ConnectionDialogViewModel(_settings.RemoteConnection, connectionService, HttpClientType.Remote);
-            _remoteConnection.PropertyChanged += ConnectionPropertyChanged;
+        _appLanguages = InitalizeAppLanguages();
+        _selectedAppLanguage =
+            _appLanguages.FirstOrDefault(x => string.Compare(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase) == 0);
 
-            _isRunningInDemoMode = _settings.IsRunningInDemoMode;
-            _showDefaultSitemap = _settings.ShowDefaultSitemap;
-            _useSVGIcons = _settings.UseSVGIcons;
-            _startAppMinimized = _settings.StartAppMinimized;
-            _notificationsEnable = _settings.NotificationsEnable;
+        PropertyChanged += ConfigurationViewModel_PropertyChanged;
+    }
 
-            Task<bool> taskCanEnableAutostart = _appManager.CanEnableAutostart();
-            taskCanEnableAutostart.ContinueWith(async result =>
+    /// <summary>
+    /// Gets or sets the supported application languages.
+    /// </summary>
+    /// <value>The application languages.</value>
+    public List<LanguageViewModel> AppLanguages
+    {
+        get
+        {
+            return _appLanguages;
+        }
+
+        set
+        {
+            Set(ref _appLanguages, value);
+        }
+    }
+
+    /// <summary>Gets or sets the can application autostart enabled.</summary>
+    /// <value>The can application autostart enabled.</value>
+    public bool? CanAppAutostartEnabled
+    {
+        get
+        {
+            return _canAppAutostartEnabled;
+        }
+
+        set
+        {
+            App.DispatcherQueue.EnqueueAsync(() =>
             {
-                CanAppAutostartEnabled = result.Result;
+                _canAppAutostartEnabled = value;
+                OnPropertyChanged(nameof(CanAppAutostartEnabled));
             });
+        }
+    }
 
-            Task<bool> taskStartupEnbabled = _appManager.IsStartupEnabled();
-            taskStartupEnbabled.ContinueWith(async result =>
+    /// <summary>Gets or sets the is application autostart is enabled.</summary>
+    /// <value>The is application autostart enabled.</value>
+    public bool? IsAppAutostartEnabled
+    {
+        get
+        {
+            return _isAppAutostartEnabled;
+        }
+
+        set
+        {
+            App.DispatcherQueue.EnqueueAsync(() =>
             {
-                IsAppAutostartEnabled = result.Result;
+                _isAppAutostartEnabled = value;
+                OnPropertyChanged(nameof(IsAppAutostartEnabled));
             });
-
-            _appLanguages = InitalizeAppLanguages();
-            _selectedAppLanguage =
-                _appLanguages.FirstOrDefault(x => string.Compare(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-            PropertyChanged += ConfigurationViewModel_PropertyChanged;
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the supported application languages.
-        /// </summary>
-        /// <value>The application languages.</value>
-        public List<LanguageViewModel> AppLanguages
+    /// <summary>Gets a value indicating whether this instance is dirty.</summary>
+    /// <value>
+    ///   <c>true</c> if this instance is dirty; otherwise, <c>false</c>.</value>
+    public new bool IsDirty
+    {
+        get
         {
-            get
-            {
-                return _appLanguages;
-            }
-
-            set
-            {
-                Set(ref _appLanguages, value);
-            }
+            return base.IsDirty || LocalConnection.IsDirty || RemoteConnection.IsDirty;
         }
+    }
 
-        /// <summary>Gets or sets the can application autostart enabled.</summary>
-        /// <value>The can application autostart enabled.</value>
-        public bool? CanAppAutostartEnabled
+    /// <summary>
+    /// Gets or sets a value indicating whether the app is currently running in demo mode.
+    /// </summary>
+    public bool? IsRunningInDemoMode
+    {
+        get
         {
-            get
-            {
-                return _canAppAutostartEnabled;
-            }
-
-            set
-            {
-                App.DispatcherQueue.EnqueueAsync(() =>
-                {
-                    _canAppAutostartEnabled = value;
-                    OnPropertyChanged(nameof(CanAppAutostartEnabled));
-                });
-            }
+            return _isRunningInDemoMode;
         }
 
-        /// <summary>Gets or sets the is application autostart is enabled.</summary>
-        /// <value>The is application autostart enabled.</value>
-        public bool? IsAppAutostartEnabled
+        set
         {
-            get
+            if (Set(ref _isRunningInDemoMode, value, true))
             {
-                return _isAppAutostartEnabled;
-            }
-
-            set
-            {
-                App.DispatcherQueue.EnqueueAsync(() =>
-                {
-                    _isAppAutostartEnabled = value;
-                    OnPropertyChanged(nameof(IsAppAutostartEnabled));
-                });
+                _settings.IsRunningInDemoMode = value;
             }
         }
+    }
 
-        /// <summary>Gets a value indicating whether this instance is dirty.</summary>
-        /// <value>
-        ///   <c>true</c> if this instance is dirty; otherwise, <c>false</c>.</value>
-        public new bool IsDirty
+    /// <summary>
+    /// Gets or sets local OpenHAB connection configuration.
+    /// </summary>
+    public ConnectionDialogViewModel LocalConnection
+    {
+        get
         {
-            get
-            {
-                return base.IsDirty || LocalConnection.IsDirty || RemoteConnection.IsDirty;
-            }
+            return _localConnection;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the app is currently running in demo mode.
-        /// </summary>
-        public bool? IsRunningInDemoMode
+        set
         {
-            get
-            {
-                return _isRunningInDemoMode;
-            }
-
-            set
-            {
-                if (Set(ref _isRunningInDemoMode, value, true))
-                {
-                    _settings.IsRunningInDemoMode = value;
-                }
-            }
+            Set(ref _localConnection, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets local OpenHAB connection configuration.
-        /// </summary>
-        public ConnectionDialogViewModel LocalConnection
+    /// <summary>Gets or sets the setting if notifications are enabled.</summary>
+    /// <value>The application triggers notification on openHAB events.</value>
+    public bool? NotificationsEnable
+    {
+        get
         {
-            get
-            {
-                return _localConnection;
-            }
-
-            set
-            {
-                Set(ref _localConnection, value);
-            }
+            return _notificationsEnable;
         }
 
-        /// <summary>Gets or sets the setting if notifications are enabled.</summary>
-        /// <value>The application triggers notification on openHAB events.</value>
-        public bool? NotificationsEnable
+        set
         {
-            get
+            if (Set(ref _notificationsEnable, value, true))
             {
-                return _notificationsEnable;
-            }
-
-            set
-            {
-                if (Set(ref _notificationsEnable, value, true))
-                {
-                    _settings.NotificationsEnable = value;
-                }
+                _settings.NotificationsEnable = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets remote OpenHAB connection configuration.
-        /// </summary>
-        public ConnectionDialogViewModel RemoteConnection
+    /// <summary>
+    /// Gets or sets remote OpenHAB connection configuration.
+    /// </summary>
+    public ConnectionDialogViewModel RemoteConnection
+    {
+        get
         {
-            get
-            {
-                return _remoteConnection;
-            }
-
-            set
-            {
-                Set(ref _remoteConnection, value);
-            }
+            return _remoteConnection;
         }
 
-        /// <summary>
-        /// Gets or sets the selected application language.
-        /// </summary>
-        /// <value>The selected application language.</value>
-        public LanguageViewModel SelectedAppLanguage
+        set
         {
-            get
-            {
-                return _selectedAppLanguage;
-            }
-
-            set
-            {
-                if (Set(ref _selectedAppLanguage, value, true))
-                {
-                    _settings.AppLanguage = value.Code;
-                }
-            }
+            Set(ref _remoteConnection, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the default sitemap should be visible.
-        /// </summary>
-        /// <value>The hide default sitemap.</value>
-        public bool ShowDefaultSitemap
+    /// <summary>
+    /// Gets or sets the selected application language.
+    /// </summary>
+    /// <value>The selected application language.</value>
+    public LanguageViewModel SelectedAppLanguage
+    {
+        get
         {
-            get
-            {
-                return _showDefaultSitemap;
-            }
-
-            set
-            {
-                if (Set(ref _showDefaultSitemap, value, true))
-                {
-                    _settings.ShowDefaultSitemap = value;
-                }
-            }
+            return _selectedAppLanguage;
         }
 
-        /// <summary>Gets or sets the start application minimized.</summary>
-        /// <value>The start application minimized.</value>
-        public bool? StartAppMinimized
+        set
         {
-            get
+            if (Set(ref _selectedAppLanguage, value, true))
             {
-                return _startAppMinimized;
-            }
-
-            set
-            {
-                if (Set(ref _startAppMinimized, value, true))
-                {
-                    _settings.StartAppMinimized = value;
-                }
+                _settings.AppLanguage = value.Code;
             }
         }
+    }
 
-        /// <summary>Gets or sets a value indicating whether [use SVG icons].</summary>
-        /// <value>
-        ///   <c>true</c> if [use SVG icons]; otherwise, <c>false</c>.</value>
-        public bool UseSVGIcons
+    /// <summary>
+    /// Gets or sets a value indicating whether the default sitemap should be visible.
+    /// </summary>
+    /// <value>The hide default sitemap.</value>
+    public bool ShowDefaultSitemap
+    {
+        get
         {
-            get
-            {
-                return _useSVGIcons;
-            }
+            return _showDefaultSitemap;
+        }
 
-            set
+        set
+        {
+            if (Set(ref _showDefaultSitemap, value, true))
             {
-                if (Set(ref _useSVGIcons, value, true))
-                {
-                    _settings.UseSVGIcons = value;
-                }
+                _settings.ShowDefaultSitemap = value;
             }
         }
+    }
 
-        /// <summary>Determines whether [is connection configuration valid].</summary>
-        /// <returns>
-        ///   <c>true</c> if [is connection configuration valid]; otherwise, <c>false</c>.</returns>
-        public bool IsConnectionConfigValid()
+    /// <summary>Gets or sets the start application minimized.</summary>
+    /// <value>The start application minimized.</value>
+    public bool? StartAppMinimized
+    {
+        get
         {
-            bool validConfig = IsRunningInDemoMode.Value ||
-                     (!string.IsNullOrEmpty(LocalConnection?.Url) && LocalConnection?.Status.State == ConnectionState.OK) ||
-                     (!string.IsNullOrEmpty(RemoteConnection?.Url) && RemoteConnection?.Status.State == ConnectionState.OK);
-
-            _logger.LogInformation($"Valid application configuration: {validConfig}");
-
-            return validConfig;
+            return _startAppMinimized;
         }
 
-        /// <summary>
-        /// Persists the settings to disk.
-        /// </summary>
-        /// <returns>True if settings saved successful, otherwise false.</returns>
-        public bool Save()
+        set
         {
-            _settings.LocalConnection = _localConnection.Model;
-            _settings.RemoteConnection = _remoteConnection.Model;
-
-            bool result = _settingsService.Save(_settings);
-            _settingsService.SetProgramLanguage(null);
-
-            return result;
-        }
-
-        private void ConfigurationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != nameof(IsDirty) && e.PropertyName != nameof(CanAppAutostartEnabled) && e.PropertyName != nameof(IsAppAutostartEnabled))
+            if (Set(ref _startAppMinimized, value, true))
             {
-                OnPropertyChanged(nameof(IsDirty));
+                _settings.StartAppMinimized = value;
             }
         }
+    }
 
-        private void ConnectionPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    /// <summary>Gets or sets a value indicating whether [use SVG icons].</summary>
+    /// <value>
+    ///   <c>true</c> if [use SVG icons]; otherwise, <c>false</c>.</value>
+    public bool UseSVGIcons
+    {
+        get
+        {
+            return _useSVGIcons;
+        }
+
+        set
+        {
+            if (Set(ref _useSVGIcons, value, true))
+            {
+                _settings.UseSVGIcons = value;
+            }
+        }
+    }
+
+    /// <summary>Determines whether [is connection configuration valid].</summary>
+    /// <returns>
+    ///   <c>true</c> if [is connection configuration valid]; otherwise, <c>false</c>.</returns>
+    public bool IsConnectionConfigValid()
+    {
+        bool validConfig = IsRunningInDemoMode.Value ||
+                 (!string.IsNullOrEmpty(LocalConnection?.Url) && LocalConnection?.Status.State == ConnectionState.OK) ||
+                 (!string.IsNullOrEmpty(RemoteConnection?.Url) && RemoteConnection?.Status.State == ConnectionState.OK);
+
+        _logger.LogInformation($"Valid application configuration: {validConfig}");
+
+        return validConfig;
+    }
+
+    /// <summary>
+    /// Persists the settings to disk.
+    /// </summary>
+    /// <returns>True if settings saved successful, otherwise false.</returns>
+    public bool Save()
+    {
+        _settings.LocalConnection = _localConnection.Model;
+        _settings.RemoteConnection = _remoteConnection.Model;
+
+        bool result = _settingsService.Save(_settings);
+        _settingsService.SetProgramLanguage(null);
+
+        return result;
+    }
+
+    private void ConfigurationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(IsDirty) && e.PropertyName != nameof(CanAppAutostartEnabled) && e.PropertyName != nameof(IsAppAutostartEnabled))
         {
             OnPropertyChanged(nameof(IsDirty));
         }
+    }
 
-        private List<LanguageViewModel> InitalizeAppLanguages()
+    private void ConnectionPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(IsDirty));
+    }
+
+    private List<LanguageViewModel> InitalizeAppLanguages()
+    {
+        List<LanguageViewModel> appLanguages = new List<LanguageViewModel>();
+        LanguageViewModel system = new LanguageViewModel()
         {
-            List<LanguageViewModel> appLanguages = new List<LanguageViewModel>();
-            LanguageViewModel system = new LanguageViewModel()
-            {
-                Name = "System",
-                Code = null
-            };
+            Name = "System",
+            Code = null
+        };
 
-            LanguageViewModel english = new LanguageViewModel()
-            {
-                Name = "English",
-                Code = "en-us"
-            };
+        LanguageViewModel english = new LanguageViewModel()
+        {
+            Name = "English",
+            Code = "en-us"
+        };
 
-            LanguageViewModel german = new LanguageViewModel()
-            {
-                Name = "Deutsch",
-                Code = "de-de"
-            };
+        LanguageViewModel german = new LanguageViewModel()
+        {
+            Name = "Deutsch",
+            Code = "de-de"
+        };
 
-            appLanguages.Add(system);
-            appLanguages.Add(english);
-            appLanguages.Add(german);
+        appLanguages.Add(system);
+        appLanguages.Add(english);
+        appLanguages.Add(german);
 
-            return appLanguages;
-        }
+        return appLanguages;
     }
 }

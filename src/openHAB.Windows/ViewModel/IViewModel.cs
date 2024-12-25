@@ -1,21 +1,20 @@
-namespace openHAB.Windows.ViewModel
+namespace openHAB.Windows.ViewModel;
+
+/// <summary>
+/// IViewModelModelProp.
+/// </summary>
+/// <typeparam name="T">Model type interface.</typeparam>
+public interface IViewModel<T>
 {
     /// <summary>
-    /// IViewModelModelProp.
+    /// Gets or sets the model.
     /// </summary>
-    /// <typeparam name="T">Model type interface.</typeparam>
-    public interface IViewModel<T>
+    /// <value>
+    /// The model.
+    /// </value>
+    T Model
     {
-        /// <summary>
-        /// Gets or sets the model.
-        /// </summary>
-        /// <value>
-        /// The model.
-        /// </value>
-        T Model
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

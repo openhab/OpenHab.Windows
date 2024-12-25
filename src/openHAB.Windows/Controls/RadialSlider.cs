@@ -1,592 +1,693 @@
-using System;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using System;
 using Windows.Foundation;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// A Percentage Ring Control.
+/// </summary>
+//// All calculations are for a 200x200 square. The ViewBox control will do the rest.
+[TemplatePart(Name = ContainerPartName, Type = typeof(Grid))]
+[TemplatePart(Name = ScalePartName, Type = typeof(Path))]
+[TemplatePart(Name = TrailPartName, Type = typeof(Path))]
+[TemplatePart(Name = ValueTextPartName, Type = typeof(TextBlock))]
+public class RadialSlider : Control
 {
     /// <summary>
-    /// A Percentage Ring Control.
+    /// Identifies the IsInteractive dependency property.
     /// </summary>
-    //// All calculations are for a 200x200 square. The ViewBox control will do the rest.
-    [TemplatePart(Name = ContainerPartName, Type = typeof(Grid))]
-    [TemplatePart(Name = ScalePartName, Type = typeof(Path))]
-    [TemplatePart(Name = TrailPartName, Type = typeof(Path))]
-    [TemplatePart(Name = ValueTextPartName, Type = typeof(TextBlock))]
-    public class RadialSlider : Control
+    public static readonly DependencyProperty IsInteractiveProperty =
+        DependencyProperty.Register(nameof(IsInteractive), typeof(bool), typeof(RadialSlider), new PropertyMetadata(false, OnInteractivityChanged));
+
+    /// <summary>
+    /// Identifies the MaxAngle dependency property.
+    /// </summary>
+    public static readonly DependencyProperty MaxAngleProperty =
+        DependencyProperty.Register(nameof(MaxAngle), typeof(int), typeof(RadialSlider), new PropertyMetadata(360, OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the MinAngle dependency property.
+    /// </summary>
+    public static readonly DependencyProperty MinAngleProperty =
+        DependencyProperty.Register(nameof(MinAngle), typeof(int), typeof(RadialSlider), new PropertyMetadata(0, OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the ScaleBrush dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ScaleBrushProperty =
+        DependencyProperty.Register(nameof(ScaleBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.DarkGray), OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the ScaleEndCap dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ScaleEndCapProperty =
+        DependencyProperty.Register(nameof(ScaleEndCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Triangle, OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the ScaleStartCap dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ScaleStartCapProperty =
+        DependencyProperty.Register(nameof(ScaleStartCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Round, OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the ScaleWidth dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ScaleWidthProperty =
+        DependencyProperty.Register(nameof(ScaleWidth), typeof(double), typeof(RadialSlider), new PropertyMetadata(25.0, OnScaleChanged));
+
+    /// <summary>
+    /// Identifies the optional StepSize property.
+    /// </summary>
+    public static readonly DependencyProperty StepSizeProperty =
+        DependencyProperty.Register(nameof(StepSize), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0));
+
+    /// <summary>
+    /// Identifies the TrailBrush dependency property.
+    /// </summary>
+    public static readonly DependencyProperty TrailBrushProperty =
+        DependencyProperty.Register(nameof(TrailBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.Orange), OnValueChanged));
+
+    /// <summary>
+    /// Identifies the TrailEndCap dependency property.
+    /// </summary>
+    public static readonly DependencyProperty TrailEndCapProperty =
+        DependencyProperty.Register(nameof(TrailEndCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Triangle, OnValueChanged));
+
+    /// <summary>
+    /// Identifies the TrailStartCap dependency property.
+    /// </summary>
+    public static readonly DependencyProperty TrailStartCapProperty =
+        DependencyProperty.Register(nameof(TrailStartCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Round, OnValueChanged));
+
+    /// <summary>
+    /// Identifies the ValueBrush dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ValueBrushProperty =
+        DependencyProperty.Register(nameof(ValueBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
+
+    /// <summary>
+    /// Identifies the Value dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ValueProperty =
+        DependencyProperty.Register(nameof(Value), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0, OnValueChanged));
+
+    /// <summary>
+    /// Identifies the ValueStringFormat dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ValueStringFormatProperty =
+        DependencyProperty.Register(nameof(ValueStringFormat), typeof(string), typeof(RadialSlider), null);
+
+    /// <summary>
+    /// Identifies the MaximumValue dependency property.
+    /// </summary>
+    protected static readonly DependencyProperty MaximumProperty =
+        DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RadialSlider), new PropertyMetadata(100.0, OnValueChanged));
+
+    /// <summary>
+    /// Identifies the MinimumValue dependency property.
+    /// </summary>
+    protected static readonly DependencyProperty MinimumProperty =
+        DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0, OnValueChanged));
+
+    /// <summary>
+    /// Identifies the ValueAngle dependency property.
+    /// </summary>
+    protected static readonly DependencyProperty ValueAngleProperty =
+        DependencyProperty.Register(nameof(ValueAngle), typeof(double), typeof(RadialSlider), new PropertyMetadata(null));
+
+    // Template Parts.
+    private const string ContainerPartName = "PART_Container";
+
+    // For convenience.
+    private const double Degrees2Radians = Math.PI / 180;
+
+    private const double Radius = 100;
+
+    private const string ScalePartName = "PART_Scale";
+
+    private const string TrailPartName = "PART_Trail";
+
+    private const string ValueTextPartName = "PART_ValueText";
+
+    private double _normalizedMaxAngle;
+
+    private double _normalizedMinAngle;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RadialSlider"/> class.
+    /// </summary>
+    public RadialSlider()
     {
-        /// <summary>
-        /// Identifies the IsInteractive dependency property.
-        /// </summary>
-        public static readonly DependencyProperty IsInteractiveProperty =
-            DependencyProperty.Register(nameof(IsInteractive), typeof(bool), typeof(RadialSlider), new PropertyMetadata(false, OnInteractivityChanged));
+        DefaultStyleKey = typeof(RadialSlider);
+    }
 
-        /// <summary>
-        /// Identifies the MaxAngle dependency property.
-        /// </summary>
-        public static readonly DependencyProperty MaxAngleProperty =
-            DependencyProperty.Register(nameof(MaxAngle), typeof(int), typeof(RadialSlider), new PropertyMetadata(360, OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the MinAngle dependency property.
-        /// </summary>
-        public static readonly DependencyProperty MinAngleProperty =
-            DependencyProperty.Register(nameof(MinAngle), typeof(int), typeof(RadialSlider), new PropertyMetadata(0, OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the ScaleBrush dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ScaleBrushProperty =
-            DependencyProperty.Register(nameof(ScaleBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.DarkGray), OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the ScaleEndCap dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ScaleEndCapProperty =
-            DependencyProperty.Register(nameof(ScaleEndCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Triangle, OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the ScaleStartCap dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ScaleStartCapProperty =
-            DependencyProperty.Register(nameof(ScaleStartCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Round, OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the ScaleWidth dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ScaleWidthProperty =
-            DependencyProperty.Register(nameof(ScaleWidth), typeof(double), typeof(RadialSlider), new PropertyMetadata(25.0, OnScaleChanged));
-
-        /// <summary>
-        /// Identifies the optional StepSize property.
-        /// </summary>
-        public static readonly DependencyProperty StepSizeProperty =
-            DependencyProperty.Register(nameof(StepSize), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0));
-
-        /// <summary>
-        /// Identifies the TrailBrush dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrailBrushProperty =
-            DependencyProperty.Register(nameof(TrailBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.Orange), OnValueChanged));
-
-        /// <summary>
-        /// Identifies the TrailEndCap dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrailEndCapProperty =
-            DependencyProperty.Register(nameof(TrailEndCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Triangle, OnValueChanged));
-
-        /// <summary>
-        /// Identifies the TrailStartCap dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TrailStartCapProperty =
-            DependencyProperty.Register(nameof(TrailStartCap), typeof(PenLineCap), typeof(RadialSlider), new PropertyMetadata(PenLineCap.Round, OnValueChanged));
-
-        /// <summary>
-        /// Identifies the ValueBrush dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ValueBrushProperty =
-            DependencyProperty.Register(nameof(ValueBrush), typeof(Brush), typeof(RadialSlider), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-        /// <summary>
-        /// Identifies the Value dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register(nameof(Value), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0, OnValueChanged));
-
-        /// <summary>
-        /// Identifies the ValueStringFormat dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ValueStringFormatProperty =
-            DependencyProperty.Register(nameof(ValueStringFormat), typeof(string), typeof(RadialSlider), null);
-
-        /// <summary>
-        /// Identifies the MaximumValue dependency property.
-        /// </summary>
-        protected static readonly DependencyProperty MaximumProperty =
-            DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RadialSlider), new PropertyMetadata(100.0, OnValueChanged));
-
-        /// <summary>
-        /// Identifies the MinimumValue dependency property.
-        /// </summary>
-        protected static readonly DependencyProperty MinimumProperty =
-            DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(RadialSlider), new PropertyMetadata(0.0, OnValueChanged));
-
-        /// <summary>
-        /// Identifies the ValueAngle dependency property.
-        /// </summary>
-        protected static readonly DependencyProperty ValueAngleProperty =
-            DependencyProperty.Register(nameof(ValueAngle), typeof(double), typeof(RadialSlider), new PropertyMetadata(null));
-
-        // Template Parts.
-        private const string ContainerPartName = "PART_Container";
-
-        // For convenience.
-        private const double Degrees2Radians = Math.PI / 180;
-
-        private const double Radius = 100;
-
-        private const string ScalePartName = "PART_Scale";
-
-        private const string TrailPartName = "PART_Trail";
-
-        private const string ValueTextPartName = "PART_ValueText";
-
-        private double _normalizedMaxAngle;
-
-        private double _normalizedMinAngle;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RadialSlider"/> class.
-        /// </summary>
-        public RadialSlider()
+    /// <summary>
+    /// Triggers whenever the slider changes
+    /// </summary>
+    public event EventHandler ValueChanged;
+    /// <summary>
+    /// Gets or sets a value indicating whether the control accepts setting its value through interaction.
+    /// </summary>
+    public bool IsInteractive
+    {
+        get
         {
-            DefaultStyleKey = typeof(RadialSlider);
+            return (bool)GetValue(IsInteractiveProperty);
         }
-
-        /// <summary>
-        /// Triggers whenever the slider changes
-        /// </summary>
-        public event EventHandler ValueChanged;
-        /// <summary>
-        /// Gets or sets a value indicating whether the control accepts setting its value through interaction.
-        /// </summary>
-        public bool IsInteractive
+        set
         {
-            get { return (bool)GetValue(IsInteractiveProperty); }
-            set { SetValue(IsInteractiveProperty, value); }
+            SetValue(IsInteractiveProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the end angle of the scale, which corresponds with the Maximum value, in degrees.
-        /// </summary>
-        public int MaxAngle
+    /// <summary>
+    /// Gets or sets the end angle of the scale, which corresponds with the Maximum value, in degrees.
+    /// </summary>
+    public int MaxAngle
+    {
+        get
         {
-            get { return (int)GetValue(MaxAngleProperty); }
-            set { SetValue(MaxAngleProperty, value); }
+            return (int)GetValue(MaxAngleProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the Maximum value for the Widget.
-        /// </summary>
-        public double Maximum
+        set
         {
-            get { return (double)GetValue(MaximumProperty); }
-            set { SetValue(MaximumProperty, value); }
+            SetValue(MaxAngleProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the start angle of the scale, which corresponds with the Minimum value, in degrees.
-        /// </summary>
-        public int MinAngle
+    /// <summary>
+    /// Gets or sets the Maximum value for the Widget.
+    /// </summary>
+    public double Maximum
+    {
+        get
         {
-            get { return (int)GetValue(MinAngleProperty); }
-            set { SetValue(MinAngleProperty, value); }
+            return (double)GetValue(MaximumProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the Minimum value for the Widget.
-        /// </summary>
-        public double Minimum
+        set
         {
-            get { return (double)GetValue(MinimumProperty); }
-            set { SetValue(MinimumProperty, value); }
+            SetValue(MaximumProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the scale brush.
-        /// </summary>
-        public Brush ScaleBrush
+    /// <summary>
+    /// Gets or sets the start angle of the scale, which corresponds with the Minimum value, in degrees.
+    /// </summary>
+    public int MinAngle
+    {
+        get
         {
-            get { return (Brush)GetValue(ScaleBrushProperty); }
-            set { SetValue(ScaleBrushProperty, value); }
+            return (int)GetValue(MinAngleProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the StrokeEndCap for the Scale.
-        /// </summary>
-        public PenLineCap ScaleEndCap
+        set
         {
-            get { return (PenLineCap)GetValue(ScaleEndCapProperty); }
-            set { SetValue(ScaleEndCapProperty, value); }
+            SetValue(MinAngleProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the StrokeStartCap for the Scale.
-        /// </summary>
-        public PenLineCap ScaleStartCap
+    /// <summary>
+    /// Gets or sets the Minimum value for the Widget.
+    /// </summary>
+    public double Minimum
+    {
+        get
         {
-            get { return (PenLineCap)GetValue(ScaleStartCapProperty); }
-            set { SetValue(ScaleStartCapProperty, value); }
+            return (double)GetValue(MinimumProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the width of the scale, in percentage of the radius.
-        /// </summary>
-        public double ScaleWidth
+        set
         {
-            get { return (double)GetValue(ScaleWidthProperty); }
-            set { SetValue(ScaleWidthProperty, value); }
+            SetValue(MinimumProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the rounding interval for the Value.
-        /// </summary>
-        public double StepSize
+    /// <summary>
+    /// Gets or sets the scale brush.
+    /// </summary>
+    public Brush ScaleBrush
+    {
+        get
         {
-            get { return (double)GetValue(StepSizeProperty); }
-            set { SetValue(StepSizeProperty, value); }
+            return (Brush)GetValue(ScaleBrushProperty);
         }
-        /// <summary>
-        /// Gets or sets the trail brush.
-        /// </summary>
-        public Brush TrailBrush
+        set
         {
-            get { return (Brush)GetValue(TrailBrushProperty); }
-            set { SetValue(TrailBrushProperty, value); }
+            SetValue(ScaleBrushProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the StrokeEndCap for the Trail.
-        /// </summary>
-        public PenLineCap TrailEndCap
+    /// <summary>
+    /// Gets or sets the StrokeEndCap for the Scale.
+    /// </summary>
+    public PenLineCap ScaleEndCap
+    {
+        get
         {
-            get { return (PenLineCap)GetValue(TrailEndCapProperty); }
-            set { SetValue(TrailEndCapProperty, value); }
+            return (PenLineCap)GetValue(ScaleEndCapProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the StrokeStartCap for the Trail.
-        /// </summary>
-        public PenLineCap TrailStartCap
+        set
         {
-            get { return (PenLineCap)GetValue(TrailStartCapProperty); }
-            set { SetValue(TrailStartCapProperty, value); }
+            SetValue(ScaleEndCapProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the current value.
-        /// </summary>
-        public double Value
+    /// <summary>
+    /// Gets or sets the StrokeStartCap for the Scale.
+    /// </summary>
+    public PenLineCap ScaleStartCap
+    {
+        get
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            return (PenLineCap)GetValue(ScaleStartCapProperty);
         }
-
-        /// <summary>
-        /// Gets or sets the brush for the displayed value.
-        /// </summary>
-        public Brush ValueBrush
+        set
         {
-            get { return (Brush)GetValue(ValueBrushProperty); }
-            set { SetValue(ValueBrushProperty, value); }
+            SetValue(ScaleStartCapProperty, value);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the value string format.
-        /// </summary>
-        public string ValueStringFormat
+    /// <summary>
+    /// Gets or sets the width of the scale, in percentage of the radius.
+    /// </summary>
+    public double ScaleWidth
+    {
+        get
         {
-            get { return (string)GetValue(ValueStringFormatProperty); }
-            set { SetValue(ValueStringFormatProperty, value); }
+            return (double)GetValue(ScaleWidthProperty);
         }
-        /// <summary>
-        /// Gets the normalized maximum angle.
-        /// </summary>
-        /// <value>The maximum angle in the range from 180 to 540.</value>
-        protected double NormalizedMaxAngle => _normalizedMaxAngle;
-
-        /// <summary>
-        /// Gets the normalized minimum angle.
-        /// </summary>
-        /// <value>The minimum angle in the range from -180 to 180.</value>
-        protected double NormalizedMinAngle => _normalizedMinAngle;
-
-        /// <summary>
-        /// Gets or sets the current angle of the needle (between MinAngle and MaxAngle). Setting the angle will update the Value.
-        /// </summary>
-        protected double ValueAngle
+        set
         {
-            get { return (double)GetValue(ValueAngleProperty); }
-            set { SetValue(ValueAngleProperty, value); }
+            SetValue(ScaleWidthProperty, value);
         }
-        /// <summary>
-        /// Update the visual state of the control when its template is changed.
-        /// </summary>
-        protected override void OnApplyTemplate()
-        {
-            OnScaleChanged(this);
+    }
 
-            base.OnApplyTemplate();
+    /// <summary>
+    /// Gets or sets the rounding interval for the Value.
+    /// </summary>
+    public double StepSize
+    {
+        get
+        {
+            return (double)GetValue(StepSizeProperty);
         }
-
-        private static double Mod(double number, double divider)
+        set
         {
-            double result = number % divider;
-            result = result < 0 ? result + divider : result;
-            return result;
+            SetValue(StepSizeProperty, value);
         }
-
-        private static void OnInteractivityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    }
+    /// <summary>
+    /// Gets or sets the trail brush.
+    /// </summary>
+    public Brush TrailBrush
+    {
+        get
         {
-            RadialSlider percentageRing = (RadialSlider)d;
+            return (Brush)GetValue(TrailBrushProperty);
+        }
+        set
+        {
+            SetValue(TrailBrushProperty, value);
+        }
+    }
 
-            if (percentageRing.IsInteractive)
+    /// <summary>
+    /// Gets or sets the StrokeEndCap for the Trail.
+    /// </summary>
+    public PenLineCap TrailEndCap
+    {
+        get
+        {
+            return (PenLineCap)GetValue(TrailEndCapProperty);
+        }
+        set
+        {
+            SetValue(TrailEndCapProperty, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the StrokeStartCap for the Trail.
+    /// </summary>
+    public PenLineCap TrailStartCap
+    {
+        get
+        {
+            return (PenLineCap)GetValue(TrailStartCapProperty);
+        }
+        set
+        {
+            SetValue(TrailStartCapProperty, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the current value.
+    /// </summary>
+    public double Value
+    {
+        get
+        {
+            return (double)GetValue(ValueProperty);
+        }
+        set
+        {
+            SetValue(ValueProperty, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the brush for the displayed value.
+    /// </summary>
+    public Brush ValueBrush
+    {
+        get
+        {
+            return (Brush)GetValue(ValueBrushProperty);
+        }
+        set
+        {
+            SetValue(ValueBrushProperty, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the value string format.
+    /// </summary>
+    public string ValueStringFormat
+    {
+        get
+        {
+            return (string)GetValue(ValueStringFormatProperty);
+        }
+        set
+        {
+            SetValue(ValueStringFormatProperty, value);
+        }
+    }
+    /// <summary>
+    /// Gets the normalized maximum angle.
+    /// </summary>
+    /// <value>The maximum angle in the range from 180 to 540.</value>
+    protected double NormalizedMaxAngle => _normalizedMaxAngle;
+
+    /// <summary>
+    /// Gets the normalized minimum angle.
+    /// </summary>
+    /// <value>The minimum angle in the range from -180 to 180.</value>
+    protected double NormalizedMinAngle => _normalizedMinAngle;
+
+    /// <summary>
+    /// Gets or sets the current angle of the needle (between MinAngle and MaxAngle). Setting the angle will update the Value.
+    /// </summary>
+    protected double ValueAngle
+    {
+        get
+        {
+            return (double)GetValue(ValueAngleProperty);
+        }
+        set
+        {
+            SetValue(ValueAngleProperty, value);
+        }
+    }
+    /// <summary>
+    /// Update the visual state of the control when its template is changed.
+    /// </summary>
+    protected override void OnApplyTemplate()
+    {
+        OnScaleChanged(this);
+
+        base.OnApplyTemplate();
+    }
+
+    private static double Mod(double number, double divider)
+    {
+        double result = number % divider;
+        result = result < 0 ? result + divider : result;
+        return result;
+    }
+
+    private static void OnInteractivityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        RadialSlider percentageRing = (RadialSlider)d;
+
+        if (percentageRing.IsInteractive)
+        {
+            percentageRing.Tapped += percentageRing.RadialSlider_Tapped;
+            percentageRing.ManipulationDelta += percentageRing.RadialSlider_ManipulationDelta;
+            percentageRing.ManipulationCompleted += percentageRing.PercentageRingOnManipulationCompleted;
+            percentageRing.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+        }
+        else
+        {
+            percentageRing.Tapped -= percentageRing.RadialSlider_Tapped;
+            percentageRing.ManipulationCompleted -= percentageRing.PercentageRingOnManipulationCompleted;
+            percentageRing.ManipulationDelta -= percentageRing.RadialSlider_ManipulationDelta;
+            percentageRing.ManipulationMode = ManipulationModes.None;
+        }
+    }
+
+    private static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        OnScaleChanged(d);
+    }
+
+    private static void OnScaleChanged(DependencyObject d)
+    {
+        RadialSlider percentageRing = (RadialSlider)d;
+
+        percentageRing.UpdateNormalizedAngles();
+
+        Path scale = percentageRing.GetTemplateChild(ScalePartName) as Path;
+        if (scale != null)
+        {
+            if (percentageRing.NormalizedMaxAngle - percentageRing.NormalizedMinAngle == 360)
             {
-                percentageRing.Tapped += percentageRing.RadialSlider_Tapped;
-                percentageRing.ManipulationDelta += percentageRing.RadialSlider_ManipulationDelta;
-                percentageRing.ManipulationCompleted += percentageRing.PercentageRingOnManipulationCompleted;
-                percentageRing.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+                // Draw full circle.
+                EllipseGeometry eg = new EllipseGeometry
+                {
+                    Center = new Point(Radius, Radius),
+                    RadiusX = Radius - (percentageRing.ScaleWidth / 2),
+                };
+
+                eg.RadiusY = eg.RadiusX;
+                scale.Data = eg;
             }
             else
             {
-                percentageRing.Tapped -= percentageRing.RadialSlider_Tapped;
-                percentageRing.ManipulationCompleted -= percentageRing.PercentageRingOnManipulationCompleted;
-                percentageRing.ManipulationDelta -= percentageRing.RadialSlider_ManipulationDelta;
-                percentageRing.ManipulationMode = ManipulationModes.None;
+                scale.StrokeStartLineCap = percentageRing.ScaleStartCap;
+                scale.StrokeEndLineCap = percentageRing.ScaleEndCap;
+
+                // Draw arc.
+                var pg = new PathGeometry();
+                var pf = new PathFigure { IsClosed = false };
+                var middleOfScale = Radius - (percentageRing.ScaleWidth / 2);
+                pf.StartPoint = percentageRing.ScalePoint(percentageRing.NormalizedMinAngle, middleOfScale);
+                var seg = new ArcSegment
+                {
+                    SweepDirection = SweepDirection.Clockwise,
+                    IsLargeArc = percentageRing.NormalizedMaxAngle > (percentageRing.NormalizedMinAngle + 180),
+                    Size = new Size(middleOfScale, middleOfScale),
+                    Point = percentageRing.ScalePoint(percentageRing.NormalizedMaxAngle, middleOfScale),
+                };
+
+                pf.Segments.Add(seg);
+                pg.Figures.Add(pf);
+                scale.Data = pg;
             }
         }
 
-        private static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        OnValueChanged(percentageRing);
+    }
+
+    private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        OnValueChanged(d);
+    }
+
+    private static void OnValueChanged(DependencyObject d)
+    {
+        var percentageRing = (RadialSlider)d;
+        if (!double.IsNaN(percentageRing.Value))
         {
-            OnScaleChanged(d);
-        }
-
-        private static void OnScaleChanged(DependencyObject d)
-        {
-            RadialSlider percentageRing = (RadialSlider)d;
-
-            percentageRing.UpdateNormalizedAngles();
-
-            Path scale = percentageRing.GetTemplateChild(ScalePartName) as Path;
-            if (scale != null)
+            if (percentageRing.StepSize > 0)
             {
-                if (percentageRing.NormalizedMaxAngle - percentageRing.NormalizedMinAngle == 360)
-                {
-                    // Draw full circle.
-                    EllipseGeometry eg = new EllipseGeometry
-                    {
-                        Center = new Point(Radius, Radius),
-                        RadiusX = Radius - (percentageRing.ScaleWidth / 2),
-                    };
-
-                    eg.RadiusY = eg.RadiusX;
-                    scale.Data = eg;
-                }
-                else
-                {
-                    scale.StrokeStartLineCap = percentageRing.ScaleStartCap;
-                    scale.StrokeEndLineCap = percentageRing.ScaleEndCap;
-
-                    // Draw arc.
-                    var pg = new PathGeometry();
-                    var pf = new PathFigure { IsClosed = false };
-                    var middleOfScale = Radius - (percentageRing.ScaleWidth / 2);
-                    pf.StartPoint = percentageRing.ScalePoint(percentageRing.NormalizedMinAngle, middleOfScale);
-                    var seg = new ArcSegment
-                    {
-                        SweepDirection = SweepDirection.Clockwise,
-                        IsLargeArc = percentageRing.NormalizedMaxAngle > (percentageRing.NormalizedMinAngle + 180),
-                        Size = new Size(middleOfScale, middleOfScale),
-                        Point = percentageRing.ScalePoint(percentageRing.NormalizedMaxAngle, middleOfScale),
-                    };
-
-                    pf.Segments.Add(seg);
-                    pg.Figures.Add(pf);
-                    scale.Data = pg;
-                }
+                percentageRing.Value = percentageRing.RoundToMultiple(percentageRing.Value, percentageRing.StepSize);
             }
 
-            OnValueChanged(percentageRing);
-        }
+            double middleOfScale = Radius - (percentageRing.ScaleWidth / 2);
+            TextBlock valueText = percentageRing.GetTemplateChild(ValueTextPartName) as TextBlock;
+            percentageRing.ValueAngle = percentageRing.ValueToAngle(percentageRing.Value);
 
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            OnValueChanged(d);
-        }
-
-        private static void OnValueChanged(DependencyObject d)
-        {
-            var percentageRing = (RadialSlider)d;
-            if (!double.IsNaN(percentageRing.Value))
+            // Trail
+            Path trail = percentageRing.GetTemplateChild(TrailPartName) as Path;
+            if (trail != null)
             {
-                if (percentageRing.StepSize > 0)
+                if (percentageRing.ValueAngle > percentageRing.NormalizedMinAngle)
                 {
-                    percentageRing.Value = percentageRing.RoundToMultiple(percentageRing.Value, percentageRing.StepSize);
-                }
+                    trail.Visibility = Visibility.Visible;
 
-                double middleOfScale = Radius - (percentageRing.ScaleWidth / 2);
-                TextBlock valueText = percentageRing.GetTemplateChild(ValueTextPartName) as TextBlock;
-                percentageRing.ValueAngle = percentageRing.ValueToAngle(percentageRing.Value);
-
-                // Trail
-                Path trail = percentageRing.GetTemplateChild(TrailPartName) as Path;
-                if (trail != null)
-                {
-                    if (percentageRing.ValueAngle > percentageRing.NormalizedMinAngle)
+                    if (percentageRing.ValueAngle - percentageRing.NormalizedMinAngle == 360)
                     {
-                        trail.Visibility = Visibility.Visible;
-
-                        if (percentageRing.ValueAngle - percentageRing.NormalizedMinAngle == 360)
+                        // Draw full circle.
+                        EllipseGeometry eg = new EllipseGeometry
                         {
-                            // Draw full circle.
-                            EllipseGeometry eg = new EllipseGeometry
-                            {
-                                Center = new Point(Radius, Radius),
-                                RadiusX = Radius - (percentageRing.ScaleWidth / 2),
-                            };
+                            Center = new Point(Radius, Radius),
+                            RadiusX = Radius - (percentageRing.ScaleWidth / 2),
+                        };
 
-                            eg.RadiusY = eg.RadiusX;
-                            trail.Data = eg;
-                        }
-                        else
-                        {
-                            trail.StrokeStartLineCap = percentageRing.TrailStartCap;
-                            trail.StrokeEndLineCap = percentageRing.TrailEndCap;
-
-                            // Draw arc.
-                            PathGeometry pg = new PathGeometry();
-                            PathFigure pf = new PathFigure
-                            {
-                                IsClosed = false,
-                                StartPoint = percentageRing.ScalePoint(percentageRing.NormalizedMinAngle, middleOfScale),
-                            };
-
-                            var seg = new ArcSegment
-                            {
-                                SweepDirection = SweepDirection.Clockwise,
-                                IsLargeArc = percentageRing.ValueAngle > 180 + percentageRing.NormalizedMinAngle,
-                                Size = new Size(middleOfScale, middleOfScale),
-                                Point =
-                                    percentageRing.ScalePoint(
-                                        Math.Min(percentageRing.ValueAngle, percentageRing.NormalizedMaxAngle), middleOfScale),
-                            };
-
-                            pf.Segments.Add(seg);
-                            pg.Figures.Add(pf);
-                            trail.Data = pg;
-                        }
+                        eg.RadiusY = eg.RadiusX;
+                        trail.Data = eg;
                     }
                     else
                     {
-                        trail.Visibility = Visibility.Collapsed;
+                        trail.StrokeStartLineCap = percentageRing.TrailStartCap;
+                        trail.StrokeEndLineCap = percentageRing.TrailEndCap;
+
+                        // Draw arc.
+                        PathGeometry pg = new PathGeometry();
+                        PathFigure pf = new PathFigure
+                        {
+                            IsClosed = false,
+                            StartPoint = percentageRing.ScalePoint(percentageRing.NormalizedMinAngle, middleOfScale),
+                        };
+
+                        var seg = new ArcSegment
+                        {
+                            SweepDirection = SweepDirection.Clockwise,
+                            IsLargeArc = percentageRing.ValueAngle > 180 + percentageRing.NormalizedMinAngle,
+                            Size = new Size(middleOfScale, middleOfScale),
+                            Point =
+                                percentageRing.ScalePoint(
+                                    Math.Min(percentageRing.ValueAngle, percentageRing.NormalizedMaxAngle), middleOfScale),
+                        };
+
+                        pf.Segments.Add(seg);
+                        pg.Figures.Add(pf);
+                        trail.Data = pg;
                     }
                 }
-
-                // Value Text
-                if (valueText != null)
+                else
                 {
-                    valueText.Text = percentageRing.Value.ToString(percentageRing.ValueStringFormat);
+                    trail.Visibility = Visibility.Collapsed;
                 }
             }
+
+            // Value Text
+            if (valueText != null)
+            {
+                valueText.Text = percentageRing.Value.ToString(percentageRing.ValueStringFormat);
+            }
         }
-        private void PercentageRingOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+    }
+    private void PercentageRingOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+    {
+        ValueChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void RadialSlider_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+    {
+        SetValueFromPoint(e.Position);
+    }
+
+    private void RadialSlider_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        SetValueFromPoint(e.GetPosition(this));
+        ValueChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private double RoundToMultiple(double number, double multiple)
+    {
+        double modulo = number % multiple;
+        if ((multiple - modulo) <= modulo)
         {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
+            modulo = multiple - modulo;
         }
-
-        private void RadialSlider_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        else
         {
-            SetValueFromPoint(e.Position);
+            modulo *= -1;
         }
 
-        private void RadialSlider_Tapped(object sender, TappedRoutedEventArgs e)
+        return number + modulo;
+    }
+
+    private Point ScalePoint(double angle, double middleOfScale)
+    {
+        return new Point(Radius + (Math.Sin(Degrees2Radians * angle) * middleOfScale), Radius - (Math.Cos(Degrees2Radians * angle) * middleOfScale));
+    }
+
+    private void SetValueFromPoint(Point p)
+    {
+        Point pt = new Point(p.X - (ActualWidth / 2), -p.Y + (ActualHeight / 2));
+
+        double angle = Math.Atan2(pt.X, pt.Y) / Degrees2Radians;
+        double divider = Mod(NormalizedMaxAngle - NormalizedMinAngle, 360);
+        if (divider == 0)
         {
-            SetValueFromPoint(e.GetPosition(this));
-            ValueChanged?.Invoke(this, EventArgs.Empty);
+            divider = 360;
         }
 
-        private double RoundToMultiple(double number, double multiple)
+        double value = Minimum + ((Maximum - Minimum) * Mod(angle - NormalizedMinAngle, 360) / divider);
+        if (value < Minimum || value > Maximum)
         {
-            double modulo = number % multiple;
-            if ((multiple - modulo) <= modulo)
-            {
-                modulo = multiple - modulo;
-            }
-            else
-            {
-                modulo *= -1;
-            }
-
-            return number + modulo;
+            // Ignore positions outside the scale angle.
+            return;
         }
 
-        private Point ScalePoint(double angle, double middleOfScale)
+        Value = value;
+    }
+
+    private void UpdateNormalizedAngles()
+    {
+        double result = Mod(MinAngle, 360);
+
+        if (result >= 180)
         {
-            return new Point(Radius + (Math.Sin(Degrees2Radians * angle) * middleOfScale), Radius - (Math.Cos(Degrees2Radians * angle) * middleOfScale));
+            result = result - 360;
         }
 
-        private void SetValueFromPoint(Point p)
+        _normalizedMinAngle = result;
+
+        result = Mod(MaxAngle, 360);
+
+        if (result < 180)
         {
-            Point pt = new Point(p.X - (ActualWidth / 2), -p.Y + (ActualHeight / 2));
-
-            double angle = Math.Atan2(pt.X, pt.Y) / Degrees2Radians;
-            double divider = Mod(NormalizedMaxAngle - NormalizedMinAngle, 360);
-            if (divider == 0)
-            {
-                divider = 360;
-            }
-
-            double value = Minimum + ((Maximum - Minimum) * Mod(angle - NormalizedMinAngle, 360) / divider);
-            if (value < Minimum || value > Maximum)
-            {
-                // Ignore positions outside the scale angle.
-                return;
-            }
-
-            Value = value;
+            result = result + 360;
         }
 
-        private void UpdateNormalizedAngles()
+        if (result > NormalizedMinAngle + 360)
         {
-            double result = Mod(MinAngle, 360);
-
-            if (result >= 180)
-            {
-                result = result - 360;
-            }
-
-            _normalizedMinAngle = result;
-
-            result = Mod(MaxAngle, 360);
-
-            if (result < 180)
-            {
-                result = result + 360;
-            }
-
-            if (result > NormalizedMinAngle + 360)
-            {
-                result = result - 360;
-            }
-
-            _normalizedMaxAngle = result;
+            result = result - 360;
         }
 
-        private double ValueToAngle(double value)
+        _normalizedMaxAngle = result;
+    }
+
+    private double ValueToAngle(double value)
+    {
+        if (this.Minimum == this.Maximum)
         {
-            if (this.Minimum == this.Maximum)
-            {
-                Minimum = 0;
-                Maximum = 100;
-            }
-
-            // Off-scale on the left.
-            if (value < Minimum)
-            {
-                return MinAngle;
-            }
-
-            // Off-scale on the right.
-            if (value > Maximum)
-            {
-                return MaxAngle;
-            }
-
-            return ((value - Minimum) / (Maximum - Minimum) * (NormalizedMaxAngle - NormalizedMinAngle)) + NormalizedMinAngle;
+            Minimum = 0;
+            Maximum = 100;
         }
+
+        // Off-scale on the left.
+        if (value < Minimum)
+        {
+            return MinAngle;
+        }
+
+        // Off-scale on the right.
+        if (value > Maximum)
+        {
+            return MaxAngle;
+        }
+
+        return ((value - Minimum) / (Maximum - Minimum) * (NormalizedMaxAngle - NormalizedMinAngle)) + NormalizedMinAngle;
     }
 }

@@ -1,18 +1,17 @@
-namespace openHAB.Core.Client.Connection.Models
+namespace openHAB.Core.Client.Connection.Models;
+
+/// <summary>
+/// Defines the connection type to a local or remote openHAB instance.
+/// </summary>
+public enum HttpClientType
 {
     /// <summary>
-    /// Defines the connection type to a local or remote openHAB instance.
+    /// Local openHab http connection.
     /// </summary>
-    public enum HttpClientType
-    {
-        /// <summary>
-        /// Local openHab http connection.
-        /// </summary>
-        Local,
+    Local,
 
-        /// <summary>
-        /// Remote openHab http connection.
-        /// </summary>
-        Remote,
-    }
+    /// <summary>
+    /// Remote openHab http connection.
+    /// </summary>
+    Remote,
 }

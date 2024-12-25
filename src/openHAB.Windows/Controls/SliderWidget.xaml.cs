@@ -1,71 +1,70 @@
-using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using System;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHAB slider.
+/// </summary>
+public sealed partial class SliderWidget : WidgetBase
 {
     /// <summary>
-    /// Widget control that represents an OpenHAB slider.
+    /// Initializes a new instance of the <see cref="SliderWidget"/> class.
     /// </summary>
-    public sealed partial class SliderWidget : WidgetBase
+    public SliderWidget()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SliderWidget"/> class.
-        /// </summary>
-        public SliderWidget()
+        InitializeComponent();
+    }
+
+    private void RadialSlider_OnValueChanged(object sender, EventArgs e)
+    {
+        if (Widget == null)
         {
-            InitializeComponent();
+            return;
         }
 
-        private void RadialSlider_OnValueChanged(object sender, EventArgs e)
-        {
-            if (Widget == null)
-            {
-                return;
-            }
+        Widget.Item.UpdateValue(((RadialSlider)sender)?.Value);
+        RaisePropertyChanged(nameof(Widget));
+    }
 
-            Widget.Item.UpdateValue(((RadialSlider)sender)?.Value);
-            RaisePropertyChanged(nameof(Widget));
+    private void Widget_OnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        double maxval = Widget.MaxValue;
+        double minval = Widget.MinValue;
+        if (maxval == minval)
+        {
+            // use default
+            maxval = 100;
+            minval = 0;
         }
 
-        private void Widget_OnTapped(object sender, TappedRoutedEventArgs e)
+        if (Widget.Item.GetStateAsDoubleValue() <= minval)
         {
-            double maxval = Widget.MaxValue;
-            double minval = Widget.MinValue;
-            if (maxval == minval)
-            {
-                // use default
-                maxval = 100;
-                minval = 0;
-            }
-
-            if (Widget.Item.GetStateAsDoubleValue() <= minval)
-            {
-                Widget.Item.UpdateValue(maxval);
-            }
-            else
-            {
-                Widget.Item.UpdateValue(minval);
-            }
-
-            RaisePropertyChanged(nameof(Widget));
+            Widget.Item.UpdateValue(maxval);
+        }
+        else
+        {
+            Widget.Item.UpdateValue(minval);
         }
 
-        internal override void SetState()
+        RaisePropertyChanged(nameof(Widget));
+    }
+
+    internal override void SetState()
+    {
+    }
+
+    private void SliderWidget_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (Widget.MaxValue != 0)
         {
+            radialSlider.Maximum = Widget.MaxValue;
         }
 
-        private void SliderWidget_Loaded(object sender, RoutedEventArgs e)
+        if (Widget.MinValue != 0)
         {
-            if (Widget.MaxValue != 0)
-            {
-                radialSlider.Maximum = Widget.MaxValue;
-            }
-
-            if (Widget.MinValue != 0)
-            {
-                radialSlider.Minimum = Widget.MinValue;
-            }
+            radialSlider.Minimum = Widget.MinValue;
         }
     }
 }

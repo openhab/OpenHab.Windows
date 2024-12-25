@@ -1,167 +1,208 @@
-using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using openHAB.Core.Client.Models;
 using openHAB.Core.Common;
 using openHAB.Core.Model;
 using openHAB.Windows.ViewModel;
+using System.Linq;
 
-namespace openHAB.Windows.Converters
+namespace openHAB.Windows.Converters;
+
+/// <summary>
+/// TemplateSelector that determines what widget needs to be shown in the UI.
+/// </summary>
+public class WidgetTemplateSelector : DataTemplateSelector
 {
-    /// <summary>
-    /// TemplateSelector that determines what widget needs to be shown in the UI.
-    /// </summary>
-    public class WidgetTemplateSelector : DataTemplateSelector
+    /// <inheritdoc/>
+    protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
     {
-        /// <inheritdoc/>
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        WidgetViewModel widget = item as WidgetViewModel;
+        UIElement uiElement = container as UIElement;
+
+        if (widget == null)
         {
-            WidgetViewModel widget = item as WidgetViewModel;
-            UIElement uiElement = container as UIElement;
-
-            if (widget == null)
-            {
-                return null;
-            }
-
-            WidgetTypeEnum itemType = GetItemViewType(widget);
-            switch (itemType)
-            {
-                case WidgetTypeEnum.ColorPicker:
-                    return ColorTemplate;
-                case WidgetTypeEnum.Group:
-                    return PageLinkTemplate;
-                case WidgetTypeEnum.Frame:
-                    VariableSizedWrapGrid.SetRowSpan(uiElement, widget.Children.Count + 1);
-                    return FrameTemplate;
-                case WidgetTypeEnum.Switch:
-                    return SwitchTemplate;
-                case WidgetTypeEnum.SectionSwitch:
-                    return SectionSwitchTemplate;
-                case WidgetTypeEnum.RollerShutter:
-                    return RollershutterTemplate;
-                case WidgetTypeEnum.Slider:
-                    return SliderTemplate;
-                case WidgetTypeEnum.DateTime:
-                case WidgetTypeEnum.Text:
-                    return TextTemplate;
-                case WidgetTypeEnum.Image:
-                    return ImageTemplate;
-                case WidgetTypeEnum.Selection:
-                    return SelectionTemplate;
-                case WidgetTypeEnum.Setpoint:
-                    return SetpointTemplate;
-                case WidgetTypeEnum.Chart:
-                    return ChartTemplate;
-                case WidgetTypeEnum.Video:
-                case WidgetTypeEnum.VideoMjpeg:
-                    return MjpegTemplate;
-                case WidgetTypeEnum.Mapview:
-                    return MapViewTemplate;
-                case WidgetTypeEnum.Webview:
-                    return WebViewTemplate;
-                default:
-                    return FrameTemplate;
-            }
+            return null;
         }
 
-        /// <summary>
-        /// Gets or sets the template for a Frame control.
-        /// </summary>
-        public DataTemplate FrameTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Selection control.
-        /// </summary>
-        public DataTemplate SelectionTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a MJPEG video control.
-        /// </summary>
-        public DataTemplate MjpegTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a rollershutter control.
-        /// </summary>
-        public DataTemplate RollershutterTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Pagelink control.
-        /// </summary>
-        public DataTemplate PageLinkTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Switch control.
-        /// </summary>
-        public DataTemplate SwitchTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Slider control.
-        /// </summary>
-        public DataTemplate SliderTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Text control.
-        /// </summary>
-        public DataTemplate TextTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a Image control.
-        /// </summary>
-        public DataTemplate ImageTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a section switch control.
-        /// </summary>
-        public DataTemplate SectionSwitchTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a color picker control.
-        /// </summary>
-        public DataTemplate ColorTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a setpoint control.
-        /// </summary>
-        public DataTemplate SetpointTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a chart control.
-        /// </summary>
-        public DataTemplate ChartTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a map view control.
-        /// </summary>
-        public DataTemplate MapViewTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the template for a web view control.
-        /// </summary>
-        public DataTemplate WebViewTemplate { get; set; }
-
-        private WidgetTypeEnum GetItemViewType(WidgetViewModel widget)
+        WidgetTypeEnum itemType = GetItemViewType(widget);
+        switch (itemType)
         {
-            if (widget.Type.Equals("Switch"))
+            case WidgetTypeEnum.ColorPicker:
+                return ColorTemplate;
+            case WidgetTypeEnum.Group:
+                return PageLinkTemplate;
+            case WidgetTypeEnum.Frame:
+                VariableSizedWrapGrid.SetRowSpan(uiElement, widget.Children.Count + 1);
+                return FrameTemplate;
+            case WidgetTypeEnum.Switch:
+                return SwitchTemplate;
+            case WidgetTypeEnum.SectionSwitch:
+                return SectionSwitchTemplate;
+            case WidgetTypeEnum.RollerShutter:
+                return RollershutterTemplate;
+            case WidgetTypeEnum.Slider:
+                return SliderTemplate;
+            case WidgetTypeEnum.DateTime:
+            case WidgetTypeEnum.Text:
+                return TextTemplate;
+            case WidgetTypeEnum.Image:
+                return ImageTemplate;
+            case WidgetTypeEnum.Selection:
+                return SelectionTemplate;
+            case WidgetTypeEnum.Setpoint:
+                return SetpointTemplate;
+            case WidgetTypeEnum.Chart:
+                return ChartTemplate;
+            case WidgetTypeEnum.Video:
+            case WidgetTypeEnum.VideoMjpeg:
+                return MjpegTemplate;
+            case WidgetTypeEnum.Mapview:
+                return MapViewTemplate;
+            case WidgetTypeEnum.Webview:
+                return WebViewTemplate;
+            default:
+                return FrameTemplate;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Frame control.
+    /// </summary>
+    public DataTemplate FrameTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Selection control.
+    /// </summary>
+    public DataTemplate SelectionTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a MJPEG video control.
+    /// </summary>
+    public DataTemplate MjpegTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a rollershutter control.
+    /// </summary>
+    public DataTemplate RollershutterTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Pagelink control.
+    /// </summary>
+    public DataTemplate PageLinkTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Switch control.
+    /// </summary>
+    public DataTemplate SwitchTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Slider control.
+    /// </summary>
+    public DataTemplate SliderTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Text control.
+    /// </summary>
+    public DataTemplate TextTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a Image control.
+    /// </summary>
+    public DataTemplate ImageTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a section switch control.
+    /// </summary>
+    public DataTemplate SectionSwitchTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a color picker control.
+    /// </summary>
+    public DataTemplate ColorTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a setpoint control.
+    /// </summary>
+    public DataTemplate SetpointTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a chart control.
+    /// </summary>
+    public DataTemplate ChartTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a map view control.
+    /// </summary>
+    public DataTemplate MapViewTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the template for a web view control.
+    /// </summary>
+    public DataTemplate WebViewTemplate
+    {
+        get; set;
+    }
+
+    private WidgetTypeEnum GetItemViewType(WidgetViewModel widget)
+    {
+        if (widget.Type.Equals("Switch"))
+        {
+            if (widget.Mappings != null && widget.Mappings.Any())
             {
-                if (widget.Mappings != null && widget.Mappings.Any())
-                {
-                    return WidgetTypeEnum.SectionSwitch;
-                }
+                return WidgetTypeEnum.SectionSwitch;
+            }
 
-                if (widget.Item != null)
+            if (widget.Item != null)
+            {
+                if (widget.Item.Type != null)
                 {
-                    if (widget.Item.Type != null)
+                    // RollerShutterItem changed to RollerShutter in later builds of OH2
+                    if ("RollershutterItem".Equals(widget.Item.Type) ||
+                        "Rollershutter".Equals(widget.Item.Type) ||
+                        "Rollershutter".Equals(widget.Item.GroupType))
                     {
-                        // RollerShutterItem changed to RollerShutter in later builds of OH2
-                        if ("RollershutterItem".Equals(widget.Item.Type) ||
-                            "Rollershutter".Equals(widget.Item.Type) ||
-                            "Rollershutter".Equals(widget.Item.GroupType))
-                        {
-                            return WidgetTypeEnum.RollerShutter;
-                        }
-
-                        return WidgetTypeEnum.Switch;
+                        return WidgetTypeEnum.RollerShutter;
                     }
 
                     return WidgetTypeEnum.Switch;
@@ -170,29 +211,31 @@ namespace openHAB.Windows.Converters
                 return WidgetTypeEnum.Switch;
             }
 
-            if (widget.Type.Equals("Video"))
-            {
-                if (widget.Encoding != null)
-                {
-                    if (widget.Encoding.Equals("mjpeg"))
-                    {
-                        return WidgetTypeEnum.VideoMjpeg;
-                    }
+            return WidgetTypeEnum.Switch;
+        }
 
-                    return WidgetTypeEnum.Video;
+        if (widget.Type.Equals("Video"))
+        {
+            if (widget.Encoding != null)
+            {
+                if (widget.Encoding.Equals("mjpeg"))
+                {
+                    return WidgetTypeEnum.VideoMjpeg;
                 }
 
                 return WidgetTypeEnum.Video;
             }
 
-            try
-            {
-                return Enum<WidgetTypeEnum>.Parse(widget.Type);
-            }
-            catch (System.Exception ex)
-            {
-                return WidgetTypeEnum.Generic;
-            }
+            return WidgetTypeEnum.Video;
+        }
+
+        try
+        {
+            return Enum<WidgetTypeEnum>.Parse(widget.Type);
+        }
+        catch (System.Exception)
+        {
+            return WidgetTypeEnum.Generic;
         }
     }
 }

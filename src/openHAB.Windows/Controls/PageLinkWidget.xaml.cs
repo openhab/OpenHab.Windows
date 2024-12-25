@@ -1,20 +1,19 @@
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHAB switch.
+/// </summary>
+public sealed partial class PageLinkWidget : WidgetBase
 {
     /// <summary>
-    /// Widget control that represents an OpenHAB switch.
+    /// Initializes a new instance of the <see cref="PageLinkWidget"/> class.
     /// </summary>
-    public sealed partial class PageLinkWidget : WidgetBase
+    public PageLinkWidget()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PageLinkWidget"/> class.
-        /// </summary>
-        public PageLinkWidget()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        internal override void SetState()
-        {
-        }
+    internal override void SetState()
+    {
     }
 }

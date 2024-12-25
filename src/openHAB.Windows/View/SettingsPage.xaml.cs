@@ -1,164 +1,161 @@
-using System;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using openHAB.Common;
-using openHAB.Core;
 using openHAB.Core.Messages;
 using openHAB.Core.Services.Contracts;
 using openHAB.Windows.Controls;
 using openHAB.Windows.ViewModel;
+using System;
 
-namespace openHAB.Windows.View
+namespace openHAB.Windows.View;
+
+/// <summary>
+/// In this page users can set their connection to the OpenHAB server.
+/// </summary>
+public sealed partial class SettingsPage : Page
 {
+    private readonly IAppManager _appManager;
+    private readonly ILogger<SettingsPage> _logger;
+    private readonly SettingsViewModel _settingsViewModel;
+
     /// <summary>
-    /// In this page users can set their connection to the OpenHAB server.
+    /// Initializes a new instance of the <see cref="SettingsPage"/> class.
     /// </summary>
-    public sealed partial class SettingsPage : Page
+    public SettingsPage()
     {
-        private IAppManager _appManager;
-        private ILogger<SettingsPage> _logger;
-        private SettingsViewModel _settingsViewModel;
+        InitializeComponent();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsPage"/> class.
-        /// </summary>
-        public SettingsPage()
-        {
-            InitializeComponent();
+        _settingsViewModel = Program.Host.Services.GetRequiredService<SettingsViewModel>();
+        _logger = Program.Host.Services.GetRequiredService<ILogger<SettingsPage>>();
+        _appManager = Program.Host.Services.GetRequiredService<IAppManager>();
 
-            _settingsViewModel = Program.Host.Services.GetRequiredService<SettingsViewModel>();
-            _logger = Program.Host.Services.GetRequiredService<ILogger<SettingsPage>>();
-            _appManager = Program.Host.Services.GetRequiredService<IAppManager>();
+        DataContext = _settingsViewModel;
+    }
 
-            DataContext = _settingsViewModel;
-        }
+    #region Page Navigation
 
-        #region Page Navigation
+    /// <inheritdoc/>
+    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    {
+        StrongReferenceMessenger.Default.Register<SettingsUpdatedMessage>(this, (recipient, msg) => HandleSettingsUpdate(recipient, msg));
+        StrongReferenceMessenger.Default.Register<SettingsValidationMessage>(this, (recipient, msg) => NotificationSettingsValidation(recipient, msg));
 
-        /// <inheritdoc/>
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            StrongReferenceMessenger.Default.Register<SettingsUpdatedMessage>(this, (recipient, msg) => HandleSettingsUpdate(recipient, msg));
-            StrongReferenceMessenger.Default.Register<SettingsValidationMessage>(this, (recipient, msg) => NotificationSettingsValidation(recipient, msg));
+        AppAutostartSwitch.Toggled += AppAutostartSwitch_Toggled;
+    }
 
-            AppAutostartSwitch.Toggled += AppAutostartSwitch_Toggled;
-        }
+    /// <inheritdoc/>
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        StrongReferenceMessenger.Default.Unregister<SettingsUpdatedMessage>(this);
+        StrongReferenceMessenger.Default.Unregister<SettingsValidationMessage>(this);
 
-        /// <inheritdoc/>
-        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            StrongReferenceMessenger.Default.Unregister<SettingsUpdatedMessage>(this);
-            StrongReferenceMessenger.Default.Unregister<SettingsValidationMessage>(this);
+        AppAutostartSwitch.Toggled -= AppAutostartSwitch_Toggled;
+    }
 
-            AppAutostartSwitch.Toggled -= AppAutostartSwitch_Toggled;
-        }
+    #endregion
 
-        #endregion
+    /// <summary>
+    /// Gets the datacontext, for use in compiled bindings.
+    /// </summary>
+    public SettingsViewModel Vm => DataContext as SettingsViewModel;
 
-        /// <summary>
-        /// Gets the datacontext, for use in compiled bindings.
-        /// </summary>
-        public SettingsViewModel Vm => DataContext as SettingsViewModel;
+    private static ConnectionDialog CreateConnectionDialog()
+    {
+        ConnectionDialog connectionDialog = new ConnectionDialog();
+        connectionDialog.DefaultButton = ContentDialogButton.Primary;
 
-        private static ConnectionDialog CreateConnectionDialog()
-        {
-            ConnectionDialog connectionDialog = new ConnectionDialog();
-            connectionDialog.DefaultButton = ContentDialogButton.Primary;
-
-            return connectionDialog;
-        }
+        return connectionDialog;
+    }
 
 
 #pragma warning disable S1172 // Unused method parameters should be removed
-        private void HandleSettingsUpdate(object recipient, SettingsUpdatedMessage msg)
+    private void HandleSettingsUpdate(object recipient, SettingsUpdatedMessage msg)
 #pragma warning restore S1172 // Unused method parameters should be removed
+    {
+        try
         {
-            try
+            if (msg.IsSettingsValid && msg.SettingsPersisted)
             {
-                if (msg.IsSettingsValid && msg.SettingsPersisted)
-                {
-                    Frame.BackStack.Clear();
-                    Frame.Navigate(typeof(MainPage));
+                Frame.BackStack.Clear();
+                Frame.Navigate(typeof(MainPage));
 
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Show info message failed.");
+                return;
             }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Show info message failed.");
+        }
+    }
 
 #pragma warning disable S1172 // Unused method parameters should be removed
-        private void NotificationSettingsValidation(object recipient, SettingsValidationMessage msg)
+    private void NotificationSettingsValidation(object recipient, SettingsValidationMessage msg)
 #pragma warning restore S1172 // Unused method parameters should be removed
+    {
+        try
         {
-            try
+            if (!msg.IsSettingsValid)
             {
-                if (!msg.IsSettingsValid)
-                {
-                    string message = AppResources.Values.GetString("MessageSettingsConnectionConfigInvalid");
+                string message = AppResources.Values.GetString("MessageSettingsConnectionConfigInvalid");
 
-                    SettingsNotification.Message = message;
-                    SettingsNotification.IsOpen = true;
-                }
-                else
-                {
-                    SettingsNotification.IsOpen = false;
-                }
+                SettingsNotification.Message = message;
+                SettingsNotification.IsOpen = true;
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Show info message failed.");
+                SettingsNotification.IsOpen = false;
             }
         }
-
-        private async void OpenLocalConnectionButton_Click(object sender, RoutedEventArgs e)
+        catch (Exception ex)
         {
-            ConnectionDialog connectionDialog = CreateConnectionDialog();
-            connectionDialog.DataContext = Vm.Settings.LocalConnection;
-
-            /*TODO: Remove workaround when fix available
-            https://github.com/microsoft/microsoft-ui-xaml/issues/2504 */
-            connectionDialog.XamlRoot = this.Content.XamlRoot;
-
-            await connectionDialog.ShowAsync();
+            _logger.LogError(ex, "Show info message failed.");
         }
+    }
 
-        private async void OpenRemoteConnectionButton_Click(object sender, RoutedEventArgs e)
+    private async void OpenLocalConnectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        ConnectionDialog connectionDialog = CreateConnectionDialog();
+        connectionDialog.DataContext = Vm.Settings.LocalConnection;
+
+        /*TODO: Remove workaround when fix available
+        https://github.com/microsoft/microsoft-ui-xaml/issues/2504 */
+        connectionDialog.XamlRoot = this.Content.XamlRoot;
+
+        await connectionDialog.ShowAsync();
+    }
+
+    private async void OpenRemoteConnectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        ConnectionDialog connectionDialog = CreateConnectionDialog();
+        connectionDialog.DataContext = Vm.Settings.RemoteConnection;
+
+        /*TODO: Remove workaround when fix available
+        https://github.com/microsoft/microsoft-ui-xaml/issues/2504 */
+        connectionDialog.XamlRoot = this.Content.XamlRoot;
+
+        await connectionDialog.ShowAsync();
+    }
+
+    private async void AppAutostartSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        ToggleSwitch toggleSwitch = (ToggleSwitch)e.OriginalSource;
+
+        bool toggleIsOn = toggleSwitch.IsOn;
+        var autostartEnabled = await _appManager.IsStartupEnabled().ConfigureAwait(false);
+
+        await App.DispatcherQueue.EnqueueAsync(async () =>
         {
-            ConnectionDialog connectionDialog = CreateConnectionDialog();
-            connectionDialog.DataContext = Vm.Settings.RemoteConnection;
-
-            /*TODO: Remove workaround when fix available
-            https://github.com/microsoft/microsoft-ui-xaml/issues/2504 */
-            connectionDialog.XamlRoot = this.Content.XamlRoot;
-
-            await connectionDialog.ShowAsync();
-        }
-
-        private async void AppAutostartSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            ToggleSwitch toggleSwitch = (ToggleSwitch)e.OriginalSource;
-
-            bool toggleIsOn = toggleSwitch.IsOn;
-            var autostartEnabled = await _appManager.IsStartupEnabled().ConfigureAwait(false);
-
-            await App.DispatcherQueue.EnqueueAsync(async () =>
+            if (autostartEnabled != toggleIsOn)
             {
-                if (autostartEnabled != toggleIsOn)
-                {
-                    await _appManager.ToggleAutostart();
-                }
+                await _appManager.ToggleAutostart();
+            }
 
-                _settingsViewModel.Settings.IsAppAutostartEnabled = toggleIsOn;
-            });
-        }
+            _settingsViewModel.Settings.IsAppAutostartEnabled = toggleIsOn;
+        });
     }
 }

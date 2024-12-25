@@ -1,46 +1,44 @@
-using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.ApplicationModel.Resources;
 
-namespace openHAB.Common
+namespace openHAB.Common;
+
+/// <summary>
+///   Resources.
+/// </summary>
+public static class AppResources
 {
+    private static ResourceLoader _resourceLoader;
+    private static ResourceLoader _errorResourceLoader;
+
     /// <summary>
-    ///   Resources.
+    ///   Gets the localized UI values.
     /// </summary>
-    public static class AppResources
+    public static ResourceLoader Values
     {
-        private static ResourceLoader _resourceLoader;
-        private static ResourceLoader _errorResourceLoader;
-
-        /// <summary>
-        ///   Gets the localized UI values.
-        /// </summary>
-        public static ResourceLoader Values
+        get
         {
-            get
+            if (_resourceLoader == null)
             {
-                if (_resourceLoader == null)
-                {
-                    _resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
-                }
-
-                return _resourceLoader;
+                _resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
             }
+
+            return _resourceLoader;
         }
+    }
 
-        /// <summary>
-        ///   Gets the localized error strings.
-        /// </summary>
-        public static ResourceLoader Errors
+    /// <summary>
+    ///   Gets the localized error strings.
+    /// </summary>
+    public static ResourceLoader Errors
+    {
+        get
         {
-            get
+            if (_errorResourceLoader == null)
             {
-                if (_errorResourceLoader == null)
-                {
-                    _errorResourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
-                }
-
-                return _errorResourceLoader;
+                _errorResourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath());
             }
+
+            return _errorResourceLoader;
         }
     }
 }

@@ -1,39 +1,38 @@
-using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using System;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHab WebView.
+/// </summary>
+public sealed partial class WebViewWidget : WidgetBase
 {
     /// <summary>
-    /// Widget control that represents an OpenHab WebView.
+    /// Initializes a new instance of the <see cref="WebViewWidget"/> class.
     /// </summary>
-    public sealed partial class WebViewWidget : WidgetBase
+    public WebViewWidget()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WebViewWidget"/> class.
-        /// </summary>
-        public WebViewWidget()
-        {
-            this.InitializeComponent();
-            Loaded += OnLoaded;
-        }
+        this.InitializeComponent();
+        Loaded += OnLoaded;
+    }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            SetState();
-        }
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SetState();
+    }
 
-        private async void OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            await PopupDialog.ShowAsync();
-        }
+    private async void OnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        await PopupDialog.ShowAsync();
+    }
 
-        internal override void SetState()
+    internal override void SetState()
+    {
+        if (!string.IsNullOrEmpty(Widget?.Url))
         {
-            if (!string.IsNullOrEmpty(Widget?.Url))
-            {
-                WebView.Source = WebViewFull.Source = new Uri(Widget.Url);
-            }
+            WebView.Source = WebViewFull.Source = new Uri(Widget.Url);
         }
     }
 }

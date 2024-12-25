@@ -1,23 +1,22 @@
-namespace openHAB.Core.Client.Connection.Models
+namespace openHAB.Core.Client.Connection.Models;
+
+/// <summary>
+/// Reflects the State for an connection.
+/// </summary>
+public enum ConnectionState
 {
     /// <summary>
-    /// Reflects the State for an connection.
+    /// OpenHAB instance is reachable via url
     /// </summary>
-    public enum ConnectionState
-    {
-        /// <summary>
-        /// OpenHAB instance is reachable via url
-        /// </summary>
-        OK,
+    OK,
 
-        /// <summary>
-        /// OpenHAB instance can not reach via check url
-        /// </summary>
-        Failed,
+    /// <summary>
+    /// OpenHAB instance can not reach via check url
+    /// </summary>
+    Failed,
 
-        /// <summary>
-        /// State is unknown
-        /// </summary>
-        Unknown,
-    }
+    /// <summary>
+    /// State is unknown
+    /// </summary>
+    Unknown,
 }

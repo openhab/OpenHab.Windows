@@ -5,103 +5,102 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Text.RegularExpressions;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Control that represents an image with a label.
+/// </summary>
+public sealed partial class ImageLabel : UserControl
 {
     /// <summary>
-    /// Control that represents an image with a label.
+    /// Initializes a new instance of the <see cref="ImageLabel"/> class.
     /// </summary>
-    public sealed partial class ImageLabel : UserControl
+    public ImageLabel()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageLabel"/> class.
-        /// </summary>
-        public ImageLabel()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        /// <summary>
-        /// Bindable property for the control icon.
-        /// </summary>
-        public static readonly DependencyProperty IconPathProperty = DependencyProperty.Register(
-            "IconPath", typeof(string), typeof(ImageLabel), new PropertyMetadata(default(string), IconChangedCallback));
+    /// <summary>
+    /// Bindable property for the control icon.
+    /// </summary>
+    public static readonly DependencyProperty IconPathProperty = DependencyProperty.Register(
+        "IconPath", typeof(string), typeof(ImageLabel), new PropertyMetadata(default(string), IconChangedCallback));
 
 #pragma warning disable S3168 // "async" methods should not return "void"
-        private static async void IconChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+    private static async void IconChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 #pragma warning restore S3168 // "async" methods should not return "void"
+    {
+        var control = (ImageLabel)dependencyObject;
+        if (control == null)
         {
-            var control = (ImageLabel)dependencyObject;
-            if (control == null)
-            {
-                return;
-            }
-
-            string iconPath = control.IconPath;
-            if (string.IsNullOrEmpty(iconPath))
-            {
-                return;
-            }
-
-            Match format = Regex.Match(iconPath, @".svg", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-            if (format.Success)
-            {
-                control.Icon.Source = new SvgImageSource(new Uri(iconPath));
-            }
-            else
-            {
-                control.Icon.Source = new BitmapImage(new Uri(iconPath));
-            }
+            return;
         }
 
-        /// <summary>
-        /// Gets or sets the IconPath.
-        /// </summary>
-        public string IconPath
+        string iconPath = control.IconPath;
+        if (string.IsNullOrEmpty(iconPath))
         {
-            get => (string)GetValue(IconPathProperty);
-            set => SetValue(IconPathProperty, value ?? string.Empty);
+            return;
         }
 
-        /// <summary>
-        /// Bindable property for the label.
-        /// </summary>
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-            "Text", typeof(string), typeof(ImageLabel), new PropertyMetadata(default(string), TextChangedCallback));
-
-        /// <summary>
-        /// Gets or sets the label.
-        /// </summary>
-        public string LabelText
+        Match format = Regex.Match(iconPath, @".svg", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+        if (format.Success)
         {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value ?? string.Empty);
+            control.Icon.Source = new SvgImageSource(new Uri(iconPath));
+        }
+        else
+        {
+            control.Icon.Source = new BitmapImage(new Uri(iconPath));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the IconPath.
+    /// </summary>
+    public string IconPath
+    {
+        get => (string)GetValue(IconPathProperty);
+        set => SetValue(IconPathProperty, value ?? string.Empty);
+    }
+
+    /// <summary>
+    /// Bindable property for the label.
+    /// </summary>
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+        "Text", typeof(string), typeof(ImageLabel), new PropertyMetadata(default(string), TextChangedCallback));
+
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    public string LabelText
+    {
+        get => (string)GetValue(TextProperty);
+        set => SetValue(TextProperty, value ?? string.Empty);
+    }
+
+    private static void TextChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+    {
+        var control = (ImageLabel)dependencyObject;
+
+        if (control == null)
+        {
+            return;
         }
 
-        private static void TextChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            var control = (ImageLabel)dependencyObject;
+        control.Label.Text = control.LabelText;
+    }
 
-            if (control == null)
-            {
-                return;
-            }
+    /// <summary>
+    /// The color for label text property.
+    /// </summary>
+    public static readonly DependencyProperty LabelForegroundProperty = DependencyProperty.Register(
+     nameof(LabelForeground), typeof(SolidColorBrush), typeof(WidgetBase), new PropertyMetadata(default(SolidColorBrush)));
 
-            control.Label.Text = control.LabelText;
-        }
-
-        /// <summary>
-        /// The color for label text property.
-        /// </summary>
-        public static readonly DependencyProperty LabelForegroundProperty = DependencyProperty.Register(
-         nameof(LabelForeground), typeof(SolidColorBrush), typeof(WidgetBase), new PropertyMetadata(default(SolidColorBrush)));
-
-        /// <summary>
-        /// Gets or sets the OpenHAB widget.
-        /// </summary>
-        public SolidColorBrush LabelForeground
-        {
-            get => (SolidColorBrush)GetValue(LabelForegroundProperty);
-            set => SetValue(LabelForegroundProperty, value);
-        }
+    /// <summary>
+    /// Gets or sets the OpenHAB widget.
+    /// </summary>
+    public SolidColorBrush LabelForeground
+    {
+        get => (SolidColorBrush)GetValue(LabelForegroundProperty);
+        set => SetValue(LabelForegroundProperty, value);
     }
 }

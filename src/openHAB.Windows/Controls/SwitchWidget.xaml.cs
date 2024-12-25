@@ -2,77 +2,75 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using openHAB.Core.Client.Messages;
-using openHAB.Core.Messages;
 using openHAB.Core.Model;
 
-namespace openHAB.Windows.Controls
+namespace openHAB.Windows.Controls;
+
+/// <summary>
+/// Widget control that represents an OpenHAB switch.
+/// </summary>
+public sealed partial class SwitchWidget : WidgetBase
 {
+    private bool _isOn;
+
     /// <summary>
-    /// Widget control that represents an OpenHAB switch.
+    /// Gets or sets a value indicating whether the switch is on or off.
     /// </summary>
-    public sealed partial class SwitchWidget : WidgetBase
+    public bool IsOn
     {
-        private bool _isOn;
+        get => _isOn;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the switch is on or off.
-        /// </summary>
-        public bool IsOn
+        set
         {
-            get => _isOn;
-
-            set
+            if (_isOn == value)
             {
-                if (_isOn == value)
-                {
-                    return;
-                }
-
-                _isOn = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwitchWidget"/> class.
-        /// </summary>
-        public SwitchWidget()
-        {
-            InitializeComponent();
-            Loaded += SwitchWidget_Loaded;
-        }
-
-        private void SwitchWidget_Loaded(object sender, RoutedEventArgs e)
-        {
-            SetState();
-        }
-
-        internal override void SetState()
-        {
-            // Fix for slider things with a switch item
-            if (Widget.Item.State != "ON" && Widget.Item.State != "OFF" && int.TryParse(Widget.Item.State, out int state))
-            {
-                IsOn = state > 0;
-            }
-            else
-            {
-                IsOn = Widget.Item.State == "ON";
+                return;
             }
 
-            VisualStateManager.GoToState(this, IsOn ? "OnState" : "OffState", false);
-            RaisePropertyChanged(nameof(Widget));
+            _isOn = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SwitchWidget"/> class.
+    /// </summary>
+    public SwitchWidget()
+    {
+        InitializeComponent();
+        Loaded += SwitchWidget_Loaded;
+    }
+
+    private void SwitchWidget_Loaded(object sender, RoutedEventArgs e)
+    {
+        SetState();
+    }
+
+    internal override void SetState()
+    {
+        // Fix for slider things with a switch item
+        if (Widget.Item.State != "ON" && Widget.Item.State != "OFF" && int.TryParse(Widget.Item.State, out int state))
+        {
+            IsOn = state > 0;
+        }
+        else
+        {
+            IsOn = Widget.Item.State == "ON";
         }
 
-        private void OnToggle()
-        {
-            IsOn = !IsOn;
-            StrongReferenceMessenger.Default.Send(new TriggerCommandMessage(Widget.Item, IsOn ? OpenHABCommands.OnCommand : OpenHABCommands.OffCommand));
-        }
+        VisualStateManager.GoToState(this, IsOn ? "OnState" : "OffState", false);
+        RaisePropertyChanged(nameof(Widget));
+    }
 
-        private void OnToggle(object sender, TappedRoutedEventArgs e)
-        {
-            OnToggle();
-            VisualStateManager.GoToState(this, ToggleStates.CurrentState == OnState ? "OffState" : "OnState", true);
-        }
+    private void OnToggle()
+    {
+        IsOn = !IsOn;
+        StrongReferenceMessenger.Default.Send(new TriggerCommandMessage(Widget.Item, IsOn ? OpenHABCommands.OnCommand : OpenHABCommands.OffCommand));
+    }
+
+    private void OnToggle(object sender, TappedRoutedEventArgs e)
+    {
+        OnToggle();
+        VisualStateManager.GoToState(this, ToggleStates.CurrentState == OnState ? "OffState" : "OnState", true);
     }
 }

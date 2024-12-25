@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Config;
@@ -10,18 +11,25 @@ using openHAB.Core.Client.Connection;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Event.Contracts;
+using openHAB.Core.Model;
 using openHAB.Core.Notification;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services;
 using openHAB.Core.Services.Contracts;
-using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
 using JsonAttribute = NLog.Layouts.JsonAttribute;
 
 namespace openHAB.Windows;
 
+/// <summary>
+/// Extension methods for configuring OpenHAB services.
+/// </summary>
 public static class AppServiceExtensions
 {
+    /// <summary>
+    /// Adds OpenHAB services to the specified IServiceCollection.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add services to.</param>
     public static void AddOpenHABServices(this IServiceCollection services)
     {
         services.AddLogging(loggingBuilder =>
@@ -52,6 +60,10 @@ public static class AppServiceExtensions
         services.AddSingleton<SitemapService>();
     }
 
+    /// <summary>
+    /// Adds OpenHAB view models to the specified IServiceCollection.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add view models to.</param>
     public static void AddOpenHABViewModels(this IServiceCollection services)
     {
         services.AddTransient<MainViewModel>();
@@ -61,6 +73,10 @@ public static class AppServiceExtensions
         services.AddTransient<MainUIViewModel>();
     }
 
+    /// <summary>
+    /// Adds views to the specified IServiceCollection.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add views to.</param>
     public static void AddViews(this IServiceCollection services)
     {
         services.AddSingleton<App>();
@@ -73,6 +89,16 @@ public static class AppServiceExtensions
         //services.AddTransient<SitemapPage>();
     }
 
+    /// <summary>
+    /// Adds configuration settings to the specified IServiceCollection.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add configuration settings to.</param>
+    /// <param name="configuration">The ConfigurationManager containing the configuration settings.</param>
+    public static void AddConfiguration(this IServiceCollection services, ConfigurationManager configuration)
+    {
+        IConfiguration config = configuration;
+        services.Configure<Settings>(config);
+    }
 
     private static LoggingConfiguration GetLoggingConfiguration()
     {
@@ -100,7 +126,7 @@ public static class AppServiceExtensions
         configuration.AddTarget(fileTarget);
         configuration.AddRuleForAllLevels(fileTarget);
 
-        string logsFolderPath = new AppPaths().LogsDirectory;
+        string logsFolderPath = AppPaths.LogsDirectory;
         configuration.Variables["LogPath"] = logsFolderPath;
 
         return configuration;

@@ -1,31 +1,30 @@
-using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
+using System;
 
-namespace openHAB.Windows.Converters
+namespace openHAB.Windows.Converters;
+
+/// <summary>
+/// Converts zero to visibility type (0 = Visibility.Visible, else Visibility.Collapsed).
+/// </summary>
+/// <seealso cref="IValueConverter" />
+public class ZeroToVisibilityConverter : IValueConverter
 {
-    /// <summary>
-    /// Converts zero to visibility type (0 = Visibility.Visible, else Visibility.Collapsed).
-    /// </summary>
-    /// <seealso cref="IValueConverter" />
-    public class ZeroToVisibilityConverter : IValueConverter
+    /// <inheritdoc/>
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-        /// <inheritdoc/>
-        public object Convert(object value, Type targetType, object parameter, string language)
+        if (value == null)
         {
-            if (value == null)
-            {
-                return Visibility.Visible;
-            }
-
-            int numberOfElements = (int)value;
-            return numberOfElements == 0 ? Visibility.Visible : Visibility.Collapsed;
+            return Visibility.Visible;
         }
 
-        /// <inheritdoc/>
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+        int numberOfElements = (int)value;
+        return numberOfElements == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    /// <inheritdoc/>
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }

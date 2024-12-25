@@ -1,18 +1,17 @@
-namespace openHAB.Core.Messages
+namespace openHAB.Core.Messages;
+
+/// <summary>
+/// Notification Message Type.
+/// </summary>
+public enum MessageType
 {
     /// <summary>
-    /// Notification Message Type.
+    /// Shows message that OpenHAB connection is not configured.
     /// </summary>
-    public enum MessageType
-    {
-        /// <summary>
-        /// Shows message that OpenHAB connection is not configured.
-        /// </summary>
-        NotConfigured,
+    NotConfigured,
 
-        /// <summary>
-        /// Shows message that OpenHAB instance is not configurable.
-        /// </summary>
-        NotReachable,
-    }
+    /// <summary>
+    /// Shows message that OpenHAB instance is not configurable.
+    /// </summary>
+    NotReachable,
 }

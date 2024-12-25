@@ -1,62 +1,61 @@
 using openHAB.Common;
 using openHAB.Core.Client.Connection.Contracts;
 
-namespace openHAB.Core.Client.Connection.Models
+namespace openHAB.Core.Client.Connection.Models;
+
+/// <summary>Connection profile for local default connection to OpenHab server.</summary>
+/// <seealso cref="IConnectionProfile" />
+public class DefaultConnectionProfile : IConnectionProfile
 {
-    /// <summary>Connection profile for local default connection to OpenHab server.</summary>
-    /// <seealso cref="IConnectionProfile" />
-    public class DefaultConnectionProfile : IConnectionProfile
+    /// <inheritdoc/>
+    public bool AllowHostUrlConfiguration
     {
-        /// <inheritdoc/>
-        public bool AllowHostUrlConfiguration
+        get => false;
+    }
+
+    /// <inheritdoc/>
+    public bool AllowIgnoreSSLCertificate
+    {
+        get => true;
+    }
+
+    /// <inheritdoc/>
+    public bool AllowIgnoreSSLHostname
+    {
+        get => true;
+    }
+
+    /// <inheritdoc/>
+    public int Id
+    {
+        get => 1;
+    }
+
+    /// <inheritdoc/>
+    public string Name
+    {
+        get => AppResources.Values.GetString("LocalDefaultConnection");
+    }
+
+    /// <inheritdoc/>
+    public HttpClientType Type
+    {
+        get => HttpClientType.Local;
+    }
+
+    public string Url => "https://openhab:8443";
+
+    public string MainUIUrl => Url;
+
+    /// <inheritdoc/>
+    public Connection CreateConnection()
+    {
+        return new Connection()
         {
-            get => false;
-        }
-
-        /// <inheritdoc/>
-        public bool AllowIgnoreSSLCertificate
-        {
-            get => true;
-        }
-
-        /// <inheritdoc/>
-        public bool AllowIgnoreSSLHostname
-        {
-            get => true;
-        }
-
-        /// <inheritdoc/>
-        public int Id
-        {
-            get => 1;
-        }
-
-        /// <inheritdoc/>
-        public string Name
-        {
-            get => AppResources.Values.GetString("LocalDefaultConnection");
-        }
-
-        /// <inheritdoc/>
-        public HttpClientType Type
-        {
-            get => HttpClientType.Local;
-        }
-
-        public string Url => "https://openhab:8443";
-
-        public string MainUIUrl => Url;
-
-        /// <inheritdoc/>
-        public Connection CreateConnection()
-        {
-            return new Connection()
-            {
-                Url = Url,
-                Type = Type,
-                WillIgnoreSSLCertificate = true,
-                WillIgnoreSSLHostname = true,
-            };
-        }
+            Url = Url,
+            Type = Type,
+            WillIgnoreSSLCertificate = true,
+            WillIgnoreSSLHostname = true,
+        };
     }
 }

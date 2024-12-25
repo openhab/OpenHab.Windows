@@ -1,23 +1,31 @@
-namespace openHAB.Core.Client.Event
+namespace openHAB.Core.Client.Event;
+
+/// <summary>
+/// Data coming from the eventstream.
+/// </summary>
+public class EventStreamData
 {
     /// <summary>
-    /// Data coming from the eventstream.
+    /// Gets or sets the topic on which the event was fired.
     /// </summary>
-    public class EventStreamData
+    public string Topic
     {
-        /// <summary>
-        /// Gets or sets the topic on which the event was fired.
-        /// </summary>
-        public string Topic { get; set; }
+        get; set;
+    }
 
-        /// <summary>
-        /// Gets or sets the payload of the event.
-        /// </summary>
-        public string Payload { get; set; }
+    /// <summary>
+    /// Gets or sets the payload of the event.
+    /// </summary>
+    public string Payload
+    {
+        get; set;
+    }
 
-        /// <summary>
-        /// Gets or sets the type of event.
-        /// </summary>
-        public string Type { get; set; }
+    /// <summary>
+    /// Gets or sets the type of event.
+    /// </summary>
+    public string Type
+    {
+        get; set;
     }
 }
