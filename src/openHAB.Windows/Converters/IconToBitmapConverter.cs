@@ -1,10 +1,10 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Model;
 using openHAB.Windows.ViewModel;
-using System;
 
 namespace openHAB.Windows.Converters;
 

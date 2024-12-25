@@ -1,5 +1,5 @@
-﻿using openHAB.Core.Client.Connection.Contracts;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using openHAB.Core.Client.Connection.Contracts;
 
 namespace openHAB.Core.Client.Connection.Models;
 

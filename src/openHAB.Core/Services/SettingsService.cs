@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
-using openHAB.Core.Model;
-using openHAB.Core.Services.Contracts;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using openHAB.Core.Model;
+using openHAB.Core.Services.Contracts;
 
 namespace openHAB.Core.Services;
 

@@ -1,6 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using openHAB.Core.Client.Messages;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +5,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using openHAB.Core.Client.Messages;
 
 namespace openHAB.Core.Client.Models;
 

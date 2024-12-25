@@ -1,3 +1,6 @@
+using System;
+using System.Globalization;
+using System.Web;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -7,9 +10,6 @@ using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Globalization;
-using System.Web;
 
 namespace openHAB.Core.Notification;
 

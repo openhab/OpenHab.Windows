@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
@@ -6,8 +8,6 @@ using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
-using System;
-using System.Threading.Tasks;
 using ConnectionState = openHAB.Core.Client.Connection.Models.ConnectionState;
 
 namespace openHAB.Windows.ViewModel;

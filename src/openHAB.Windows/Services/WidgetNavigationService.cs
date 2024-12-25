@@ -1,6 +1,6 @@
-using openHAB.Windows.ViewModel;
 using System.Collections.Generic;
 using System.Linq;
+using openHAB.Windows.ViewModel;
 
 namespace openHAB.Windows.Services;
 

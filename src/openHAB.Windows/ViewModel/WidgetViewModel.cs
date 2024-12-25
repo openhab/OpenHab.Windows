@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
@@ -7,10 +11,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Windows.UI;
 
 namespace openHAB.Windows.ViewModel;

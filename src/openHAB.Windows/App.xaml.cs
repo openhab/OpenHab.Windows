@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -6,7 +7,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
-using System;
 
 namespace openHAB.Windows;
 

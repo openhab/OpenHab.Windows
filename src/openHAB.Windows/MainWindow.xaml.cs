@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
@@ -14,8 +16,6 @@ using openHAB.Core.Messages;
 using openHAB.Windows.Messages;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
-using System;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 

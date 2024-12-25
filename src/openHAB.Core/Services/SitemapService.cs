@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using openHAB.Core.Client.Common;
@@ -8,10 +12,6 @@ using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace openHAB.Core.Services;
 

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -5,9 +8,6 @@ using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ConnectionState = openHAB.Core.Client.Connection.Models.ConnectionState;
 
 namespace openHAB.Windows.ViewModel;

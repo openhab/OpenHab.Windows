@@ -1,9 +1,9 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Client.Connection.Contracts;
-using System;
 
 namespace openHAB.Windows.Controls;
 

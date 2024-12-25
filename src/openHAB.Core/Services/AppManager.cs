@@ -1,11 +1,11 @@
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
-using System;
-using System.Globalization;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.System.UserProfile;
 

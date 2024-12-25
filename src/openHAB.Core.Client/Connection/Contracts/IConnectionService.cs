@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using openHAB.Core.Client.Common;
 using openHAB.Core.Client.Models;
-using System.Threading.Tasks;
 
 namespace openHAB.Core.Client.Connection.Contracts;
 

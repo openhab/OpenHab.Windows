@@ -1,3 +1,4 @@
+using System.Linq;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
@@ -6,7 +7,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
-using System.Linq;
 
 namespace openHAB.Windows.Controls;
 

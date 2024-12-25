@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using openHAB.Common;
@@ -9,11 +14,6 @@ using openHAB.Core.Messages;
 using openHAB.Core.Services;
 using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace openHAB.Windows.ViewModel;
 

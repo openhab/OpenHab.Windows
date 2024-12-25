@@ -1,5 +1,5 @@
-using openHAB.Core.Client.Connection.Contracts;
 using System.Text.Json.Serialization;
+using openHAB.Core.Client.Connection.Contracts;
 
 namespace openHAB.Core.Client.Connection.Models;
 

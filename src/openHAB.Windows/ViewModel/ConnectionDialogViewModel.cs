@@ -1,14 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using openHAB.Common;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Common;
 using openHAB.Core.Model;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
 
 namespace openHAB.Windows.ViewModel;
 

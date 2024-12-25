@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,6 @@ using openHAB.Core.Services;
 using openHAB.Windows.Messages;
 using openHAB.Windows.Services;
 using openHAB.Windows.ViewModel;
-using System;
 
 namespace openHAB.Windows.View;
 

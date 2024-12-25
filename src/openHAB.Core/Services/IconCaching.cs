@@ -1,3 +1,8 @@
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using openHAB.Core.Client;
@@ -7,11 +12,6 @@ using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
 using openHAB.Core.Services.Models;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace openHAB.Core.Services;
 

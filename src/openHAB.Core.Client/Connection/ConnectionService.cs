@@ -1,4 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Helpers;
 using Microsoft.Extensions.Logging;
 using openHAB.Common;
@@ -7,11 +12,6 @@ using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
-using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace openHAB.Core.Client.Connection;
 
