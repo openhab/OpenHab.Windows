@@ -139,7 +139,7 @@ public sealed partial class ColorMap : UserControl
             (float)colorMap.ellipse.ActualWidth / 2,
             (float)colorMap.ellipse.ActualHeight / 2);
 
-        Vector2 pos = ((hsl.Y / 2) * normalized * halfSize * new Vector2(1, -1)) + halfSize;
+        Vector2 pos = (hsl.Y / 2 * normalized * halfSize * new Vector2(1, -1)) + halfSize;
 
         colorMap._colorX = pos.X;
         colorMap._colorY = pos.Y;
@@ -199,7 +199,7 @@ public sealed partial class ColorMap : UserControl
         var sizeY = ellipse.ActualHeight;
         var x = _colorX / sizeX;
         var y = 1 - (_colorY / sizeY);
-        var intangle = Math.Abs((Math.Atan((y - 0.5) / (x - 0.5)) * 180) / Math.PI); // Absolute Value
+        var intangle = Math.Abs(Math.Atan((y - 0.5) / (x - 0.5)) * 180 / Math.PI); // Absolute Value
 
         // Check Quadrant
         if (x >= 0.5 && y >= 0.5)
@@ -277,7 +277,7 @@ public sealed partial class ColorMap : UserControl
     private Color CalcWheelColor(float x, float y, float lightness)
     {
         x = x - 0.5f;
-        y = (1 - y) - 0.5f;
+        y = 1 - y - 0.5f;
         float saturation = 2 * (float)Math.Sqrt((x * x) + (y * y));
         float hue = y < 0 ?
             (float)Math.Atan2(-y, -x) + (float)Math.PI :

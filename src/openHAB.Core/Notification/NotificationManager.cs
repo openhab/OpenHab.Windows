@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Uwp.Notifications;
 using openHAB.Common;
 using openHAB.Core.Client.Messages;
@@ -17,26 +18,27 @@ public class NotificationManager : INotificationManager
 {
     private readonly IItemManager _itemManager;
     private readonly string _iconFormat;
-    private readonly ISettingsService _settingsService;
     private readonly IIconCaching _iconCaching;
+    private readonly IOptions<Settings> _settingsOption;
 
     /// <summary>Initializes a new instance of the <see cref="NotificationManager" /> class.</summary>
     /// <param name="itemStateManager">The item state manager.</param>
-    /// <param name="iconCaching">Service for Icon caching</param>
-    /// <param name="settingsService">Setting service.</param>
+    /// <param name="iconCaching">Service for Icon caching.</param>
     /// <param name="settings">Application Settings.</param>
-    public NotificationManager(IItemManager itemStateManager, IIconCaching iconCaching, ISettingsService settingsService, Settings settings)
+    public NotificationManager(IItemManager itemStateManager, IIconCaching iconCaching, IOptions<Settings> settingsOption)
     {
         StrongReferenceMessenger.Default.Register<ItemStateChangedMessage>(this, HandleUpdateItemMessage);
         _itemManager = itemStateManager;
-        _iconFormat = settings.UseSVGIcons ? "svg" : "svg";
-        _settingsService = settingsService;
         _iconCaching = iconCaching;
+
+        _settingsOption = settingsOption;
+        Settings settings = _settingsOption.Value;
+        _iconFormat = settings.UseSVGIcons ? "svg" : "svg";
     }
 
     private async void HandleUpdateItemMessage(object receipts, ItemStateChangedMessage obj)
     {
-        Settings settings = _settingsService.Load();
+        Settings settings = _settingsOption.Value;
         if (settings.NotificationsEnable.HasValue && !settings.NotificationsEnable.Value)
         {
             return;

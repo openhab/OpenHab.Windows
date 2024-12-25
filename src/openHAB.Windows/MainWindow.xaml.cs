@@ -114,7 +114,7 @@ public sealed partial class MainWindow : Window
     {
         try
         {
-            string message = null;
+            string? message = null;
             switch (msg.MessageType)
             {
                 case MessageType.NotConfigured:

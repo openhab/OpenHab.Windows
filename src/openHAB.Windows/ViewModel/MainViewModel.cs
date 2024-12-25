@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
@@ -26,6 +27,7 @@ namespace openHAB.Windows.ViewModel;
 public class MainViewModel : ViewModelBase<object>
 {
     private readonly IOpenHABClient _openHABClient;
+    private readonly IOptions<Settings> _settingsOptions;
     private readonly ISettingsService _settingsService;
     private readonly ILogger<MainViewModel> _logger;
     private readonly SitemapService _sitemapManager;
@@ -42,12 +44,17 @@ public class MainViewModel : ViewModelBase<object>
     /// <param name="openHABClient">The OpenHAB client.</param>
     /// <param name="settingsService">Setting service instance.</param>
     /// <param name="logger">Logger class instance.</param>
-    public MainViewModel(IOpenHABClient openHABClient, ISettingsService settingsService, SitemapService sitemapManager, ILogger<MainViewModel> logger)
+    public MainViewModel(IOpenHABClient openHABClient,
+        ISettingsService settingsService,
+        IOptions<Settings> settingsOptions,
+        SitemapService sitemapManager,
+        ILogger<MainViewModel> logger)
         : base(new object())
     {
         _logger = logger;
 
         _openHABClient = openHABClient;
+        _settingsOptions = settingsOptions;
         _settingsService = settingsService;
         _breadcrumbItems = new ObservableCollection<WidgetViewModel>();
         _sitemapManager = sitemapManager;
@@ -120,7 +127,7 @@ public class MainViewModel : ViewModelBase<object>
             {
                 if (_selectedSitemap != null)
                 {
-                    Settings settings = _settingsService.Load();
+                    Settings settings = _settingsOptions.Value;
                     settings.LastSitemap = _selectedSitemap.Name;
                     _settingsService.Save(settings);
 
@@ -243,7 +250,7 @@ public class MainViewModel : ViewModelBase<object>
 
     private Sitemap OpenLastOrDefaultSitemap()
     {
-        Settings settings = _settingsService.Load();
+        Settings settings = _settingsOptions.Value;
         string sitemapName = settings.LastSitemap;
 
         if (string.IsNullOrWhiteSpace(sitemapName))

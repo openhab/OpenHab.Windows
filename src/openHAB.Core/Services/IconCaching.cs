@@ -1,9 +1,5 @@
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using openHAB.Core.Client;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
@@ -11,6 +7,11 @@ using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
 using openHAB.Core.Services.Models;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace openHAB.Core.Services;
 
@@ -19,8 +20,8 @@ public class IconCaching : IIconCaching
 {
     private readonly OpenHABHttpClient _openHABHttpClient;
     private readonly IConnectionService _connectionService;
-    private readonly ISettingsService _settingsService;
-    private readonly Settings _settings;
+    private readonly IAppManager _appManager;
+    private readonly IOptions<Settings> _settingsOptions;
     private readonly ILogger<IconCaching> _logger;
 
     /// <summary>
@@ -29,26 +30,27 @@ public class IconCaching : IIconCaching
     /// <param name="appPaths">Application default paths.</param>
     /// <param name="openHABHttpClient">The HTTP client factory.</param>
     /// <param name="connectionService">The connection service to retrieve the connection details.</param>
-    /// <param name="settingsService">The settings service to load settings.</param>
+    /// <param name="settingsOptions">The settings service to load settings.</param>
     /// <param name="logger">The logger.</param>
     public IconCaching(
         OpenHABHttpClient openHABHttpClient,
         IConnectionService connectionService,
-        ISettingsService settingsService,
+        IAppManager appManager,
+        IOptions<Settings> settingsOptions,
         ILogger<IconCaching> logger)
     {
         _logger = logger;
         _openHABHttpClient = openHABHttpClient;
         _connectionService = connectionService;
-        _settingsService = settingsService;
-        _settings = settingsService.Load();
+        _settingsOptions = settingsOptions;
+        _appManager = appManager;
     }
 
     /// <inheritdoc/>
     public async Task<string> ResolveIconPath(string icon, string state, string iconFormat)
     {
         string serverUrl = _connectionService.CurrentConnection.Url;
-        OpenHABVersion openHABVersion = _settingsService.ServerVersion;
+        OpenHABVersion openHABVersion = _appManager.ServerVersion;
 
         string iconUrl = openHABVersion == OpenHABVersion.Two || openHABVersion == OpenHABVersion.Three || openHABVersion == OpenHABVersion.Four ?
                    $"{serverUrl}icon/{icon}?state={state}&format={iconFormat}&anyFormat=true&iconset=classic" :
@@ -92,9 +94,11 @@ public class IconCaching : IIconCaching
 
     private async Task<bool> DownloadAndSaveIconToCache(string iconUrl, string iconFilePath)
     {
-        bool isRunningInDemoMode = _settings.IsRunningInDemoMode.HasValue && _settings.IsRunningInDemoMode.Value;
-        Connection connection = await _connectionService.DetectAndRetriveConnection(_settings.LocalConnection, _settings.RemoteConnection, isRunningInDemoMode)
+        Settings settings = _settingsOptions.Value;
+        bool isRunningInDemoMode = settings.IsRunningInDemoMode.HasValue && settings.IsRunningInDemoMode.Value;
+        Connection connection = await _connectionService.DetectAndRetriveConnection(settings.LocalConnection, settings.RemoteConnection, isRunningInDemoMode)
             .ConfigureAwait(false);
+
         if (connection == null)
         {
             _logger.LogError("Failed to retrieve connection details to download icon");

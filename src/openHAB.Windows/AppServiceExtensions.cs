@@ -43,11 +43,6 @@ public static class AppServiceExtensions
         services.AddSingleton<IMessenger>(StrongReferenceMessenger.Default);
         services.AddSingleton<IOpenHABClient, OpenHABClient>();
         services.AddSingleton<ISettingsService, SettingsService>();
-        services.AddTransient(x =>
-        {
-            ISettingsService settingsService = x.GetService<ISettingsService>();
-            return settingsService.Load();
-        });
 
         services.AddSingleton<AppPaths>();
         services.AddSingleton<OpenHABHttpClient>();

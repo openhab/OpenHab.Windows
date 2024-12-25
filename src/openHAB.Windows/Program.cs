@@ -11,7 +11,6 @@ using System.Threading;
 
 namespace openHAB.Windows;
 
-
 #if DISABLE_XAML_GENERATED_MAIN
 public static partial class Program
 {

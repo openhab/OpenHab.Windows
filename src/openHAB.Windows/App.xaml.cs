@@ -16,14 +16,14 @@ namespace openHAB.Windows;
 public partial class App : Application
 {
     private readonly ILogger<App> _logger;
-    private readonly ISettingsService _settingsService;
+    private readonly IAppManager _appManager;
     private readonly INotificationManager _notificationManager;
     private MainWindow _mainWindow;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="App" /> class.
     /// </summary>
-    public App(ISettingsService settingsService, INotificationManager notificationManage, ILogger<App> logger)
+    public App(IAppManager appManager, INotificationManager notificationManage, ILogger<App> logger)
     {
         InitializeComponent();
         UnhandledException += App_UnhandledException;
@@ -31,7 +31,7 @@ public partial class App : Application
         DispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         _logger = logger;
-        _settingsService = settingsService;
+        _appManager = appManager;
         _notificationManager = notificationManage;
     }
 
@@ -53,7 +53,7 @@ public partial class App : Application
     protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
     {
         _logger.LogInformation("=== Start Application ===");
-        _settingsService.SetProgramLanguage(null);
+        _appManager.SetProgramLanguage(null);
 
         // TODO This code defaults the app to a single instance app. If you need multi instance app, remove this part.
         // Read: https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/applifecycle#single-instancing-in-applicationonlaunched

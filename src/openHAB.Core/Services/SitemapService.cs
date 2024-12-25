@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using openHAB.Core.Client.Common;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Messages;
@@ -20,8 +21,9 @@ namespace openHAB.Core.Services;
 public class SitemapService
 {
     private readonly ILogger<SitemapService> _logger;
+    private readonly IAppManager _appManager;
     private readonly IOpenHABClient _openHABClient;
-    private readonly ISettingsService _settingsService;
+    private readonly IOptions<Settings> _settingsOptions;
     private ServerInfo _serverInfo;
 
     /// <summary>
@@ -30,11 +32,16 @@ public class SitemapService
     /// <param name="settingsService">The settings service.</param>
     /// <param name="openHABClient">The openHAB client.</param>
     /// <param name="logger">The logger.</param>
-    public SitemapService(ISettingsService settingsService, IOpenHABClient openHABClient, ILogger<SitemapService> logger)
+    public SitemapService(
+        IOptions<Settings> settingsOptions,
+        IAppManager appManager,
+        IOpenHABClient openHABClient,
+        ILogger<SitemapService> logger)
     {
-        _settingsService = settingsService;
+        _settingsOptions = settingsOptions;
         _openHABClient = openHABClient;
         _logger = logger;
+        _appManager = appManager;
     }
 
     /// <summary>
@@ -51,7 +58,7 @@ public class SitemapService
             {
                 return null;
             }
-            _settingsService.ServerVersion = _serverInfo.Version;
+            _appManager.ServerVersion = _serverInfo.Version;
 
             Sitemap sitemap = await _openHABClient.GetSitemap(sitemapUrl, _serverInfo.Version).ConfigureAwait(false);
             return sitemap;
@@ -84,7 +91,8 @@ public class SitemapService
             {
                 return null;
             }
-            _settingsService.ServerVersion = _serverInfo.Version;
+
+            _appManager.ServerVersion = _serverInfo.Version;
 
             if (loadCancellationToken.IsCancellationRequested)
             {
@@ -96,7 +104,7 @@ public class SitemapService
                 return !sitemap.Name.Equals("_default", StringComparison.InvariantCultureIgnoreCase);
             };
 
-            Settings settings = _settingsService.Load();
+            Settings settings = _settingsOptions.Value;
             List<Func<Sitemap, bool>> filters = new List<Func<Sitemap, bool>>();
             if (!settings.ShowDefaultSitemap)
             {
@@ -145,7 +153,7 @@ public class SitemapService
 
     private async Task<ServerInfo> InitalizeConnectionAsync()
     {
-        Settings settings = _settingsService.Load();
+        Settings settings = _settingsOptions.Value;
         if (settings.LocalConnection == null && settings.RemoteConnection == null &&
             (!settings.IsRunningInDemoMode.HasValue || !settings.IsRunningInDemoMode.Value))
         {

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 using openHAB.Core.Model;
-using openHAB.Core.Services.Contracts;
 using openHAB.Windows.ViewModel;
 using System;
 
@@ -16,11 +16,11 @@ public class IconToBitmapConverter : IValueConverter
     /// <inheritdoc/>
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        ISettingsService settingsService = Program.Host.Services.GetRequiredService<ISettingsService>();
-        Settings settings = settingsService.Load();
+        IOptions<Settings> settingsOptions = Program.Host.Services.GetRequiredService<IOptions<Settings>>();
+        Settings settings = settingsOptions.Value;
 
-        WidgetViewModel widget = value as WidgetViewModel;
-        if (widget == null || string.IsNullOrEmpty(widget?.IconPath))
+        WidgetViewModel? widget = value as WidgetViewModel;
+        if (widget == null || string.IsNullOrEmpty(widget.IconPath))
         {
             return null;
         }

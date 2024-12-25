@@ -1,21 +1,43 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using openHAB.Core.Client.Models;
+using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.System.UserProfile;
 
 namespace openHAB.Core.Services;
 
 /// <inheritdoc/>
 public class AppManager : IAppManager
 {
-    private readonly string _startupId = "openHABStartupId";
     private readonly ILogger<AppManager> _logger;
+    private readonly IOptions<Settings> _options;
+    private readonly string _startupId = "openHABStartupId";
 
-    /// <summary>Initializes a new instance of the <see cref="AppManager" /> class.</summary>
-    public AppManager(ILogger<AppManager> logger)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppManager" /> class.
+    /// </summary>
+    public AppManager(IOptions<Settings> options, ILogger<AppManager> logger)
     {
         _logger = logger;
+        _options = options;
+    }
+
+    /// <inheritdoc />
+    public OpenHABVersion ServerVersion
+    {
+        get; set;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CanEnableAutostart()
+    {
+        StartupTask startupTask = await StartupTask.GetAsync(_startupId);
+        return !(startupTask.State == StartupTaskState.DisabledByPolicy || startupTask.State == StartupTaskState.DisabledByUser);
     }
 
     /// <inheritdoc/>
@@ -25,11 +47,24 @@ public class AppManager : IAppManager
         return startupTask.State == StartupTaskState.Enabled || startupTask.State == StartupTaskState.EnabledByPolicy;
     }
 
-    /// <inheritdoc/>
-    public async Task<bool> CanEnableAutostart()
+    /// <inheritdoc />
+    public void SetProgramLanguage(string langcode)
     {
-        StartupTask startupTask = await StartupTask.GetAsync(_startupId);
-        return !(startupTask.State == StartupTaskState.DisabledByPolicy || startupTask.State == StartupTaskState.DisabledByUser);
+        if (string.IsNullOrEmpty(langcode))
+        {
+            Settings settings = _options.Value;
+            langcode = settings.AppLanguage;
+        }
+
+        if (!string.IsNullOrEmpty(langcode))
+        {
+            CultureInfo.CurrentCulture = new CultureInfo(langcode);
+        }
+        else
+        {
+            string userLanguage = GlobalizationPreferences.Languages[0];
+            CultureInfo.CurrentCulture = new CultureInfo(userLanguage);
+        }
     }
 
     /// <inheritdoc/>
