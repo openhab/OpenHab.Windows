@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Behaviors;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI;
 using Microsoft.UI.Input;
@@ -9,13 +9,12 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using openHAB.Common;
-using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
 using openHAB.Windows.Messages;
 using openHAB.Windows.View;
 using openHAB.Windows.ViewModel;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Graphics;
 
@@ -35,6 +34,9 @@ public sealed partial class MainWindow : Window
     {
         _logger = logger;
 
+        StrongReferenceMessenger.Default.Register<TriggerInfoMessage>(this, async (recipient, msg)
+           => await ShowInfoMessage(recipient, msg));
+
         this.InitializeComponent();
 
         this.ExtendsContentIntoTitleBar = true;
@@ -42,13 +44,10 @@ public sealed partial class MainWindow : Window
         this.AppWindow.TitleBar.ButtonForegroundColor = Colors.Black;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-        //TitleBarTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName; //TODO: Replace with
+        TitleBarTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName;
 
         Vm = mainViewModel;
         Root.DataContext = Vm;
-
-        StrongReferenceMessenger.Default.Register<ConnectionErrorMessage>(this, async (recipient, msg) => await ShowErrorMessage(recipient, msg));
-        StrongReferenceMessenger.Default.Register<FireInfoMessage>(this, async (recipient, msg) => await ShowInfoMessage(recipient, msg));
 
         _ = Vm.LoadSitemapsAndItemData();
     }
@@ -82,69 +81,19 @@ public sealed partial class MainWindow : Window
         StrongReferenceMessenger.Default.Send(new WidgetNavigationMessage(null, widget, EventTriggerSource.Breadcrumb), Vm.SelectedSitemap.Name);
     }
 
-    private async Task ShowErrorMessage(object recipient, ConnectionErrorMessage message)
+    private void NavigationViewItemMainUI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
     {
-        try
-        {
-            string errorMessage = null;
-            if (message == null || string.IsNullOrEmpty(message.ErrorMessage))
-            {
-                errorMessage = AppResources.Values.GetString("MessageError");
-                ErrorNotification.Message = errorMessage;
-                ErrorNotification.IsOpen = true;
-            }
-            else
-            {
-                errorMessage = message.ErrorMessage;
-            }
+        SitemapNavigation.IsPaneOpen = false;
 
-            await App.DispatcherQueue.EnqueueAsync(() =>
-            {
-                ErrorNotification.Message = errorMessage;
-                ErrorNotification.IsOpen = true;
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Show error message failed.");
-        }
-    }
+        Vm.SelectedSitemap = null;
+        SitemapNavigation.AlwaysShowHeader = false;
 
-    private async Task ShowInfoMessage(object recipient, FireInfoMessage msg)
-    {
-        try
-        {
-            string? message = null;
-            switch (msg.MessageType)
-            {
-                case MessageType.NotConfigured:
-                    message = AppResources.Values.GetString("MessageNotConfigured");
-                    break;
-
-                case MessageType.NotReachable:
-                    message = AppResources.Values.GetString("MessagesNotReachable");
-                    break;
-
-                default:
-                    message = "Message not defined";
-                    break;
-            }
-
-            await App.DispatcherQueue.EnqueueAsync(() =>
-            {
-                InfoNotification.Message = message;
-                InfoNotification.IsOpen = true;
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Show info message failed.");
-        }
+        ContentFrame.Navigate(typeof(MainUIPage));
     }
 
     private void SitemapNavigation_SelectionChanged(
-        NavigationView sender,
-        NavigationViewSelectionChangedEventArgs args)
+            NavigationView sender,
+            NavigationViewSelectionChangedEventArgs args)
     {
 
         NavigationViewItem item = args.SelectedItem as NavigationViewItem;
@@ -169,16 +118,39 @@ public sealed partial class MainWindow : Window
         StrongReferenceMessenger.Default.Send(new WidgetNavigationMessage(null, null, EventTriggerSource.Root), Vm.SelectedSitemap.Name);
     }
 
+    private async Task ShowInfoMessage(object recipient, TriggerInfoMessage msg)
+    {
+        Vm.Notifications.Add(msg);
+
+        Notification notification = new Notification()
+        {
+            Title = $"Notification {DateTimeOffset.Now}",
+            Message = msg.Message,
+            Severity = (InfoBarSeverity)msg.Severity,
+        };
+
+        NotificationQueue.Show(notification);
+    }
+
     #region App TitleBar
+
+    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
+    {
+        SetRegionsForCustomTitleBar();
+    }
 
     private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForCustomTitleBar();
     }
-
-    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
+    private RectInt32 GetRect(Rect bounds, double scale)
     {
-        SetRegionsForCustomTitleBar();
+        return new RectInt32(
+            _X: (int)Math.Round(bounds.X * scale),
+            _Y: (int)Math.Round(bounds.Y * scale),
+            _Width: (int)Math.Round(bounds.Width * scale),
+            _Height: (int)Math.Round(bounds.Height * scale)
+        );
     }
 
     private void SetRegionsForCustomTitleBar()
@@ -208,26 +180,5 @@ public sealed partial class MainWindow : Window
             InputNonClientPointerSource.GetForWindowId(this.AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
     }
-
-    private RectInt32 GetRect(Rect bounds, double scale)
-    {
-        return new RectInt32(
-            _X: (int)Math.Round(bounds.X * scale),
-            _Y: (int)Math.Round(bounds.Y * scale),
-            _Width: (int)Math.Round(bounds.Width * scale),
-            _Height: (int)Math.Round(bounds.Height * scale)
-        );
-    }
-
     #endregion
-
-    private void NavigationViewItemMainUI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
-    {
-        SitemapNavigation.IsPaneOpen = false;
-
-        Vm.SelectedSitemap = null;
-        SitemapNavigation.AlwaysShowHeader = false;
-
-        ContentFrame.Navigate(typeof(MainUIPage));
-    }
 }

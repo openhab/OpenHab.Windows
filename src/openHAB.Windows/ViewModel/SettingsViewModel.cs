@@ -85,7 +85,6 @@ public class SettingsViewModel : ViewModelBase<object>
         if (validConnectionConfig)
         {
             bool savedSuccessful = _configuration.Save();
-            StrongReferenceMessenger.Default.Send(new SettingsUpdatedMessage(validConnectionConfig, savedSuccessful));
         }
     }
 
@@ -103,7 +102,6 @@ public class SettingsViewModel : ViewModelBase<object>
     private bool CanPersistSettings(object arg)
     {
         bool validConnectionConfig = CheckForValidConnectionConfig();
-        StrongReferenceMessenger.Default.Send(new SettingsValidationMessage(validConnectionConfig));
 
         return validConnectionConfig && _configuration.IsDirty;
     }

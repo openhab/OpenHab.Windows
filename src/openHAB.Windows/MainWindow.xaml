@@ -8,6 +8,7 @@
         xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
         xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
         xmlns:model="using:openHAB.Core.Client.Models"
+        xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
         mc:Ignorable="d"
         Title="openHab"
         x:Name="Window">
@@ -229,36 +230,17 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Vertical"
-                            Grid.Row="0"
-                            VerticalAlignment="Bottom"
-                            Margin="10">
-                    <muxc:InfoBar x:Name="ErrorNotification"
-                                  Margin="0,0,0,5"
-                                  Severity="Error"
-                                  IsIconVisible="True"
-                                  IsClosable="True"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Center" />
-                    <muxc:InfoBar x:Name="InfoNotification"
-                                  Severity="Informational"
-                                  IsIconVisible="True"
-                                  IsClosable="True"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Center">
-                        <muxc:InfoBar.ActionButton>
-                            <Button x:Name="SettingsButtonInfoNotification"
-                                    x:Uid="InfoAppBarSettingsButton">
-                                <interactivity:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="Tapped"
-                                                               SourceObject="{Binding ElementName=SettingsButtonInfoNotification}">
-                                        <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SettingsPage" />
-                                    </core:EventTriggerBehavior>
-                                </interactivity:Interaction.Behaviors>
-                            </Button>
-                        </muxc:InfoBar.ActionButton>
-                    </muxc:InfoBar>
-                </StackPanel>
+                <muxc:InfoBar x:Name="Notification"
+                              Grid.Row="0"
+                              Margin="15"
+                              IsIconVisible="True"
+                              IsClosable="True"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+                    </interactivity:Interaction.Behaviors>
+                </muxc:InfoBar>
                 <Frame Grid.Row="1" x:Name="ContentFrame" />
             </Grid>
         </muxc:NavigationView>

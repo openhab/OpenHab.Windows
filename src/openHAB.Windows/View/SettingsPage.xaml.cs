@@ -1,13 +1,10 @@
 using System;
-using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using openHAB.Common;
-using openHAB.Core.Messages;
 using openHAB.Core.Services.Contracts;
 using openHAB.Windows.Controls;
 using openHAB.Windows.ViewModel;
@@ -42,18 +39,12 @@ public sealed partial class SettingsPage : Page
     /// <inheritdoc/>
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
-        StrongReferenceMessenger.Default.Register<SettingsUpdatedMessage>(this, (recipient, msg) => HandleSettingsUpdate(recipient, msg));
-        StrongReferenceMessenger.Default.Register<SettingsValidationMessage>(this, (recipient, msg) => NotificationSettingsValidation(recipient, msg));
-
         AppAutostartSwitch.Toggled += AppAutostartSwitch_Toggled;
     }
 
     /// <inheritdoc/>
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
     {
-        StrongReferenceMessenger.Default.Unregister<SettingsUpdatedMessage>(this);
-        StrongReferenceMessenger.Default.Unregister<SettingsValidationMessage>(this);
-
         AppAutostartSwitch.Toggled -= AppAutostartSwitch_Toggled;
     }
 
@@ -70,51 +61,6 @@ public sealed partial class SettingsPage : Page
         connectionDialog.DefaultButton = ContentDialogButton.Primary;
 
         return connectionDialog;
-    }
-
-
-#pragma warning disable S1172 // Unused method parameters should be removed
-    private void HandleSettingsUpdate(object recipient, SettingsUpdatedMessage msg)
-#pragma warning restore S1172 // Unused method parameters should be removed
-    {
-        try
-        {
-            if (msg.IsSettingsValid && msg.SettingsPersisted)
-            {
-                Frame.BackStack.Clear();
-                Frame.Navigate(typeof(MainPage));
-
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Show info message failed.");
-        }
-    }
-
-#pragma warning disable S1172 // Unused method parameters should be removed
-    private void NotificationSettingsValidation(object recipient, SettingsValidationMessage msg)
-#pragma warning restore S1172 // Unused method parameters should be removed
-    {
-        try
-        {
-            if (!msg.IsSettingsValid)
-            {
-                string message = AppResources.Values.GetString("MessageSettingsConnectionConfigInvalid");
-
-                SettingsNotification.Message = message;
-                SettingsNotification.IsOpen = true;
-            }
-            else
-            {
-                SettingsNotification.IsOpen = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Show info message failed.");
-        }
     }
 
     private async void OpenLocalConnectionButton_Click(object sender, RoutedEventArgs e)

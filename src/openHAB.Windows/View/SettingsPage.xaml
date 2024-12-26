@@ -33,7 +33,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <CommandBar Grid.Row="0"
                         DefaultLabelPosition="Right"
@@ -73,14 +72,7 @@
                     </StackPanel>
                 </CommandBar.Content>
             </CommandBar>
-            <muxc:InfoBar x:Name="SettingsNotification"
-                          Grid.Row="1"
-                          Margin="10"
-                          IsClosable="True"
-                          Severity="Error"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center" />
-            <StackPanel Grid.Row="2"
+            <StackPanel Grid.Row="1"
                         Orientation="Vertical">
                 <StackPanel Margin="0,0,0,10"
                             Padding="12">

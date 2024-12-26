@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using openHAB.Common;
 using openHAB.Core.Client.Common;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Messages;
@@ -161,7 +162,7 @@ public class SitemapService
         if (settings.LocalConnection == null && settings.RemoteConnection == null &&
             (!settings.IsRunningInDemoMode.HasValue || !settings.IsRunningInDemoMode.Value))
         {
-            StrongReferenceMessenger.Default.Send(new FireInfoMessage(MessageType.NotConfigured));
+            StrongReferenceMessenger.Default.Send(new TriggerInfoMessage(MessageSeverity.Error, AppResources.Values.GetString("MessageNotConfigured")));
             return null;
         }
 
@@ -169,7 +170,7 @@ public class SitemapService
             .ConfigureAwait(false);
         if (!isSuccessful)
         {
-            StrongReferenceMessenger.Default.Send(new FireInfoMessage(MessageType.NotConfigured));
+            StrongReferenceMessenger.Default.Send(new TriggerInfoMessage(MessageSeverity.Error, AppResources.Values.GetString("MessageNotConfigured")));
             return null;
         }
 
@@ -178,7 +179,7 @@ public class SitemapService
 
         if (serverInfo == null || serverInfo.Version == OpenHABVersion.None)
         {
-            StrongReferenceMessenger.Default.Send(new FireInfoMessage(MessageType.NotConfigured));
+            StrongReferenceMessenger.Default.Send(new TriggerInfoMessage(MessageSeverity.Error, AppResources.Values.GetString("MessageNotConfigured")));
             return null;
         }
 

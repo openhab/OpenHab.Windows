@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using openHAB.Common;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
@@ -54,6 +55,7 @@ public class MainViewModel : ViewModelBase<object>
         _openHABClient = openHABClient;
         _settingsOptions = settingsOptions;
         _breadcrumbItems = new ObservableCollection<WidgetViewModel>();
+        _notifications = new ObservableCollection<TriggerInfoMessage>();
         _sitemapManager = sitemapManager;
 
         StrongReferenceMessenger.Default.Register<DataOperation>(this, async (obj, operation)
@@ -152,6 +154,7 @@ public class MainViewModel : ViewModelBase<object>
     #region Sitemaps Refresh Command
 
     private ActionCommand _refreshCommand;
+    private ObservableCollection<TriggerInfoMessage> _notifications;
 
     /// <summary>Gets the command to refresh sitemap and widget data.</summary>
     /// <value>The refresh command.</value>
@@ -220,7 +223,8 @@ public class MainViewModel : ViewModelBase<object>
             List<Sitemap> sitemaps = await _sitemapManager.GetSitemapsAsync(loadCancellationToken);
             if (sitemaps == null)
             {
-                StrongReferenceMessenger.Default.Send(new FireInfoMessage(MessageType.NotConfigured));
+                StrongReferenceMessenger.Default.Send(
+                    new TriggerInfoMessage(MessageSeverity.Warning, AppResources.Values.GetString("MessageNotConfigured")));
                 return;
             }
 
@@ -270,6 +274,12 @@ public class MainViewModel : ViewModelBase<object>
     #endregion
 
     #region Events
+
+    public ObservableCollection<TriggerInfoMessage> Notifications
+    {
+        get => _notifications;
+        set => Set(ref _notifications, value);
+    }
 
     private async Task DataOperationStateAsync(DataOperation operation)
     {

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using openHAB.Common;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
 using openHAB.Core.Services;
@@ -68,7 +69,7 @@ public sealed partial class SitemapPage : Microsoft.UI.Xaml.Controls.Page
         Sitemap sitemap = await _sitemapService.GetSitemapByUrlAsync(sitemapUrl);
         if (sitemap is null)
         {
-            StrongReferenceMessenger.Default.Send<FireInfoMessage>(new FireInfoMessage(MessageType.NotReachable));
+            StrongReferenceMessenger.Default.Send<TriggerInfoMessage>(new TriggerInfoMessage(MessageSeverity.Error, AppResources.Values.GetString("MessagesNotReachable")));
             StrongReferenceMessenger.Default.Send<DataOperation>(new DataOperation(OperationState.Completed));
 
             return;
