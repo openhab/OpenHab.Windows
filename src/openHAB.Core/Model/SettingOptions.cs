@@ -1,7 +1,6 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using openHAB.Core.Services;
 
 namespace openHAB.Core.Model;
 
@@ -24,7 +23,7 @@ public class SettingOptions
     /// Gets or sets the application language.
     /// </summary>
     /// <value>The application language.</value>
-    public string AppLanguage
+    public string? AppLanguage
     {
         get;
         set;

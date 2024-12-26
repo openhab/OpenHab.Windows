@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using openHAB.Core.Services;
+using openHAB.Core;
 
 namespace openHAB.Windows;
 
@@ -43,6 +43,7 @@ public static partial class Program
 
                 HostApplicationBuilder builder = new HostApplicationBuilder(args);
                 builder.Configuration.AddJsonFile(AppPaths.SettingsFilePath, optional: true, reloadOnChange: true);
+                builder.Configuration.AddJsonFile(AppPaths.ConnectionFilePath, optional: true, reloadOnChange: true);
 
                 builder.Services.AddConfiguration(builder.Configuration);
                 builder.Services.AddOpenHABServices();

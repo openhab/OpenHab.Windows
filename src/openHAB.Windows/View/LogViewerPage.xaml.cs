@@ -16,4 +16,9 @@ public sealed partial class LogViewerPage : Page
 
         this.InitializeComponent();
     }
+
+    private void TextBlock_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+    {
+        LogScroller.ScrollToVerticalOffset(LogScroller.ScrollableHeight);
+    }
 }

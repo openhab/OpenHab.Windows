@@ -66,6 +66,14 @@ public sealed partial class SitemapPage : Microsoft.UI.Xaml.Controls.Page
         StrongReferenceMessenger.Default.Send<DataOperation>(new DataOperation(OperationState.Started));
 
         Sitemap sitemap = await _sitemapService.GetSitemapByUrlAsync(sitemapUrl);
+        if (sitemap is null)
+        {
+            StrongReferenceMessenger.Default.Send<FireInfoMessage>(new FireInfoMessage(MessageType.NotReachable));
+            StrongReferenceMessenger.Default.Send<DataOperation>(new DataOperation(OperationState.Completed));
+
+            return;
+        }
+
         _viewModel = await SitemapViewModel.CreateAsync(sitemap, _sitemapService, _serviceProvider);
 
         DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();

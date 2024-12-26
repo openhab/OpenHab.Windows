@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace openHAB.Core.Services;
+namespace openHAB.Core;
 
 /// <summary>
 /// Represents the paths used by the application.

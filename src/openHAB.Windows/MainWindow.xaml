@@ -76,8 +76,7 @@
                             </muxc:NavigationViewItem.Icon>
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="Tapped">
-                                    <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SitemapPage"
-                                                               Parameter="{Binding Link, Mode=OneWay}" />
+                                    <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SettingsPage" />
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
                         </muxc:NavigationViewItem>
@@ -225,34 +224,44 @@
                                          Tag="openHAB.Windows.View.MainUIPage"
                                          Tapped="NavigationViewItemMainUI_Tapped" />
             </muxc:NavigationView.FooterMenuItems>
-            <Frame x:Name="ContentFrame" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Vertical"
+                            Grid.Row="0"
+                            VerticalAlignment="Bottom"
+                            Margin="10">
+                    <muxc:InfoBar x:Name="ErrorNotification"
+                                  Margin="0,0,0,5"
+                                  Severity="Error"
+                                  IsIconVisible="True"
+                                  IsClosable="True"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center" />
+                    <muxc:InfoBar x:Name="InfoNotification"
+                                  Severity="Informational"
+                                  IsIconVisible="True"
+                                  IsClosable="True"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center">
+                        <muxc:InfoBar.ActionButton>
+                            <Button x:Name="SettingsButtonInfoNotification"
+                                    x:Uid="InfoAppBarSettingsButton">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Tapped"
+                                                               SourceObject="{Binding ElementName=SettingsButtonInfoNotification}">
+                                        <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SettingsPage" />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </Button>
+                        </muxc:InfoBar.ActionButton>
+                    </muxc:InfoBar>
+                </StackPanel>
+                <Frame Grid.Row="1" x:Name="ContentFrame" />
+            </Grid>
         </muxc:NavigationView>
-        <StackPanel Orientation="Vertical"
-                    Grid.Row="2"
-                    Margin="10">
-            <muxc:InfoBar x:Name="ErrorNotification"
-                          Margin="0,0,0,5"
-                          Severity="Error"
-                          IsClosable="True"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center" />
-            <muxc:InfoBar x:Name="InfoNotification"
-                          Severity="Informational"
-                          IsClosable="True"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center">
-                <muxc:InfoBar.ActionButton>
-                    <Button x:Name="SettingsButtonInfoNotification"
-                            x:Uid="InfoAppBarSettingsButton">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="Tapped">
-                                <core:NavigateToPageAction TargetPage="openHAB.Windows.View.SettingsPage" />
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </Button>
-                </muxc:InfoBar.ActionButton>
-            </muxc:InfoBar>
-        </StackPanel>
         <Border x:Name="LoadingControl"
                 MaxHeight="150"
                 MaxWidth="150"

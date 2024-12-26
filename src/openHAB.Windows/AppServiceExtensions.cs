@@ -6,6 +6,7 @@ using NLog.Config;
 using NLog.Extensions.Logging;
 using NLog.Layouts;
 using NLog.Targets;
+using openHAB.Core;
 using openHAB.Core.Client;
 using openHAB.Core.Client.Connection;
 using openHAB.Core.Client.Connection.Contracts;
@@ -111,7 +112,7 @@ public static class AppServiceExtensions
 
         FileTarget fileTarget = new FileTarget("file")
         {
-            FileName = "${var:LogPath}/logs/${shortdate}.json",
+            FileName = "${var:LogPath}/${shortdate}.json",
             Layout = layout,
             MaxArchiveFiles = 3,
             ArchiveEvery = FileArchivePeriod.Day,

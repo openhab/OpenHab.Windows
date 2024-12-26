@@ -40,6 +40,8 @@ public class MainViewModel : ViewModelBase<object>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
     /// <param name="openHABClient">The OpenHAB client.</param>
+    /// <param name="sitemapManager">The service responsible for managing sitemaps.</param>
+    /// <param name="settingsOptions">The application settings options.</param>
     /// <param name="logger">Logger class instance.</param>
     public MainViewModel(IOpenHABClient openHABClient,
         IOptions<SettingOptions> settingsOptions,

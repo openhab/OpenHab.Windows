@@ -1,13 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
+using openHAB.Core;
 using openHAB.Core.Common;
-using Windows.Storage;
-using Windows.System;
-using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace openHAB.Windows.ViewModel;
 
@@ -16,103 +15,107 @@ namespace openHAB.Windows.ViewModel;
 /// </summary>
 public class LogsViewModel : ViewModelBase<object>, IDisposable
 {
-    private StorageFile _logFile;
+    private readonly string _logFilename = $"{DateTime.Now:yyyy-MM-dd}.json";
+    private readonly ILogger<LogsViewModel> _logger;
+    private FileInfo _logFile;
     private string _logFileContent;
     private FileSystemWatcher _logFileWatcher;
-    private readonly ILogger<LogsViewModel> _logger;
-    private readonly string _logFilename = $"{DateTime.Now:yyyy-MM-dd}.json";
     private ICommand _openLogFileCommand;
 
-    /// <summary>Initializes a new instance of the <see cref="LogsViewModel" /> class.</summary>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogsViewModel" /> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
     public LogsViewModel(ILogger<LogsViewModel> logger)
         : base(null)
     {
         _logger = logger;
-        LoadLogfileAsync();
+        _ = LoadLogfileAsync();
     }
 
-    /// <summary>Gets or sets the content of the log.</summary>
+    /// <summary>
+    /// Gets or sets the content of the log.
+    /// </summary>
     /// <value>The content of the log.</value>
     public string LogContent
     {
-        get
-        {
-            return _logFileContent;
-        }
-
-        set
-        {
-            Set(ref _logFileContent, value);
-        }
+        get => _logFileContent;
+        set => Set(ref _logFileContent, value);
     }
 
-    /// <summary>Gets the log file path.</summary>
-    /// <value>The log file path.</value>
-    public string LogFilePath
-    {
-        get
-        {
-            if (_logFile != null)
-            {
-                return _logFile.Path;
-            }
-
-            return string.Empty;
-        }
-    }
-
-    /// <summary>Gets the log file name including extension.</summary>
+    /// <summary>
+    /// Gets the log file name including extension.
+    /// </summary>
     /// <value>The log file.</value>
-    public string LogFile
-    {
-        get
-        {
-            if (_logFile != null)
-            {
-                return _logFile.Name;
-            }
+    public string LogFile => _logFile?.Name ?? string.Empty;
 
-            return string.Empty;
-        }
-    }
-
+    /// <summary>
+    /// Asynchronously loads the log file content and registers a file observer.
+    /// </summary>
     private async Task LoadLogfileAsync()
     {
         await LoadLogFileContent().ConfigureAwait(false);
         RegisterFileObserver();
     }
 
+    /// <summary>
+    /// Asynchronously loads the content of the log file.
+    /// </summary>
     private async Task LoadLogFileContent()
     {
-        _logger.LogInformation($"Load current log file: {_logFilename}");
+        _logger.LogInformation("Load current log file: {LogFilename}", _logFilename);
 
-        StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
-        _logFolder = await storageFolder.GetFolderAsync("logs");
-        if (_logFolder == null)
+        string logFolderPath = AppPaths.LogsDirectory;
+        if (!Directory.Exists(logFolderPath))
         {
             return;
         }
 
-        _logFile = await _logFolder.GetFileAsync(_logFilename);
-        if (_logFile == null)
+        string logFilePath = Path.Combine(logFolderPath, _logFilename);
+        if (!File.Exists(logFilePath))
         {
             return;
         }
 
-        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-        await dispatcherQueue.EnqueueAsync(async () =>
+        _logFile = new FileInfo(logFilePath);
+
+        await Task.Run(() =>
         {
-            LogContent = await FileIO.ReadTextAsync(_logFile);
+            using (FileStream fileStream = File.Open(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (StreamReader reader = new StreamReader(fileStream))
+            {
+                LogContent = reader.ReadToEnd();
+            }
+        }).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Handles the log file changed event and updates the log content.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
+    private async void LogFile_Changed(object sender, FileSystemEventArgs e)
+    {
+        await App.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            using (FileStream fileStream = File.Open(_logFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (StreamReader reader = new StreamReader(fileStream))
+            {
+                LogContent = reader.ReadToEnd();
+            }
         });
     }
 
+    /// <summary>
+    /// Registers a file system watcher to observe changes in the log file.
+    /// </summary>
     private void RegisterFileObserver()
     {
         _logger.LogInformation("Register FileSystemWatch to load changed log file.");
 
         _logFileWatcher = new FileSystemWatcher
         {
-            Path = Path.GetDirectoryName(_logFile.Path),
+            Path = Path.GetDirectoryName(_logFile.FullName),
             Filter = _logFilename
         };
 
@@ -120,38 +123,48 @@ public class LogsViewModel : ViewModelBase<object>, IDisposable
         _logFileWatcher.EnableRaisingEvents = true;
     }
 
-    private async void LogFile_Changed(object sender, FileSystemEventArgs e)
+    #region Command
+
+    /// <summary>
+    /// Gets the command to open log files directory.
+    /// </summary>
+    /// <value>The open log file command.</value>
+    public ICommand OpenLogFileCommand => _openLogFileCommand ??= new ActionCommand(ExecuteOpenLogFileCommand, CanExecuteOpenLogFileCommand);
+
+    /// <summary>
+    /// Determines whether the open log file command can execute.
+    /// </summary>
+    /// <param name="arg">The command argument.</param>
+    /// <returns><c>true</c> if the command can execute; otherwise, <c>false</c>.</returns>
+    private bool CanExecuteOpenLogFileCommand(object arg) => true;
+
+    /// <summary>
+    /// Executes the open log file command.
+    /// </summary>
+    /// <param name="obj">The command parameter.</param>
+    private void ExecuteOpenLogFileCommand(object obj)
     {
-        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-        await dispatcherQueue.EnqueueAsync(async () =>
+        _logger.LogInformation("Open log files directory: '{LogFolderPath}'", AppPaths.LogsDirectory);
+        Process.Start(new ProcessStartInfo
         {
-            LogContent = await FileIO.ReadTextAsync(_logFile);
+            FileName = AppPaths.LogsDirectory,
+            UseShellExecute = true,
+            Verb = "open"
         });
     }
 
-    #region Command
-
-    /// <summary>Gets the command to open log files directory.</summary>
-    /// <value>The open log file command.</value>
-    public ICommand OpenLogFileCommand => _openLogFileCommand ?? (_openLogFileCommand = new ActionCommand(ExecuteOpenLogFileCommand, CanExecuteOpenLogFileCommand));
-
-    private bool CanExecuteOpenLogFileCommand(object arg)
-    {
-        return true;
-    }
-
-    private void ExecuteOpenLogFileCommand(object obj)
-    {
-        _logger.LogInformation($"Open log files directory: '{_logFolder.Path}'");
-        Launcher.LaunchFolderAsync(_logFolder);
-    }
-
-    #endregion
+    #endregion Command
 
     #region IDisposable Support
 
     private bool disposedValue = false; // To detect redundant calls
-    private StorageFolder _logFolder;
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
@@ -163,19 +176,11 @@ public class LogsViewModel : ViewModelBase<object>, IDisposable
         {
             if (disposing)
             {
-                _logFileWatcher.Dispose();
+                _logFileWatcher?.Dispose();
             }
 
             disposedValue = true;
         }
     }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    #endregion
+    #endregion IDisposable Support
 }

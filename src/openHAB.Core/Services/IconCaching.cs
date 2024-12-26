@@ -115,7 +115,7 @@ public class IconCaching : IIconCaching
             }
 
             byte[] iconContent = await httpResponse.Content.ReadAsByteArrayAsync();
-            using (FileStream file = File.Create(iconFilePath))
+            using (FileStream file = File.Open(iconFilePath, FileMode.OpenOrCreate))
             {
                 await file.WriteAsync(iconContent, 0, iconContent.Length);
             }

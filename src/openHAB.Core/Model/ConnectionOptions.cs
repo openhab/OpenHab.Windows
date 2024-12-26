@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
-using openHAB.Core.Services;
 
 namespace openHAB.Core.Model;
 
@@ -68,7 +67,7 @@ public class ConnectionOptions
         try
         {
             string connectionSettings = JsonSerializer.Serialize(this);
-            File.WriteAllText(AppPaths.SettingsFilePath, connectionSettings, Encoding.UTF8);
+            File.WriteAllText(AppPaths.ConnectionFilePath, connectionSettings, Encoding.UTF8);
 
             return true;
         }

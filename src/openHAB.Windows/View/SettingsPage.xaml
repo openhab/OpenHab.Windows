@@ -15,7 +15,7 @@
       x:Name="SettingsView">
     <Page.Resources>
         <converters:ReverseBoolConverter x:Key="ReverseBoolConverter" />
-        <media:AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
+        <!--<media:AcrylicBrush x:Key="NavigationViewDefaultPaneBackground"
                             TintOpacity="0.7"
                             FallbackColor="{StaticResource DarkColor}"
                             TintColor="{StaticResource DarkColor}" />
@@ -26,210 +26,66 @@
         <media:AcrylicBrush x:Key="NavigationViewTopPaneBackground"
                             TintOpacity="0.7"
                             FallbackColor="{StaticResource DarkColor}"
-                            TintColor="{StaticResource DarkColor}" />
-        <SolidColorBrush x:Key="NavigationViewItemForeground"
-                         Color="White" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundPointerOver"
-                         Color="#FFFF5722" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundPressed"
-                         Color="White" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundChecked"
-                         Color="#FFFF5722" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundCheckedPressed"
-                         Color="#FFFF5722" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundCheckedPointerOver"
-                         Color="White" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundSelected"
-                         Color="#FFFF5722" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPressed"
-                         Color="#FFFF5722" />
-        <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPointerOver"
-                         Color="White" />
-        <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground"
-                         Color="#FFFF5722" />
-        <Style x:Name="SettingsMenuItem"
-               TargetType="ListViewItem">
-            <Setter Property="Foreground"
-                    Value="White" />
-            <Setter Property="FontSize"
-                    Value="16" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <ListViewItemPresenter CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
-                                               ContentMargin="{TemplateBinding Padding}"
-                                               CheckMode="Overlay"
-                                               ContentTransitions="{TemplateBinding ContentTransitions}"
-                                               CheckBoxBrush="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
-                                               DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
-                                               DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
-                                               DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
-                                               DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
-                                               FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
-                                               FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"
-                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                               PointerOverForeground="#FFFF5722"
-                                               PressedBackground="{ThemeResource SystemControlHighlightListMediumBrush}"
-                                               PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
-                                               PointerOverBackground="{ThemeResource SystemControlHighlightListLowBrush}"
-                                               ReorderHintOffset="{ThemeResource GridViewItemReorderHintThemeOffset}"
-                                               SelectedPressedBackground="{ThemeResource SystemControlHighlightListAccentHighBrush}"
-                                               SelectionCheckMarkVisualEnabled="True"
-                                               SelectedForeground="#FFFF5722"
-                                               SelectedPointerOverBackground="{ThemeResource SystemControlHighlightListAccentMediumBrush}"
-                                               SelectedBackground="#344040"
-                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                            TintColor="{StaticResource DarkColor}" />-->
     </Page.Resources>
-    <!--<Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="100*" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0"
-                                Orientation="Horizontal">
-                        <SymbolIcon Symbol="Setting"
-                                    Margin="10,5,0,0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{StaticResource OpenHABMenuColor}" />
-                        <TextBlock x:Uid="SettingsHeader"
-                                   Margin="10,0,0,0"
-                                   FontSize="28"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap"
-                                   Foreground="White" />
-                    </StackPanel>
-                    <ListView Grid.Row="1"
-                              x:Name="SettingOptionsListView"
-                              Margin="0,10,0,0"
-                              ItemContainerStyle="{StaticResource SettingsMenuItem}">
-                        <ListViewItem x:Uid="MenuAppSettings"
-                                      Tapped="AppSettingsListViewItem_Tapped" />
-                        <ListViewItem x:Uid="MenuConnectionSettings"
-                                      Tapped="ConnectionSettingsListViewItem_Tapped" />
-                        <ListViewItem x:Uid="MenuLogsView">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="Tapped">
-                                    <core:NavigateToPageAction TargetPage="openHAB.Windows.View.LogViewerPage" />
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </ListViewItem>
-                    </ListView>
-                    <CommandBar Grid.Row="2"
-                                Background="Transparent"
-                                HorizontalAlignment="Left"
-                                DefaultLabelPosition="Right">
-                        <AppBarButton x:Uid="SettingsSaveButton"
-                                      Icon="Save"
-                                      Foreground="White"
-                                      Command="{x:Bind Vm.SaveCommand}" />
-                        <AppBarButton x:Uid="SettingsCancelButton"
-                                      Foreground="White"
-                                      Icon="Cancel">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="Tapped">
-                                    <core:NavigateToPageAction TargetPage="openHAB.Windows.View.MainPage" />
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </AppBarButton>
-                    </CommandBar>
-                </Grid>-->
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="20,20,50,50">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0"
+            <CommandBar Grid.Row="0"
+                        DefaultLabelPosition="Right"
+                        OverflowButtonVisibility="Collapsed">
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton x:Uid="SettingsSaveButton"
+                                  Icon="Save"
+                                  Command="{x:Bind Vm.SaveCommand}" />
+                    <AppBarButton x:Uid="SettingsCancelButton"
+                                  Icon="Cancel">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Tapped">
+                                <core:NavigateToPageAction TargetPage="openHAB.Windows.View.MainPage" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                    <AppBarSeparator />
+                    <AppBarButton x:Uid="OpenLogViewerButton"
+                                  Icon="Document">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Tapped">
+                                <core:NavigateToPageAction TargetPage="openHAB.Windows.View.LogViewerPage" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </AppBarButton>
+                </CommandBar.PrimaryCommands>
+                <CommandBar.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Setting"
+                                    Margin="10,5,0,0"
+                                    VerticalAlignment="Center" />
+                        <TextBlock x:Uid="SettingsHeader"
+                                   Margin="10,0,0,0"
+                                   Style="{StaticResource TitleTextBlockStyle}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </CommandBar.Content>
+            </CommandBar>
+            <muxc:InfoBar x:Name="SettingsNotification"
+                          Grid.Row="1"
+                          Margin="10"
+                          IsClosable="True"
+                          Severity="Error"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center" />
+            <StackPanel Grid.Row="2"
                         Orientation="Vertical">
                 <StackPanel Margin="0,0,0,10"
                             Padding="12">
-                    <TextBlock x:Uid="AppSettings"
-                               Style="{StaticResource TitleStyle}"
-                               Margin="0,0,0,10" />
-                    <controls:SettingsCard x:Uid="AppAutostart"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xE80F;}">
-                        <ToggleSwitch x:Name="AppAutostartSwitch"
-                                      Margin="0,0,0,12"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      IsEnabled="{Binding Settings.CanAppAutostartEnabled, Mode=TwoWay}"
-                                      IsOn="{Binding Settings.IsAppAutostartEnabled, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard x:Uid="StartAppMinimized"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xE7F4;g}">
-                        <ToggleSwitch x:Name="StartAppMinimizedSwitch"
-                                      Margin="0,0,0,12"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      IsOn="{Binding Settings.StartAppMinimized, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard x:Uid="AppLanguage"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
-                        <ComboBox Margin="0,0,0,12"
-                                  ItemsSource="{Binding Settings.AppLanguages}"
-                                  DisplayMemberPath="Name"
-                                  SelectedItem="{Binding Settings.SelectedAppLanguage, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10"
-                            Padding="12">
-                    <TextBlock x:Uid="NotificationSetting"
-                               Style="{StaticResource TitleStyle}"
-                               Margin="0,0,0,10" />
-                    <controls:SettingsCard x:Uid="EnableWindowsNotifications"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xED0C;}">
-                        <ToggleSwitch Margin="0,0,0,12"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      IsOn="{Binding Settings.NotificationsEnable, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10"
-                            Padding="12">
-                    <TextBlock x:Uid="SitemapSetting"
-                               Style="{StaticResource TitleStyle}"
-                               Margin="0,0,0,10" />
-                    <controls:SettingsCard x:Uid="ShowDefaultSitemap"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}">
-                        <ToggleSwitch x:Name="CheckBoxHideDefaultSitemap"
-                                      Margin="0,0,0,12"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      IsOn="{Binding Settings.ShowDefaultSitemap, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard x:Uid="SVGIcons"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xE91B;}">
-                        <ToggleSwitch x:Name="CheckBoxSVGIcons"
-                                      Margin="0,0,0,12"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      IsOn="{Binding Settings.UseSVGIcons, Mode=TwoWay}" />
-                    </controls:SettingsCard>
-                    <controls:SettingsCard x:Uid="ClearIconCache"
-                                           Margin="0,0,0,10"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xF12B;}">
-                        <Button x:Uid="ClearIconCacheButton"
-                                Margin="0,0,0,12"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Command="{x:Bind Vm.ClearIconCacheCommand}" />
-                    </controls:SettingsCard>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,10"
-                            Padding="12">
                     <TextBlock x:Uid="ConnectionSettingsSection"
-                               Style="{StaticResource TitleStyle}"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
                                Margin="0,0,0,10" />
                     <controls:SettingsCard x:Uid="DemoModeHeader"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE81E;}"
@@ -270,14 +126,87 @@
                         </controls:SettingsExpander.Items>
                     </controls:SettingsExpander>
                 </StackPanel>
+                <StackPanel Margin="0,0,0,10"
+                            Padding="12">
+                    <TextBlock x:Uid="AppSettings"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Margin="0,0,0,10" />
+                    <controls:SettingsCard x:Uid="AppAutostart"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE80F;}">
+                        <ToggleSwitch x:Name="AppAutostartSwitch"
+                                      Margin="0,0,0,12"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsEnabled="{Binding Settings.CanAppAutostartEnabled, Mode=TwoWay}"
+                                      IsOn="{Binding Settings.IsAppAutostartEnabled, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="StartAppMinimized"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE7F4;g}">
+                        <ToggleSwitch x:Name="StartAppMinimizedSwitch"
+                                      Margin="0,0,0,12"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsOn="{Binding Settings.StartAppMinimized, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="AppLanguage"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                        <ComboBox Margin="0,0,0,12"
+                                  ItemsSource="{Binding Settings.AppLanguages}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding Settings.SelectedAppLanguage, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                </StackPanel>
+                <StackPanel Margin="0,0,0,10"
+                            Padding="12">
+                    <TextBlock x:Uid="NotificationSetting"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Margin="0,0,0,10" />
+                    <controls:SettingsCard x:Uid="EnableWindowsNotifications"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xED0C;}">
+                        <ToggleSwitch Margin="0,0,0,12"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsOn="{Binding Settings.NotificationsEnable, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                </StackPanel>
+                <StackPanel Margin="0,0,0,10"
+                            Padding="12">
+                    <TextBlock x:Uid="SitemapSetting"
+                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Margin="0,0,0,10" />
+                    <controls:SettingsCard x:Uid="ShowDefaultSitemap"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}">
+                        <ToggleSwitch x:Name="CheckBoxHideDefaultSitemap"
+                                      Margin="0,0,0,12"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsOn="{Binding Settings.ShowDefaultSitemap, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="SVGIcons"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE91B;}">
+                        <ToggleSwitch x:Name="CheckBoxSVGIcons"
+                                      Margin="0,0,0,12"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsOn="{Binding Settings.UseSVGIcons, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="ClearIconCache"
+                                           Margin="0,0,0,10"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xF12B;}">
+                        <Button x:Uid="ClearIconCacheButton"
+                                Margin="0,0,0,12"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Command="{x:Bind Vm.ClearIconCacheCommand}" />
+                    </controls:SettingsCard>
+                </StackPanel>
             </StackPanel>
-            <muxc:InfoBar x:Name="SettingsNotification"
-                          Grid.Row="1"
-                          Margin="10"
-                          IsClosable="True"
-                          Severity="Error"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center" />
         </Grid>
     </ScrollViewer>
 </Page>

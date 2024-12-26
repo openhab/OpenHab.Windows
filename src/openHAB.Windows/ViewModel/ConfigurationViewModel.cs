@@ -61,11 +61,18 @@ public class ConfigurationViewModel : ViewModelBase<object>
         _notificationsEnable = _settings.NotificationsEnable;
 
         InitializeAutostartSettings();
-
-        _appLanguages = InitializeAppLanguages();
-        _selectedAppLanguage = _appLanguages.FirstOrDefault(x => string.Equals(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase));
+        InitializeAppLanguage();
 
         PropertyChanged += ConfigurationViewModel_PropertyChanged;
+    }
+
+    private void InitializeAppLanguage()
+    {
+        _appLanguages = InitializeAppLanguages();
+
+        _selectedAppLanguage = string.IsNullOrEmpty(_settings.AppLanguage)
+            ? _appLanguages.FirstOrDefault(x => x.Code == null)
+            : _appLanguages.FirstOrDefault(x => string.Equals(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private async void InitializeAutostartSettings()
@@ -140,7 +147,13 @@ public class ConfigurationViewModel : ViewModelBase<object>
     public ConnectionDialogViewModel LocalConnection
     {
         get => _localConnection;
-        set => Set(ref _localConnection, value);
+        set
+        {
+            if (Set(ref _localConnection, value))
+            {
+                _connection.LocalConnection = value.Model;
+            }
+        }
     }
 
     /// <summary>
@@ -165,7 +178,13 @@ public class ConfigurationViewModel : ViewModelBase<object>
     public ConnectionDialogViewModel RemoteConnection
     {
         get => _remoteConnection;
-        set => Set(ref _remoteConnection, value);
+        set
+        {
+            if (Set(ref _remoteConnection, value))
+            {
+                _connection.RemoteConnection = value.Model;
+            }
+        }
     }
 
     /// <summary>
@@ -259,6 +278,7 @@ public class ConfigurationViewModel : ViewModelBase<object>
         _connection.RemoteConnection = _remoteConnection.Model;
 
         bool result = _settings.Save();
+        result &= _connection.Save();
         _appManager.SetProgramLanguage(null);
 
         return result;
