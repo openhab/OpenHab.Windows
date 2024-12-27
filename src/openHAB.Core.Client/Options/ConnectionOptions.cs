@@ -3,16 +3,15 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using openHAB.Core.Client.Connection.Contracts;
-using openHAB.Core.Client.Connection.Models;
 
-namespace openHAB.Core.Model;
+namespace openHAB.Core.Client.Options;
 
 /// <summary>
 /// Represents the connection options for the OpenHAB application.
 /// </summary>
 public class ConnectionOptions
 {
-    private static readonly List<IConnectionProfile> _connectionProfiles = Client.Connection.Models.ConnectionProfiles.GetProfiles();
+    private static readonly List<IConnectionProfile> _connectionProfiles = Connection.Models.ConnectionProfiles.GetProfiles();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectionOptions"/> class.
@@ -42,7 +41,7 @@ public class ConnectionOptions
     /// Gets or sets the configuration to the OpenHAB local instance.
     /// </summary>
     /// <value>The local connection configuration.</value>
-    public Connection LocalConnection
+    public Connection.Models.Connection LocalConnection
     {
         get;
         set;
@@ -52,7 +51,7 @@ public class ConnectionOptions
     /// Gets or sets the configuration to the OpenHAB remote instance.
     /// </summary>
     /// <value>The remote connection configuration.</value>
-    public Connection RemoteConnection
+    public Connection.Models.Connection RemoteConnection
     {
         get;
         set;
@@ -62,12 +61,12 @@ public class ConnectionOptions
     /// Saves the current connection options to a file.
     /// </summary>
     /// <returns><c>true</c> if the save operation was successful; otherwise, <c>false</c>.</returns>
-    public bool Save()
+    public bool Save(string filePath)
     {
         try
         {
             string connectionSettings = JsonSerializer.Serialize(this);
-            File.WriteAllText(AppPaths.ConnectionFilePath, connectionSettings, Encoding.UTF8);
+            File.WriteAllText(filePath, connectionSettings, Encoding.UTF8);
 
             return true;
         }

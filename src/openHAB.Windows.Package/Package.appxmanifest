@@ -60,7 +60,7 @@
 				<!--Register COM CLSID LocalServer32 registry key-->
 				<com:Extension Category="windows.comServer">
 					<com:ComServer>
-						<com:ExeServer Executable="openHAB.Windows.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
+						<com:ExeServer Executable="openHAB.Windows\openHAB.Windows.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
 							<com:Class Id="5EDF1378-0453-439A-9D48-71C645088153" DisplayName="Toast activator"/>
 						</com:ExeServer>
 					</com:ComServer>

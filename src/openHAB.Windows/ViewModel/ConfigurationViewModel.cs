@@ -4,8 +4,10 @@ using System.Linq;
 using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using openHAB.Core;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
+using openHAB.Core.Client.Options;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
 using ConnectionState = openHAB.Core.Client.Connection.Models.ConnectionState;
@@ -278,7 +280,7 @@ public class ConfigurationViewModel : ViewModelBase<object>
         _connection.RemoteConnection = _remoteConnection.Model;
 
         bool result = _settings.Save();
-        result &= _connection.Save();
+        result &= _connection.Save(AppPaths.ConnectionFilePath);
         _appManager.SetProgramLanguage(null);
 
         return result;

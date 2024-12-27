@@ -3,6 +3,7 @@ using openHAB.Core.Client.Connection.Contracts;
 
 namespace openHAB.Core.Client.Connection.Models;
 
+
 /// <summary>
 /// Connection configuration for OpenHAB service or cloud instance.
 /// </summary>
@@ -84,5 +85,36 @@ public class Connection
     {
         get;
         set;
+    }
+
+    /// <summary>
+    /// Gets or sets for openHAB MainUI URL.
+    /// </summary>
+    [JsonIgnore]
+    public string MainUIUrl
+    {
+        get
+        {
+            if (Profile is LocalConnectionProfile)
+            {
+                return Url;
+            }
+            else if (Profile is RemoteConnectionProfile)
+            {
+                return Url;
+            }
+            else if (Profile is CloudConnectionProfile)
+            {
+                return Profile.MainUIUrl;
+            }
+            else if (Profile is DefaultConnectionProfile)
+            {
+                return Profile.MainUIUrl;
+            }
+            else
+            {
+                return Url;
+            }
+        }
     }
 }

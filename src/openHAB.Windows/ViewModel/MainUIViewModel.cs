@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using openHAB.Core.Client;
+using openHAB.Core.Client.Connection.Contracts;
 
 namespace openHAB.Windows.ViewModel;
 
@@ -8,12 +8,12 @@ public class MainUIViewModel : ViewModelBase<object>
     private string _mainUiUrl;
     private readonly ILogger<MainUIViewModel> _logger;
 
-    public MainUIViewModel(ILogger<MainUIViewModel> logger)
+    public MainUIViewModel(IConnectionService connectionService, ILogger<MainUIViewModel> logger)
         : base(new object())
     {
         _logger = logger;
 
-        MainUIUrl = OpenHABHttpClient.BaseUrl;
+        MainUIUrl = connectionService.CurrentConnection.MainUIUrl;
     }
 
     public string MainUIUrl

@@ -43,9 +43,11 @@ public class RemoteConnectionProfile : IConnectionProfile
         get => HttpClientType.Remote;
     }
 
+    /// <inheritdoc/>
     public string MainUIUrl => "https://home.myopenhab.org/";
 
-    public string Url => throw new System.NotImplementedException();
+    /// <inheritdoc/>
+    public string Url => null;
 
     /// <inheritdoc/>
     public Connection CreateConnection()

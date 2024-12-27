@@ -15,11 +15,13 @@ using openHAB.Core.Client.Models;
 
 namespace openHAB.Core.Client.Connection;
 
+
+/// <summary>
 /// <inheritdoc/>
 public class ConnectionService : IConnectionService
 {
     private readonly ILogger<ConnectionService> _logger;
-    private readonly OpenHABHttpClient _openHABHttpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private Models.Connection _connection;
 
     /// <summary>
@@ -27,17 +29,14 @@ public class ConnectionService : IConnectionService
     /// </summary>
     /// <param name="openHABHttpClient">The OpenHAB HTTP client.</param>
     /// <param name="logger">The logger.</param>
-    public ConnectionService(OpenHABHttpClient openHABHttpClient, ILogger<ConnectionService> logger)
+    public ConnectionService(IHttpClientFactory httpClientFactory, ILogger<ConnectionService> logger)
     {
         _logger = logger;
-        _openHABHttpClient = openHABHttpClient;
+        _httpClientFactory = httpClientFactory;
     }
 
     /// <inheritdoc/>
-    public Models.Connection CurrentConnection
-    {
-        get => _connection;
-    }
+    public Models.Connection CurrentConnection => _connection;
 
     /// <inheritdoc/>
     public async Task<HttpResponseResult<bool>> CheckUrlReachability(Models.Connection connection)
@@ -49,28 +48,21 @@ public class ConnectionService : IConnectionService
 
         if (!connection.Url.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
         {
-            connection.Url = connection.Url + "/";
+            connection.Url += "/";
         }
 
-        OpenHABHttpClient.BaseUrl = connection.Url;
         HttpResponseResult<ServerInfo> result = await GetOpenHABServerInfo(connection).ConfigureAwait(false);
-        if (result.Content == null)
-        {
-            return new HttpResponseResult<bool>(false, null, result.Exception);
-        }
-        else
-        {
-            return new HttpResponseResult<bool>(true, result.StatusCode);
-        }
+        return result.Content == null
+            ? new HttpResponseResult<bool>(false, null, result.Exception)
+            : new HttpResponseResult<bool>(true, result.StatusCode);
     }
 
     /// <inheritdoc/>
-    public async Task<Models.Connection> DetectAndRetriveConnection(Models.Connection localConnection, Models.Connection remoteConnection, bool isRunningInDemoMode)
+    public async Task<Models.Connection> DetectAndRetrieveConnection(Models.Connection localConnection, Models.Connection remoteConnection, bool isRunningInDemoMode)
     {
         _logger.LogInformation("Validate Connection");
-        _logger.LogInformation($"App is running in demo mode: {isRunningInDemoMode}");
+        _logger.LogInformation("APP is running in demo mode: {IsRunningInDemoMode}", isRunningInDemoMode);
 
-        // no url configured yet
         if (string.IsNullOrWhiteSpace(localConnection?.Url) &&
             string.IsNullOrWhiteSpace(remoteConnection?.Url) &&
             !isRunningInDemoMode)
@@ -81,64 +73,50 @@ public class ConnectionService : IConnectionService
         if (isRunningInDemoMode)
         {
             _connection = new DemoConnectionProfile().CreateConnection();
-            OpenHABHttpClient.BaseUrl = Constants.API.DemoModeUrl;
             return _connection;
         }
 
         bool meteredConnection = NetworkHelper.Instance.ConnectionInformation.IsInternetOnMeteredConnection;
-        _logger.LogInformation($"Metered Connection Type: {meteredConnection}");
+        _logger.LogInformation("Metered Connection Type: {MeteredConnection}", meteredConnection);
 
         if (meteredConnection)
         {
             if (string.IsNullOrEmpty(remoteConnection?.Url))
             {
-                string message = "No remote url configured";
-                _logger.LogWarning(message);
-
+                _logger.LogWarning("No remote url configured");
                 return null;
             }
 
-            OpenHABHttpClient.BaseUrl = remoteConnection.Url;
             _connection = remoteConnection;
-
             return _connection;
         }
 
         HttpResponseResult<bool> result = await CheckUrlReachability(localConnection).ConfigureAwait(false);
-        _logger.LogInformation($"OpenHab server is reachable: {result.Content}");
+        _logger.LogInformation("OpenHab server is reachable: {IsReachable}", result.Content);
 
         if (result.Content)
         {
-            OpenHABHttpClient.BaseUrl = localConnection.Url;
             _connection = localConnection;
-
             return _connection;
         }
-        else
+
+        if (string.IsNullOrWhiteSpace(remoteConnection?.Url))
         {
-            // If remote URL is configured
-            if (string.IsNullOrWhiteSpace(remoteConnection?.Url))
-            {
-                StrongReferenceMessenger.Default.Send<ConnectionErrorMessage>(new ConnectionErrorMessage(AppResources.Errors.GetString("ConnectionTestFailed")));
-                _logger.LogWarning($"OpenHab server url is not valid");
-
-                return null;
-            }
-
-            result = await CheckUrlReachability(remoteConnection).ConfigureAwait(false);
-            if (!result.Content)
-            {
-                StrongReferenceMessenger.Default.Send<ConnectionErrorMessage>(new ConnectionErrorMessage(AppResources.Errors.GetString("ConnectionTestFailed")));
-                _logger.LogWarning($"OpenHab server url is not valid");
-
-                return null;
-            }
-
-            OpenHABHttpClient.BaseUrl = remoteConnection.Url;
-            _connection = remoteConnection;
-
-            return _connection;
+            StrongReferenceMessenger.Default.Send(new ConnectionErrorMessage(AppResources.Errors.GetString("ConnectionTestFailed")));
+            _logger.LogWarning("OpenHab server url is not valid");
+            return null;
         }
+
+        result = await CheckUrlReachability(remoteConnection).ConfigureAwait(false);
+        if (!result.Content)
+        {
+            StrongReferenceMessenger.Default.Send(new ConnectionErrorMessage(AppResources.Errors.GetString("ConnectionTestFailed")));
+            _logger.LogWarning("OpenHab server url is not valid");
+            return null;
+        }
+
+        _connection = remoteConnection;
+        return _connection;
     }
 
     /// <inheritdoc />
@@ -146,26 +124,26 @@ public class ConnectionService : IConnectionService
     {
         try
         {
-            var httpClient = _openHABHttpClient.DisposableClient(connection);
-            httpClient.BaseAddress = new Uri(connection.Url);
-
-            ServerInfo serverInfo = new ServerInfo();
+            HttpClient httpClient = connection.Type switch
+            {
+                HttpClientType.Local => _httpClientFactory.CreateClient("local"),
+                HttpClientType.Remote => _httpClientFactory.CreateClient("remote"),
+                _ => throw new OpenHABException("Invalid connection type")
+            };
 
             HttpResponseMessage result = await httpClient.GetAsync(Constants.API.ServerInformation).ConfigureAwait(false);
             if (!result.IsSuccessStatusCode)
             {
-                _logger.LogError($"Http request get OpenHab version failed, ErrorCode:'{result.StatusCode}'");
+                _logger.LogError("HTTP request get OpenHab version failed, ErrorCode:'{StatusCode}'", result.StatusCode);
                 throw new OpenHABException($"{result.StatusCode} received from server");
             }
 
             string responseBody = await result.Content.ReadAsStringAsync();
-
             APIInfo apiInfo = JsonSerializer.Deserialize<APIInfo>(responseBody);
 
             if (int.TryParse(apiInfo.Version, out int apiVersion) && apiVersion < 4)
             {
-                serverInfo.Version = OpenHABVersion.Two;
-                return new HttpResponseResult<ServerInfo>(serverInfo, result.StatusCode);
+                return new HttpResponseResult<ServerInfo>(new ServerInfo { Version = OpenHABVersion.Two }, result.StatusCode);
             }
 
             string runtimeversion = Regex.Replace(apiInfo?.RuntimeInfo.Version, "[^.0-9]", string.Empty, RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
@@ -173,32 +151,19 @@ public class ConnectionService : IConnectionService
             {
                 string message = "Not able to parse runtime version from openHAB server";
                 _logger.LogError(message);
-
                 throw new OpenHABException(message);
             }
 
-            OpenHABVersion openHABVersion = (OpenHABVersion)serverVersion.Major;
-
-            serverInfo.Version = openHABVersion;
-            serverInfo.RuntimeVersion = apiInfo?.RuntimeInfo.Version;
-            serverInfo.Build = apiInfo.RuntimeInfo.BuildString;
-
-            return new HttpResponseResult<ServerInfo>(serverInfo, result.StatusCode);
+            return new HttpResponseResult<ServerInfo>(new ServerInfo
+            {
+                Version = (OpenHABVersion)serverVersion.Major,
+                RuntimeVersion = apiInfo?.RuntimeInfo.Version,
+                Build = apiInfo.RuntimeInfo.BuildString
+            }, result.StatusCode);
         }
-        catch (ArgumentNullException ex)
-        {
-            throw new OpenHABException("Invalid call", ex);
-        }
-        catch (InvalidOperationException ex)
+        catch (Exception ex) when (ex is ArgumentNullException or InvalidOperationException or HttpRequestException)
         {
             _logger.LogError(ex, "GetOpenHABServerInfo failed");
-
-            return new HttpResponseResult<ServerInfo>(null, null, ex);
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "GetOpenHABServerInfo failed");
-
             return new HttpResponseResult<ServerInfo>(null, null, ex);
         }
         catch (Exception ex)

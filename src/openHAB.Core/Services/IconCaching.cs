@@ -5,22 +5,23 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using openHAB.Core.Client;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Client.Models;
-using openHAB.Core.Model;
+using openHAB.Core.Client.Options;
 using openHAB.Core.Services.Contracts;
 using openHAB.Core.Services.Models;
+
+using Connection = openHAB.Core.Client.Connection.Models.Connection;
 
 namespace openHAB.Core.Services;
 
 /// <inheritdoc/>
 public class IconCaching : IIconCaching
 {
-    private readonly OpenHABHttpClient _openHABHttpClient;
     private readonly IConnectionService _connectionService;
     private readonly IAppManager _appManager;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IOptions<ConnectionOptions> _connectionOptions;
     private readonly ILogger<IconCaching> _logger;
 
@@ -28,22 +29,21 @@ public class IconCaching : IIconCaching
     /// Initializes a new instance of the <see cref="IconCaching" /> class.
     /// </summary>
     /// <param name="appPaths">Application default paths.</param>
-    /// <param name="openHABHttpClient">The HTTP client factory.</param>
     /// <param name="connectionService">The connection service to retrieve the connection details.</param>
-    /// <param name="settingsOptions">The settings service to load settings.</param>
+    /// <param name="connectionOptions">The settings service to load settings.</param>
     /// <param name="logger">The logger.</param>
     public IconCaching(
-        OpenHABHttpClient openHABHttpClient,
         IConnectionService connectionService,
         IAppManager appManager,
-        IOptions<ConnectionOptions> settingsOptions,
+        IHttpClientFactory httpClientFactory,
+        IOptions<ConnectionOptions> connectionOptions,
         ILogger<IconCaching> logger)
     {
         _logger = logger;
-        _openHABHttpClient = openHABHttpClient;
         _connectionService = connectionService;
-        _connectionOptions = settingsOptions;
+        _connectionOptions = connectionOptions;
         _appManager = appManager;
+        _httpClientFactory = httpClientFactory;
     }
 
     /// <inheritdoc/>
@@ -96,7 +96,7 @@ public class IconCaching : IIconCaching
     {
         ConnectionOptions settings = _connectionOptions.Value;
         bool isRunningInDemoMode = settings.IsRunningInDemoMode.HasValue && settings.IsRunningInDemoMode.Value;
-        Connection connection = await _connectionService.DetectAndRetriveConnection(settings.LocalConnection, settings.RemoteConnection, isRunningInDemoMode)
+        Connection connection = await _connectionService.DetectAndRetrieveConnection(settings.LocalConnection, settings.RemoteConnection, isRunningInDemoMode)
             .ConfigureAwait(false);
 
         if (connection == null)
@@ -105,23 +105,27 @@ public class IconCaching : IIconCaching
             return false;
         }
 
-        using (HttpClient httpClient = _openHABHttpClient.DisposableClient(connection))
+        HttpClient httpClient = connection.Type switch
         {
-            Uri uri = new Uri(iconUrl);
-            HttpResponseMessage httpResponse = await httpClient.GetAsync(uri).ConfigureAwait(false);
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Failed to download icon from '{IconUrl}' with status code '{StatusCode}'", iconUrl, httpResponse.StatusCode);
-            }
+            HttpClientType.Local => _httpClientFactory.CreateClient("local"),
+            HttpClientType.Remote => _httpClientFactory.CreateClient("remote"),
+            _ => throw new OpenHABException("Invalid connection type")
+        };
 
-            byte[] iconContent = await httpResponse.Content.ReadAsByteArrayAsync();
-            using (FileStream file = File.Open(iconFilePath, FileMode.OpenOrCreate))
-            {
-                await file.WriteAsync(iconContent, 0, iconContent.Length);
-            }
-
-            return true;
+        Uri uri = new Uri(iconUrl);
+        HttpResponseMessage httpResponse = await httpClient.GetAsync(uri).ConfigureAwait(false);
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("Failed to download icon from '{IconUrl}' with status code '{StatusCode}'", iconUrl, httpResponse.StatusCode);
         }
+
+        byte[] iconContent = await httpResponse.Content.ReadAsByteArrayAsync();
+        using (FileStream file = File.Open(iconFilePath, FileMode.OpenOrCreate))
+        {
+            await file.WriteAsync(iconContent, 0, iconContent.Length);
+        }
+
+        return true;
     }
 
     /// <inheritdoc/>

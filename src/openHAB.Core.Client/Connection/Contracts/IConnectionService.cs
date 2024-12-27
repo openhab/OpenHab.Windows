@@ -25,7 +25,7 @@ public interface IConnectionService
     /// <summary>Detects if connection is local or remote and provides the connection information.</summary>
     /// <param name="settings">The app settings.</param>
     /// <returns>Return the connection information for local/remote.</returns>
-    Task<Models.Connection> DetectAndRetriveConnection(Models.Connection localConnection, Models.Connection remoteConnection, bool isRunningInDemoMode);
+    Task<Models.Connection> DetectAndRetrieveConnection(Models.Connection localConnection, Models.Connection remoteConnection, bool isRunningInDemoMode);
 
     /// <summary>
     /// Gets information about the openHAB server.

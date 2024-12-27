@@ -12,6 +12,8 @@ using openHAB.Core.Client.Connection;
 using openHAB.Core.Client.Connection.Contracts;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Event.Contracts;
+using openHAB.Core.Client.Extensions;
+using openHAB.Core.Client.Options;
 using openHAB.Core.Model;
 using openHAB.Core.Notification;
 using openHAB.Core.Notification.Contracts;
@@ -42,10 +44,10 @@ public static class AppServiceExtensions
         });
 
         services.AddSingleton<IMessenger>(StrongReferenceMessenger.Default);
+
+        services.AddOpenHabHttpClients();
         services.AddSingleton<IOpenHABClient, OpenHABClient>();
 
-        services.AddSingleton<AppPaths>();
-        services.AddSingleton<OpenHABHttpClient>();
         services.AddSingleton<IConnectionService, ConnectionService>();
         services.AddSingleton<IIconCaching, IconCaching>();
         services.AddSingleton<IAppManager, AppManager>();

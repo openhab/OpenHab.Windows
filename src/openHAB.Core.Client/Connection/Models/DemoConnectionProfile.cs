@@ -43,8 +43,10 @@ public class DemoConnectionProfile : IConnectionProfile
         get => HttpClientType.Remote;
     }
 
+    /// <inheritdoc/>
     public string MainUIUrl => Url;
 
+    /// <inheritdoc/>
     public string Url => Constants.API.DemoModeUrl;
 
     /// <inheritdoc/>

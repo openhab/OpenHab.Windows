@@ -29,7 +29,16 @@ public static partial class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        // TODO: add application initialization stuff before XAML things happen
+        HostApplicationBuilder builder = new HostApplicationBuilder(args);
+        builder.Configuration.AddJsonFile(AppPaths.SettingsFilePath, optional: true, reloadOnChange: true);
+        builder.Configuration.AddJsonFile(AppPaths.ConnectionFilePath, optional: true, reloadOnChange: true);
+
+        builder.Services.AddConfiguration(builder.Configuration);
+        builder.Services.AddOpenHABServices();
+        builder.Services.AddOpenHABViewModels();
+        builder.Services.AddViews();
+
+        Host = builder.Build();
 
         // Taken from the default generated XAML entry point
         XamlCheckProcessRequirements();
@@ -40,17 +49,6 @@ public static partial class Program
             {
                 DispatcherQueueSynchronizationContext? context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
                 SynchronizationContext.SetSynchronizationContext(context);
-
-                HostApplicationBuilder builder = new HostApplicationBuilder(args);
-                builder.Configuration.AddJsonFile(AppPaths.SettingsFilePath, optional: true, reloadOnChange: true);
-                builder.Configuration.AddJsonFile(AppPaths.ConnectionFilePath, optional: true, reloadOnChange: true);
-
-                builder.Services.AddConfiguration(builder.Configuration);
-                builder.Services.AddOpenHABServices();
-                builder.Services.AddOpenHABViewModels();
-                builder.Services.AddViews();
-
-                Host = builder.Build();
 
                 App? app = Host.Services.GetRequiredService<App>();
             }

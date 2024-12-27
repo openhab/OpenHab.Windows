@@ -44,9 +44,9 @@ public class LocalConnectionProfile : IConnectionProfile
         get => HttpClientType.Local;
     }
 
-    public string MainUIUrl => throw new System.NotImplementedException();
+    public string MainUIUrl => null;
 
-    public string Url => throw new System.NotImplementedException();
+    public string Url => null;
 
     /// <inheritdoc/>
     public Connection CreateConnection()

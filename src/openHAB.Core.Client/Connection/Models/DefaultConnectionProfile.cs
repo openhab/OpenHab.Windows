@@ -43,8 +43,10 @@ public class DefaultConnectionProfile : IConnectionProfile
         get => HttpClientType.Local;
     }
 
+    /// <inheritdoc/>
     public string Url => "https://openhab:8443";
 
+    /// <inheritdoc/>
     public string MainUIUrl => Url;
 
     /// <inheritdoc/>

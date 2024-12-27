@@ -6,22 +6,6 @@ namespace openHAB.Core.Client;
 public sealed class Constants
 {
     /// <summary>
-    /// Holds the constants that are used for in-app stuff.
-    /// </summary>
-    public sealed class Local
-    {
-        /// <summary>
-        /// The key that is used to persist settings to the Windows settings store.
-        /// </summary>
-        public const string SettingsKey = "UserSettingsKey";
-
-        /// <summary>
-        /// The key used to store the last opened sitemap.
-        /// </summary>
-        public const string SitemapKey = "SitemapKey";
-    }
-
-    /// <summary>
     /// Holds the constants used in server calls.
     /// </summary>
     public sealed class API

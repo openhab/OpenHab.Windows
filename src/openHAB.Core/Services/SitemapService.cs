@@ -10,6 +10,7 @@ using openHAB.Core.Client.Common;
 using openHAB.Core.Client.Contracts;
 using openHAB.Core.Client.Messages;
 using openHAB.Core.Client.Models;
+using openHAB.Core.Client.Options;
 using openHAB.Core.Messages;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
