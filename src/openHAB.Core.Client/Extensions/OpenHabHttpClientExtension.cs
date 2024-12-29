@@ -49,7 +49,7 @@ public static class OpenHabHttpClientExtension
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicCredentials);
         }
 
-        client.DefaultRequestHeaders.Add("Accept", "application/json");
+        //client.DefaultRequestHeaders.Add("Accept", "application/json");
     }
 
     private static HttpClientHandler CreateHttpClientHandler(Connection.Models.Connection connection)

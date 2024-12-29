@@ -85,6 +85,7 @@ public class SettingsViewModel : ViewModelBase<object>
         if (validConnectionConfig)
         {
             bool savedSuccessful = _configuration.Save();
+            StrongReferenceMessenger.Default.Send<TriggerAction>(new TriggerAction(Core.Messages.Action.Reload));
         }
     }
 

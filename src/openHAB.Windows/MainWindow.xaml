@@ -241,7 +241,7 @@
                         <behaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
                     </interactivity:Interaction.Behaviors>
                 </muxc:InfoBar>
-                <Frame Grid.Row="1" x:Name="ContentFrame" />
+                <Frame Grid.Row="1" x:Name="ContentFrame" Navigated="ContentFrame_Navigated" />
             </Grid>
         </muxc:NavigationView>
         <Border x:Name="LoadingControl"

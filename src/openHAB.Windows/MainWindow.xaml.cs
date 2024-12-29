@@ -37,6 +37,8 @@ public sealed partial class MainWindow : Window
         StrongReferenceMessenger.Default.Register<TriggerInfoMessage>(this, async (recipient, msg)
            => await ShowInfoMessage(recipient, msg));
 
+
+
         this.InitializeComponent();
 
         this.ExtendsContentIntoTitleBar = true;
@@ -181,4 +183,12 @@ public sealed partial class MainWindow : Window
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
     }
     #endregion
+
+    private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        if (e.Content is LogViewerPage)
+        {
+            SitemapNavigation.SelectedItem = null;
+        }
+    }
 }

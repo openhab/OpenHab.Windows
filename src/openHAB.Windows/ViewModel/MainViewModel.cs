@@ -60,6 +60,22 @@ public class MainViewModel : ViewModelBase<object>
 
         StrongReferenceMessenger.Default.Register<DataOperation>(this, async (obj, operation)
             => await DataOperationStateAsync(operation));
+
+        StrongReferenceMessenger.Default.Register<TriggerAction>(this, async (recipient, msg)
+            => await ExecuteAction(recipient, msg));
+    }
+
+    private async Task ExecuteAction(object recipient, TriggerAction msg)
+    {
+        switch (msg.Action)
+        {
+            case Core.Messages.Action.Reload:
+                LoadSitemapsAndItemData();
+                break;
+            case Core.Messages.Action.None:
+                break;
+
+        }
     }
 
     /// <summary>
