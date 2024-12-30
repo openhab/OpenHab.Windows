@@ -43,11 +43,6 @@ jobs:
           run: ls -la
           working-directory: '${{env.BuildDirectory}}'
 
-        - name: Unpack the App Package
-          shell: pwsh
-          run: |
-            Expand-Archive -Path '${{env.BuildDirectory}}\app.zip' -DestinationPath '${{env.BuildDirectory}}\'
-
         - name: Create a Release
           id: create_release
           uses: marvinpinto/action-automatic-releases@latest
@@ -57,4 +52,4 @@ jobs:
             automatic_release_tag: ${{inputs.build_number}}
             title: ${{inputs.build_number}}
             files: |
-              ${{env.BuildDirectory}}/*.msixbundle
+              ${{env.BuildDirectory}}/**/*.msixbundle
