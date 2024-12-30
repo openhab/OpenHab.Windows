@@ -21,6 +21,12 @@ on:
         description: 'The build number to use'
         required: true
 
+permissions:
+  id-token: "write"
+  contents: "write"
+  packages: "write"
+  pull-requests: "read"
+
 jobs:
   release:
       name: 'App release creation for ${{inputs.build_number}}'
@@ -37,7 +43,9 @@ jobs:
           id: create_release
           uses: marvinpinto/action-automatic-releases@latest
           with:
-            repo_token: ${{ secrets.GITHUB_TOKEN }}
+            repo_token: "${{ secrets.GITHUB_TOKEN }}"
             prerelease: ${{inputs.beta_release}}
             automatic_release_tag: ${{inputs.build_number}}
             title: ${{inputs.build_number}}
+            files: |
+              ${{env.BuildDirectory}}/*.msixbundle
