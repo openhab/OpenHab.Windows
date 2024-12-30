@@ -1,11 +1,16 @@
 name: App Release
- 
+
 env:
   BuildDirectory: '${{github.workspace}}\build'
 
-on: 
+on:
   workflow_call:
     inputs:
+      force_release:
+        description: 'Specifies if a release should be created even if the branch is not main.'
+        type: boolean
+        default: false
+        required: false
       beta_release:
         description: 'Specifies if a beta release should be created.'
         type: boolean
@@ -15,12 +20,12 @@ on:
         type: string
         description: 'The build number to use'
         required: true
-    
+
 jobs:
   release:
       name: 'Creates an app release'
-      runs-on: ubuntu-latest 
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/releases/beta'
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/releases/beta' || inputs.force_release == true
       steps:
         - name: Download a App Package from Build Artifacts
           uses: actions/download-artifact@v2.0.8
