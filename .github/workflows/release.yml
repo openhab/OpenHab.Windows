@@ -1,7 +1,7 @@
 name: App Release
 
 env:
-  BuildDirectory: '${{github.workspace}}\build'
+  BuildDirectory: '${{github.workspace}}/build'
 
 on:
   workflow_call:
@@ -52,4 +52,4 @@ jobs:
             automatic_release_tag: ${{inputs.build_number}}
             title: ${{inputs.build_number}}
             files: |
-              **/*.msixbundle
+              ${{env.BuildDirectory}}/**/*.msixbundle
