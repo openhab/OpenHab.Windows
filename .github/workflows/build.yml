@@ -12,7 +12,7 @@ on:
         type: string
         description: 'Defines the platforms for the app package.'
         required: false
-        default: ' x86|x64|ARM'
+        default: ' x86|x64|arm64'
       build_number:
         type: string
         description: 'The build number to use'
