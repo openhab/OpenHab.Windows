@@ -39,6 +39,10 @@ jobs:
             name: app
             path: '${{env.BuildDirectory}}'
 
+        - name: Display structure of downloaded files
+          run: ls -la
+          working-directory: '${{env.BuildDirectory}}'
+
         - name: Unpack the App Package
           shell: pwsh
           run: |
