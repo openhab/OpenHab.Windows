@@ -81,6 +81,7 @@ jobs:
     secrets: inherit
 
   create_release:
+    name: Create Release
     uses: ./.github/workflows/release.yml
     needs:
       - build

@@ -23,12 +23,12 @@ on:
 
 jobs:
   release:
-      name: 'Creates an app release'
+      name: 'App release creation for ${{inputs.build_number}}'
       runs-on: ubuntu-latest
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/releases/beta' || inputs.force_release == true
       steps:
         - name: Download a App Package from Build Artifacts
-          uses: actions/download-artifact@v2.0.8
+          uses: actions/download-artifact@v4
           with:
             name: app
             path: '${{env.BuildDirectory}}'
