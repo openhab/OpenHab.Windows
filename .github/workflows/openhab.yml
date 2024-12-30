@@ -17,11 +17,11 @@ on:
         options: ["release", "debug"]
         default: "release"
       IsBetaRelease:
-        description: "Specifies if a beta release should be created."
+        description: "Create store beta release."
         type: "boolean"
         default: false
       create_release:
-        description: "Specifies if a release should be created even if the branch is not main."
+        description: "Create release even if the branch is not main."
         type: "boolean"
         default: false
 
