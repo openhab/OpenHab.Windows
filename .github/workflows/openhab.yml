@@ -1,5 +1,5 @@
 name: "openHAB Build and Release app"
-run-name: app-${{github.run_id }}
+run-name: run-${{github.head_ref || github.ref_name}}-${{github.run_number}}
 
 env:
   BuildDirectory: '${{github.workspace}}\build'
