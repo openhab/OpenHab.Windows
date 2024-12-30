@@ -39,6 +39,11 @@ jobs:
             name: app
             path: '${{env.BuildDirectory}}'
 
+        - name: Unpack the App Package
+          shell: pwsh
+          run: |
+            Expand-Archive -Path '${{env.BuildDirectory}}\app.zip' -DestinationPath '${{env.BuildDirectory}}\'
+
         - name: Create a Release
           id: create_release
           uses: marvinpinto/action-automatic-releases@latest
