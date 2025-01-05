@@ -23,7 +23,7 @@
                     Margin="0,12,12,12"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    BorderBrush="{StaticResource DarkAcrylicColor}"
+                    BorderBrush="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"
                     BorderThickness="0">
             <Grid>
                 <Grid.RowDefinitions>

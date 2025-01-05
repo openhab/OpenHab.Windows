@@ -13,7 +13,7 @@ public class MainUIViewModel : ViewModelBase<object>
     {
         _logger = logger;
 
-        MainUIUrl = connectionService.CurrentConnection.MainUIUrl;
+        MainUIUrl = connectionService.CurrentConnection?.MainUIUrl;
     }
 
     public string MainUIUrl

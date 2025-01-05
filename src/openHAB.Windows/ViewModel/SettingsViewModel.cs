@@ -15,6 +15,7 @@ public class SettingsViewModel : ViewModelBase<object>
 {
     private readonly IIconCaching _iconCaching;
     private readonly ILogger<SettingsViewModel> _logger;
+    private readonly IAppManager _appManager;
     private ActionCommand _clearIconCacheCommand;
     private ConfigurationViewModel _configuration;
     private ActionCommand _saveCommand;
@@ -22,12 +23,16 @@ public class SettingsViewModel : ViewModelBase<object>
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
     /// </summary>
-    public SettingsViewModel(ConfigurationViewModel configurationViewModel, IIconCaching iconCaching, ILogger<SettingsViewModel> logger)
+    public SettingsViewModel(
+        ConfigurationViewModel configurationViewModel,
+        IIconCaching iconCaching,
+        IAppManager appManager,
+        ILogger<SettingsViewModel> logger)
         : base(new object())
     {
         _configuration = configurationViewModel;
         _configuration.PropertyChanged += Configuration_PropertyChanged;
-
+        _appManager = appManager;
         _iconCaching = iconCaching;
 
         _logger = logger;
@@ -85,6 +90,8 @@ public class SettingsViewModel : ViewModelBase<object>
         if (validConnectionConfig)
         {
             bool savedSuccessful = _configuration.Save();
+
+            _appManager.SetAppTheme(App.MainWindow.Content);
             StrongReferenceMessenger.Default.Send<TriggerAction>(new TriggerAction(Core.Messages.Action.Reload));
         }
     }

@@ -25,7 +25,7 @@
     </local:WidgetBase.Resources>
     <StackPanel VerticalAlignment="Top"
                 CornerRadius="10"
-                Background="{StaticResource SolidBackgroundFillColorBaseAltBrush}">
+                Style="{StaticResource WidgetGroup}">
         <StackPanel Margin="5,5,0,0"
                     HorizontalAlignment="Stretch"
                     Orientation="Horizontal">

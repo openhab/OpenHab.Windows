@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
 using openHAB.Core.Client.Models;
 
 namespace openHAB.Core.Services.Contracts;
@@ -31,6 +32,12 @@ public interface IAppManager
     /// A task that represents the asynchronous operation. The task result contains a boolean value indicating whether autostart is enabled.
     /// </returns>
     Task<bool> IsStartupEnabled();
+
+
+    /// <summary>
+    /// Sets the application theme.
+    /// </summary>
+    void SetAppTheme(UIElement content);
 
     /// <summary>
     /// Sets the program language.

@@ -19,24 +19,33 @@ namespace openHAB.Windows.ViewModel;
 /// </summary>
 public class ConfigurationViewModel : ViewModelBase<object>
 {
+    private readonly IAppManager _appManager;
+    private readonly ConnectionOptions _connection;
     private readonly ILogger<ConfigurationViewModel> _logger;
     private readonly SettingOptions _settings;
-    private readonly ConnectionOptions _connection;
-    private readonly IAppManager _appManager;
     private List<LanguageViewModel> _appLanguages;
     private bool? _canAppAutostartEnabled;
     private bool? _isAppAutostartEnabled;
     private bool? _isRunningInDemoMode;
     private ConnectionDialogViewModel _localConnection;
+    private bool? _notificationsEnable;
     private ConnectionDialogViewModel _remoteConnection;
     private LanguageViewModel _selectedAppLanguage;
 
+    private ApplicationThemeViewModel _selectedAppTheme;
     private bool _showDefaultSitemap;
     private bool? _startAppMinimized;
     private bool _useSVGIcons;
-    private bool? _notificationsEnable;
+    private List<ApplicationThemeViewModel> _appThemes;
 
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class.
+    /// </summary>
+    /// <param name="appManager">The application manager.</param>
+    /// <param name="connectionService">The connection service.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="settingsOptions">The settings options.</param>
+    /// <param name="connectionOptions">The connection options.</param>
     public ConfigurationViewModel(
         IAppManager appManager,
         IConnectionService connectionService,
@@ -62,26 +71,17 @@ public class ConfigurationViewModel : ViewModelBase<object>
         _startAppMinimized = _settings.StartAppMinimized;
         _notificationsEnable = _settings.NotificationsEnable;
 
+        _appThemes = Enum.GetValues<AppTheme>().Select(x => new ApplicationThemeViewModel(x)).ToList();
+        _selectedAppTheme = _appThemes.FirstOrDefault(x => x.Model == _settings.AppTheme);
+
         InitializeAutostartSettings();
         InitializeAppLanguage();
 
         PropertyChanged += ConfigurationViewModel_PropertyChanged;
+        OnPropertyChanged(nameof(SelectedAppTheme));
     }
 
-    private void InitializeAppLanguage()
-    {
-        _appLanguages = InitializeAppLanguages();
-
-        _selectedAppLanguage = string.IsNullOrEmpty(_settings.AppLanguage)
-            ? _appLanguages.FirstOrDefault(x => x.Code == null)
-            : _appLanguages.FirstOrDefault(x => string.Equals(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase));
-    }
-
-    private async void InitializeAutostartSettings()
-    {
-        CanAppAutostartEnabled = await _appManager.CanEnableAutostart();
-        IsAppAutostartEnabled = await _appManager.IsStartupEnabled();
-    }
+    #region Properties
 
     /// <summary>
     /// Gets or sets the supported application languages.
@@ -91,6 +91,16 @@ public class ConfigurationViewModel : ViewModelBase<object>
     {
         get => _appLanguages;
         set => Set(ref _appLanguages, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the supported application themes.
+    /// </summary>
+    /// <value>The application themes.</value>
+    public List<ApplicationThemeViewModel> AppThemes
+    {
+        get => _appThemes;
+        set => Set(ref _appThemes, value);
     }
 
     /// <summary>
@@ -205,6 +215,19 @@ public class ConfigurationViewModel : ViewModelBase<object>
         }
     }
 
+    public ApplicationThemeViewModel SelectedAppTheme
+    {
+        get => _selectedAppTheme;
+        set
+        {
+            if (value != null)
+            {
+                _settings.AppTheme = value.Model;
+                Set<ApplicationThemeViewModel>(ref _selectedAppTheme, value, true);
+            }
+        }
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether the default sitemap should be visible.
     /// </summary>
@@ -254,6 +277,8 @@ public class ConfigurationViewModel : ViewModelBase<object>
         }
     }
 
+    #endregion
+
     /// <summary>
     /// Determines whether [is connection configuration valid].
     /// </summary>
@@ -282,6 +307,7 @@ public class ConfigurationViewModel : ViewModelBase<object>
         bool result = _settings.Save();
         result &= _connection.Save(AppPaths.ConnectionFilePath);
         _appManager.SetProgramLanguage(null);
+        _appManager.SetAppTheme(App.MainWindow.Content);
 
         return result;
     }
@@ -299,6 +325,15 @@ public class ConfigurationViewModel : ViewModelBase<object>
         OnPropertyChanged(nameof(IsDirty));
     }
 
+    private void InitializeAppLanguage()
+    {
+        _appLanguages = InitializeAppLanguages();
+
+        _selectedAppLanguage = string.IsNullOrEmpty(_settings.AppLanguage)
+            ? _appLanguages.FirstOrDefault(x => x.Code == null)
+            : _appLanguages.FirstOrDefault(x => string.Equals(x.Code, _settings.AppLanguage, StringComparison.InvariantCultureIgnoreCase));
+    }
+
     private List<LanguageViewModel> InitializeAppLanguages()
     {
         return new List<LanguageViewModel>
@@ -307,5 +342,11 @@ public class ConfigurationViewModel : ViewModelBase<object>
             new LanguageViewModel { Name = "English", Code = "en-US" },
             new LanguageViewModel { Name = "Deutsch", Code = "de-DE" }
         };
+    }
+
+    private async void InitializeAutostartSettings()
+    {
+        CanAppAutostartEnabled = await _appManager.CanEnableAutostart();
+        IsAppAutostartEnabled = await _appManager.IsStartupEnabled();
     }
 }

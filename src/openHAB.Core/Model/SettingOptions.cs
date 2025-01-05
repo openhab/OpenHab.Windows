@@ -79,6 +79,16 @@ public class SettingOptions
     }
 
     /// <summary>
+    /// Gets or sets the application theme.
+    /// </summary>
+    /// <value>The application theme.</value>
+    public AppTheme AppTheme
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
     /// Saves the current settings to a file.
     /// </summary>
     /// <returns><c>true</c> if the settings were saved successfully; otherwise, <c>false</c>.</returns>

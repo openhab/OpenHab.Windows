@@ -26,7 +26,7 @@
               Margin="0,0,12,0"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
-              BorderBrush="{StaticResource DarkAcrylicColor}"
+              BorderBrush="{StaticResource SolidBackgroundFillColorSecondaryBrush}"
               BorderThickness="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
@@ -56,7 +56,7 @@
             <VisualStateGroup x:Name="ToggleStates">
                 <VisualState x:Name="OnState">
                     <VisualState.Setters>
-                        <Setter Target="OnBorder.(Border.Background)" Value="{StaticResource DarkAcrylicColor}" />
+                        <Setter Target="OnBorder.(Border.Background)" Value="{StaticResource SolidBackgroundFillColorSecondaryBrush}" />
                     </VisualState.Setters>
                     <Storyboard>
                         <ColorAnimation d:IsOptimized="True"
@@ -68,7 +68,7 @@
                 </VisualState>
                 <VisualState x:Name="OffState">
                     <VisualState.Setters>
-                        <Setter Target="OffBorder.(Border.Background)" Value="{StaticResource DarkAcrylicColor}" />
+                        <Setter Target="OffBorder.(Border.Background)" Value="{StaticResource SolidBackgroundFillColorSecondaryBrush}" />
                     </VisualState.Setters>
                     <Storyboard>
                         <ColorAnimation d:IsOptimized="True"

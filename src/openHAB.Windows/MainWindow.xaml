@@ -31,15 +31,11 @@
                    TargetType="TextBlock">
                 <Setter Property="FontSize"
                         Value="42" />
-                <Setter Property="Foreground"
-                        Value="{StaticResource TextFillColorPrimaryBrush}" />
             </Style>
             <Style x:Key="BreakcrumbItemText"
                    TargetType="TextBlock">
                 <Setter Property="FontSize"
                         Value="21" />
-                <Setter Property="Foreground"
-                        Value="{StaticResource TextFillColorPrimaryBrush}" />
             </Style>
             <!-- Navigation View Styling -->
             <SolidColorBrush x:Key="NavigationViewItemForegroundPointerOver"
@@ -137,8 +133,6 @@
                              MenuItemsSource="{x:Bind Vm.Sitemaps, Mode=OneWay}"
                              MenuItemTemplateSelector="{StaticResource Selector}"
                              SelectedItem="{x:Bind Vm.SelectedMenuItem, Mode=TwoWay}"
-                             Foreground="{StaticResource TextFillColorPrimaryBrush}"
-                             Background="{StaticResource AcrylicBackgroundFillColorBaseBrush}"
                              IsBackButtonVisible="Collapsed"
                              AlwaysShowHeader="False"
                              IsSettingsVisible="True"
@@ -164,8 +158,7 @@
                                 MaxWidth="35"
                                 VerticalAlignment="Center">
                             <FontIcon Glyph="&#xE72C;"
-                                      FontSize="12"
-                                      Foreground="{StaticResource TextFillColorPrimaryBrush}" />
+                                      FontSize="12" />
                         </Button>
                     </StackPanel>
                     <BreadcrumbBar Grid.Row="1"
@@ -200,15 +193,13 @@
                                    Margin="10,-3,0,0"
                                    VerticalAlignment="Center"
                                    Style="{StaticResource MenuSubHeader}"
-                                   Foreground="{StaticResource TextFillColorPrimaryBrush}"
                                    Text="Sitemaps" />
                         <Button Grid.Column="1"
                                 Margin="0,0,10,0"
                                 HorizontalAlignment="Right"
                                 Command="{Binding Vm.RefreshCommand, ElementName=Window}">
                             <FontIcon Glyph="&#xE72C;"
-                                      FontSize="12"
-                                      Foreground="{StaticResource TextFillColorPrimaryBrush}" />
+                                      FontSize="12" />
                         </Button>
                     </Grid>
                     <TextBlock Margin="10,10,10,0"
@@ -262,10 +253,10 @@
                               Margin="20"
                               HorizontalContentAlignment="Stretch"
                               VerticalContentAlignment="Stretch">
-                    <ProgressRing.Background>
+                    <!--<ProgressRing.Background>
                         <SolidColorBrush Color="Black"
                                          Opacity="0.7" />
-                    </ProgressRing.Background>
+                    </ProgressRing.Background>-->
                 </ProgressRing>
                 <TextBlock x:Uid="Loading" />
             </StackPanel>

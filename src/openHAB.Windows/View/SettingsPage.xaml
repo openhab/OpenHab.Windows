@@ -150,6 +150,14 @@
                                   DisplayMemberPath="Name"
                                   SelectedItem="{Binding Settings.SelectedAppLanguage, Mode=TwoWay}" />
                     </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="AppTheme"
+                                           Margin="0,0,0,12"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                        <ComboBox Margin="0,0,0,12"
+                                  ItemsSource="{Binding Settings.AppThemes}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding Settings.SelectedAppTheme, Mode=TwoWay}" />
+                    </controls:SettingsCard>
                 </StackPanel>
                 <StackPanel Margin="0,0,0,10"
                             Padding="12">

@@ -354,4 +354,19 @@ Please select demo mode or configure local/remote connection.</value>
   <data name="OpenLogViewerButton.Label" xml:space="preserve">
     <value>Logs</value>
   </data>
+  <data name="AppTheme.Header" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="AppTheme.Description" xml:space="preserve">
+    <value>Choose the color theme for the app.</value>
+  </data>
+  <data name="AppThemeSystem" xml:space="preserve">
+    <value>Use system setting</value>
+  </data>
+  <data name="AppThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="AppThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
 </root>

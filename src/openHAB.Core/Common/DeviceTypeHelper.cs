@@ -1,14 +1,17 @@
 namespace openHAB.Core.Common;
 
-/// <summary>Helper class to get the target platform the app is running on.</summary>
+/// <summary>
+/// Helper class to get the target platform the app is running on.
+/// </summary>
 public class DeviceTypeHelper
 {
+
     /// <summary>
     /// Initializes static members of the <see cref="DeviceTypeHelper"/> class.
     /// </summary>
     static DeviceTypeHelper()
     {
-        DeviceFamily = RecognizeDeviceFamily(Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily);
+        DeviceFamily = RecognizeDeviceFamily(global::Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily);
     }
 
     /// <summary>Gets the device family.</summary>

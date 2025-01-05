@@ -18,7 +18,7 @@ public partial class App : Application
     private readonly ILogger<App> _logger;
     private readonly IAppManager _appManager;
     private readonly INotificationManager _notificationManager;
-    private MainWindow _mainWindow;
+    private static Window _mainWindow;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="App" /> class.
@@ -40,7 +40,7 @@ public partial class App : Application
         get; private set;
     }
 
-    public Window MainWindow
+    public static Window MainWindow
     {
         get => _mainWindow;
     }
@@ -85,6 +85,8 @@ public partial class App : Application
 
         // Initialize MainWindow here
         _mainWindow = Program.Host.Services.GetRequiredService<MainWindow>();
+        _appManager.SetAppTheme(MainWindow.Content);
+
         MainWindow.Activate();
     }
 

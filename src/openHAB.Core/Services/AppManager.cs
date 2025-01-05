@@ -1,8 +1,10 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.UI.Xaml;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Model;
 using openHAB.Core.Services.Contracts;
@@ -64,6 +66,35 @@ public class AppManager : IAppManager
         {
             string userLanguage = GlobalizationPreferences.Languages[0];
             CultureInfo.CurrentCulture = new CultureInfo(userLanguage);
+        }
+    }
+
+    [DllImport("UXTheme.dll", SetLastError = true, EntryPoint = "#138")]
+    public static extern bool ShouldSystemUseDarkMode();
+
+    /// <inheritdoc />
+    public void SetAppTheme(UIElement content)
+    {
+        if (!(content is FrameworkElement frameworkElement))
+        {
+            _logger.LogWarning("Unable to set app theme");
+            return;
+        }
+
+        SettingOptions settings = _options.Value;
+        switch (settings.AppTheme)
+        {
+            case AppTheme.Light:
+                frameworkElement.RequestedTheme = ElementTheme.Light;
+                break;
+            case AppTheme.Dark:
+                frameworkElement.RequestedTheme = ElementTheme.Dark;
+                break;
+            case AppTheme.System:
+                frameworkElement.RequestedTheme = ShouldSystemUseDarkMode() ? ElementTheme.Dark : ElementTheme.Light;
+                break;
+            default:
+                break;
         }
     }
 

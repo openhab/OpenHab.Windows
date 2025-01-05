@@ -97,6 +97,11 @@ public class WidgetViewModel : ViewModelBase<Widget>
         get
         {
             string colorString = Model.LabelColor as string;
+            if (string.IsNullOrEmpty(colorString))
+            {
+                return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            }
+
             Color color = ConvertColorCodeToColor(colorString);
             return new SolidColorBrush(color);
         }
@@ -282,11 +287,6 @@ public class WidgetViewModel : ViewModelBase<Widget>
 
     private Color ConvertColorCodeToColor(string value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return (Color)Application.Current.Resources["TextFillColorPrimary"];
-        }
-
         return (Color)XamlBindingHelper.ConvertValue(typeof(Color), value);
     }
 }
