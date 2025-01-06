@@ -32,15 +32,16 @@ public partial class App : Application
     /// <param name="logger">The logger instance.</param>
     public App(IAppManager appManager, INotificationManager notificationManage, IOptions<SettingOptions> options, ILogger<App> logger)
     {
-        InitializeComponent();
         _options = options;
-        UnhandledException += App_UnhandledException;
-
-        DispatcherQueue = DispatcherQueue.GetForCurrentThread();
-
         _logger = logger;
         _appManager = appManager;
         _notificationManager = notificationManage;
+
+        InitializeComponent();
+
+        RequestedTheme = _options.Value.AppTheme.ConvertToApplicationTheme();
+        UnhandledException += App_UnhandledException;
+        DispatcherQueue = DispatcherQueue.GetForCurrentThread();
     }
 
     /// <summary>
@@ -100,7 +101,6 @@ public partial class App : Application
         // Initialize MainWindow here
         _mainWindow = Program.Host.Services.GetRequiredService<MainWindow>();
 
-        RequestedTheme = _options.Value.AppTheme.ConvertToApplicationTheme();
         _appManager.SetAppTheme(MainWindow.Content);
 
         MainWindow.Activate();
