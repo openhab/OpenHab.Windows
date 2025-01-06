@@ -206,7 +206,6 @@
                                x:Uid="NoItemsOrOpenHabNotAvailable"
                                Visibility="{Binding DataContext.Sitemaps.Count, Converter={StaticResource ZeroToVisibility}, Mode=OneWay, ElementName=ContentFrame}"
                                TextWrapping="Wrap"
-                               Foreground="{StaticResource TextFillColorPrimaryBrush}"
                                Style="{StaticResource FlyoutPickerTitleTextBlockStyle}" />
                 </StackPanel>
             </muxc:NavigationView.PaneCustomContent>

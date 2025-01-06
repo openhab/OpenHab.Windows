@@ -8,16 +8,8 @@
     <!-- Control base colors -->
     <SolidColorBrush x:Key="OpenHABLightOrangeBrush"
                      Color="{StaticResource OpenHABLightOrange}" />
-    <!-- Acryl colors -->
-    <!--<media:AcrylicBrush x:Key="DarkAcrylicColor"
-                        TintOpacity="0.7"
-                        FallbackColor="{StaticResource DarkColor}"
-                        TintColor="{StaticResource DarkColor}" />
-    <media:AcrylicBrush x:Key="OpenHABLightColor"
-                        TintOpacity="0.5"
-                        FallbackColor="{StaticResource OpenHABLightGrey}"
-                        TintColor="{StaticResource OpenHABLightGrey}"
-                        AlwaysUseFallback="False" />-->
+    <SolidColorBrush x:Key="DefaultTextColor"
+                     Color="{ThemeResource TextFillColorPrimaryBrush}" />
     <media:AcrylicBrush x:Key="ErrorNotificationBackground"
                         TintOpacity="0.5"
                         FallbackColor="Red"
@@ -57,6 +49,11 @@
            TargetType="StackPanel">
         <Setter Property="Background"
                 Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+    </Style>
+    <Style x:Key="ContentDialog"
+           TargetType="ContentDialog">
+        <Setter Property="Background"
+                Value="{ThemeResource ControlStrokeColorOnAccentDefaultBrush}" />
     </Style>
     <!-- Text Styles -->
     <Style x:Key="TitleStyle"

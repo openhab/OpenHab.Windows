@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,10 +21,10 @@ namespace openHAB.Windows.ViewModel;
 /// </summary>
 public class WidgetViewModel : ViewModelBase<Widget>
 {
-    private ObservableCollection<WidgetViewModel> _children;
-    private string _iconPath;
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<SettingOptions> _settingsOptions;
+    private ObservableCollection<WidgetViewModel> _children;
+    private string _iconPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WidgetViewModel"/> class.
@@ -39,7 +40,6 @@ public class WidgetViewModel : ViewModelBase<Widget>
 
     #region Properties
 
-
     /// <summary>
     /// Gets the collection of child widgets.
     /// </summary>
@@ -48,6 +48,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
         get => _children;
         set => Set(ref _children, value);
     }
+
     /// <summary>
     /// Gets the encoding of the widget.
     /// </summary>
@@ -97,13 +98,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
         get
         {
             string colorString = Model.LabelColor as string;
-            if (string.IsNullOrEmpty(colorString))
-            {
-                return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-            }
-
-            Color color = ConvertColorCodeToColor(colorString);
-            return new SolidColorBrush(color);
+            return ColorValueToSolidColor(colorString);
         }
     }
 
@@ -139,6 +134,9 @@ public class WidgetViewModel : ViewModelBase<Widget>
         get => Model.MinValue;
     }
 
+    /// <summary>
+    /// Gets or sets the parent widget view model.
+    /// </summary>
     public WidgetViewModel Parent
     {
         get;
@@ -210,8 +208,8 @@ public class WidgetViewModel : ViewModelBase<Widget>
     {
         get
         {
-            Color color = ConvertColorCodeToColor(Model.ValueColor);
-            return new SolidColorBrush(color);
+            string colorString = Model.ValueColor as string;
+            return ColorValueToSolidColor(colorString);
         }
     }
 
@@ -230,6 +228,7 @@ public class WidgetViewModel : ViewModelBase<Widget>
     {
         get => Model.WidgetId;
     }
+
     #endregion
 
     #region Factory
@@ -283,10 +282,34 @@ public class WidgetViewModel : ViewModelBase<Widget>
 
         Children = widgets;
     }
+
     #endregion
+
+    #region Color Handling
+
+    private SolidColorBrush ColorValueToSolidColor(string colorString, string resourceName = "TextFillColorPrimaryBrush")
+    {
+        if (string.IsNullOrEmpty(colorString))
+        {
+            ResourceDictionary? resourceDictionary = Application.Current.Resources.MergedDictionaries
+                .FirstOrDefault(rd => rd.ContainsKey(resourceName));
+
+            if (resourceDictionary == null || !resourceDictionary.TryGetValue(resourceName, out object defaultTextColor))
+            {
+                return null;
+            }
+
+            return (SolidColorBrush)defaultTextColor;
+        }
+
+        Color color = ConvertColorCodeToColor(colorString);
+        return new SolidColorBrush(color);
+    }
 
     private Color ConvertColorCodeToColor(string value)
     {
         return (Color)XamlBindingHelper.ConvertValue(typeof(Color), value);
     }
+
+    #endregion
 }

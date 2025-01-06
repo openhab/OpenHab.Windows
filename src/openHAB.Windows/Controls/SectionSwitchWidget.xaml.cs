@@ -37,8 +37,8 @@ public sealed partial class SectionSwitchWidget : WidgetBase
     internal override void SetState()
     {
         UncheckEverything();
-        var currentItem = SectionsList?.Items?.SingleOrDefault(x => ((WidgetMapping)x).Command == Widget.Item.State);
-        ContentPresenter presenter = SectionsList?.ContainerFromItem(currentItem) as Microsoft.UI.Xaml.Controls.ContentPresenter;
+        object? currentItem = SectionsList?.Items?.SingleOrDefault(x => ((WidgetMapping)x).Command == Widget.Item.State);
+        ContentPresenter? presenter = SectionsList?.ContainerFromItem(currentItem) as ContentPresenter;
 
         if (presenter != null && presenter.FindChild(typeof(ToggleButton)) is ToggleButton toggleButton)
         {
@@ -48,13 +48,13 @@ public sealed partial class SectionSwitchWidget : WidgetBase
 
     private void Button_OnClick(object sender, TappedRoutedEventArgs e)
     {
-        ToggleButton button = sender as ToggleButton;
+        ToggleButton? button = sender as ToggleButton;
         if (button == null)
         {
             return;
         }
 
-        if (string.CompareOrdinal(button?.Tag?.ToString(), Widget.Item.State) == 0)
+        if (string.CompareOrdinal(button.Tag?.ToString(), Widget.Item.State) == 0)
         {
             SetState();
             return;
@@ -70,8 +70,8 @@ public sealed partial class SectionSwitchWidget : WidgetBase
     {
         foreach (var item in SectionsList.Items)
         {
-            ContentPresenter presenter = SectionsList?.ContainerFromItem(item) as ContentPresenter;
-            if (presenter.FindChild(typeof(ToggleButton)) is ToggleButton toggleButton)
+            ContentPresenter? presenter = SectionsList?.ContainerFromItem(item) as ContentPresenter;
+            if (presenter?.FindChild(typeof(ToggleButton)) is ToggleButton toggleButton)
             {
                 toggleButton.IsChecked = false;
             }

@@ -29,7 +29,7 @@
                       HorizontalContentAlignment="Center"
                       VerticalContentAlignment="Center"
                       Foreground="{x:Bind Widget.ValueColor, Mode=OneWay}"
-                      Background="{StaticResource OpenHABLightColor}"
+                      Background="{StaticResource ContentDialog}"
                       ItemsSource="{x:Bind Widget.Mappings}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:WidgetMapping">

@@ -23,6 +23,8 @@ public class AppManager : IAppManager
     /// <summary>
     /// Initializes a new instance of the <see cref="AppManager" /> class.
     /// </summary>
+    /// <param name="options">The settings options.</param>
+    /// <param name="logger">The logger instance.</param>
     public AppManager(IOptions<SettingOptions> options, ILogger<AppManager> logger)
     {
         _logger = logger;

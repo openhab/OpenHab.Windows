@@ -120,7 +120,7 @@ public sealed partial class ColorMap : UserControl
 
     private static void OnColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        ColorMap colorMap = d as ColorMap;
+        ColorMap? colorMap = d as ColorMap;
         colorMap?.ColorChanged?.Invoke(colorMap, new ColorChangedEventArgs((Color)e.NewValue));
 
         if (colorMap == null || colorMap._settingColor)

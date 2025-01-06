@@ -6,7 +6,7 @@
 				  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 				  d:DesignHeight="150"
 				  d:DesignWidth="300"
-				  mc:Ignorable="d" 
+				  mc:Ignorable="d"
 				  Visibility="{x:Bind Widget.Visibility}">
 
 	<Grid Style="{StaticResource Widget}"
@@ -22,7 +22,7 @@
 
 		<ContentDialog x:Name="PopupDialog"
 					   Title="{x:Bind Widget.Label}"
-					   Background="{StaticResource OpenHABLightColor}"
+                       Background="{StaticResource ContentDialog}"
 					   IsPrimaryButtonEnabled="True"
 					   PrimaryButtonText="Close">
 			<WebView2 x:Name="WebViewFull" Width="550" Height="300" />

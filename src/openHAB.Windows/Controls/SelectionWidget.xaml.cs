@@ -54,14 +54,13 @@ public sealed partial class SelectionWidget : WidgetBase
 
     internal override void SetState()
     {
-        SelectionMapping itemState = selectionMappings.FirstOrDefault(x => x.Command == Widget.Item.State);
+        SelectionMapping? itemState = selectionMappings.FirstOrDefault(x => x.Command == Widget.Item.State);
 
         DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         dispatcherQueue.EnqueueAsync(() =>
         {
-            SelectionMapping currentSelection = SelectionComboBox.SelectedItem as SelectionMapping;
-
-            if (currentSelection != null && string.CompareOrdinal(currentSelection?.Command, itemState?.Command) != 0)
+            SelectionMapping? currentSelection = SelectionComboBox.SelectedItem as SelectionMapping;
+            if (currentSelection != null && string.CompareOrdinal(currentSelection.Command, itemState?.Command) != 0)
             {
                 SelectionComboBox.SelectedItem = itemState;
             }
@@ -72,7 +71,7 @@ public sealed partial class SelectionWidget : WidgetBase
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        SelectionMapping mapping = (SelectionMapping)e.AddedItems.FirstOrDefault();
+        SelectionMapping? mapping = (SelectionMapping)e.AddedItems.FirstOrDefault();
         if (mapping == null || string.CompareOrdinal(Widget.Item.State, mapping.Command) == 0)
         {
             return;

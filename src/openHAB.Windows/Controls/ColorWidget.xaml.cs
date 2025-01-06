@@ -51,8 +51,8 @@ public sealed partial class ColorWidget : WidgetBase
 
     internal override void SetState()
     {
-        string rgbString = Widget.Item?.State;
-        string[] rgbSegements = Widget.Item?.State.Split(',');
+        string? rgbString = Widget.Item?.State;
+        string[]? rgbSegements = Widget.Item?.State.Split(',');
 
         Regex rgbRegEx = new Regex(@"^(([1-9][\.\d]*)(,)){2}([1-9][\.\d]*)", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 

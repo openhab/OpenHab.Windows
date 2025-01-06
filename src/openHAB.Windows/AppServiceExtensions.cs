@@ -37,7 +37,6 @@ public static class AppServiceExtensions
     {
         services.AddLogging(loggingBuilder =>
         {
-            // configure Logging with NLog
             loggingBuilder.ClearProviders();
             loggingBuilder.SetMinimumLevel(LogLevel.Information);
             loggingBuilder.AddNLog(GetLoggingConfiguration());
@@ -78,12 +77,6 @@ public static class AppServiceExtensions
     {
         services.AddSingleton<App>();
         services.AddSingleton<MainWindow>();
-
-        //services.AddTransient<MainPage>();
-        //services.AddTransient<MainUIPage>();
-        //services.AddTransient<SettingsPage>();
-        //services.AddTransient<LogViewerPage>();
-        //services.AddTransient<SitemapPage>();
     }
 
     /// <summary>

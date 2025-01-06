@@ -1,10 +1,12 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using openHAB.Core.Model;
 using openHAB.Core.Notification.Contracts;
 using openHAB.Core.Services.Contracts;
 
@@ -19,13 +21,19 @@ public partial class App : Application
     private readonly IAppManager _appManager;
     private readonly INotificationManager _notificationManager;
     private static Window _mainWindow;
+    private readonly IOptions<SettingOptions> _options;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="App" /> class.
     /// </summary>
-    public App(IAppManager appManager, INotificationManager notificationManage, ILogger<App> logger)
+    /// <param name="appManager">The application manager.</param>
+    /// <param name="notificationManage">The notification manager.</param>
+    /// <param name="options">The application settings options.</param>
+    /// <param name="logger">The logger instance.</param>
+    public App(IAppManager appManager, INotificationManager notificationManage, IOptions<SettingOptions> options, ILogger<App> logger)
     {
         InitializeComponent();
+        _options = options;
         UnhandledException += App_UnhandledException;
 
         DispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -35,22 +43,28 @@ public partial class App : Application
         _notificationManager = notificationManage;
     }
 
+    /// <summary>
+    /// Gets the dispatcher queue for the current thread.
+    /// </summary>
     public static DispatcherQueue DispatcherQueue
     {
         get; private set;
     }
 
+    /// <summary>
+    /// Gets the main window of the application.
+    /// </summary>
     public static Window MainWindow
     {
         get => _mainWindow;
     }
 
     /// <summary>
-    /// Invoked when the application is launched normally by the end user.  Other entry points
+    /// Invoked when the application is launched normally by the end user. Other entry points
     /// will be used such as when the application is launched to open a specific file.
     /// </summary>
     /// <param name="e">Details about the launch request and process.</param>
-    protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
+    protected override async void OnLaunched(LaunchActivatedEventArgs e)
     {
         _logger.LogInformation("=== Start Application ===");
         _appManager.SetProgramLanguage(null);
@@ -85,6 +99,8 @@ public partial class App : Application
 
         // Initialize MainWindow here
         _mainWindow = Program.Host.Services.GetRequiredService<MainWindow>();
+
+        RequestedTheme = _options.Value.AppTheme.ConvertToApplicationTheme();
         _appManager.SetAppTheme(MainWindow.Content);
 
         MainWindow.Activate();

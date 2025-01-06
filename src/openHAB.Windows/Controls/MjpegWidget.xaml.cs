@@ -58,7 +58,7 @@ public sealed partial class MjpegWidget : WidgetBase
         _mjpegDecoder.Error += MjpegDecoder_Error;
 
         // Construct Http Uri
-        string requestUri = Widget?.Url;
+        string? requestUri = Widget?.Url;
 
         // Tell MJPEGDecoder to connect to the IP camera, parse the mjpeg stream, and
         // report the received image frames.

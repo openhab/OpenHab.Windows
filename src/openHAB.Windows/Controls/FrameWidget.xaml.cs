@@ -20,7 +20,7 @@ public sealed partial class FrameWidget : WidgetBase
 
     private void OnItemClick(object sender, ItemClickEventArgs e)
     {
-        WidgetViewModel viewModel = e.ClickedItem as WidgetViewModel;
+        WidgetViewModel? viewModel = e.ClickedItem as WidgetViewModel;
         if (viewModel == null)
         {
             return;

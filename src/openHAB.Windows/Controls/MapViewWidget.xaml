@@ -17,7 +17,7 @@
 
         <ContentDialog x:Name="PopupDialog"
                        Title="{x:Bind Widget.Label}"
-                       Background="{StaticResource OpenHABLightColor}"
+                       Background="{StaticResource ContentDialog}"
                        IsPrimaryButtonEnabled="True"
                        PrimaryButtonText="Close"
                        DefaultButton="Primary">
@@ -26,4 +26,4 @@
                              Height="400" />
         </ContentDialog>
     </Grid>
-</local:WidgetBase> 
+</local:WidgetBase>

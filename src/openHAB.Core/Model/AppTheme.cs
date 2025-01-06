@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.ComponentModel;
+using Microsoft.UI.Xaml;
 
 namespace openHAB.Core.Model;
 
@@ -21,4 +22,21 @@ public enum AppTheme
     /// System default theme.
     /// </summary>
     System = 2
+}
+
+public static class AppThemeExtension
+{
+    public static ApplicationTheme ConvertToApplicationTheme(this AppTheme theme)
+    {
+        switch (theme)
+        {
+            case AppTheme.Light:
+                return ApplicationTheme.Light;
+            case AppTheme.Dark:
+                return ApplicationTheme.Dark;
+            case AppTheme.System:
+            default:
+                throw new InvalidEnumArgumentException(nameof(theme));
+        }
+    }
 }

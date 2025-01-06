@@ -463,7 +463,7 @@ public class RadialSlider : Control
 
         percentageRing.UpdateNormalizedAngles();
 
-        Path scale = percentageRing.GetTemplateChild(ScalePartName) as Path;
+        Path? scale = percentageRing.GetTemplateChild(ScalePartName) as Path;
         if (scale != null)
         {
             if (percentageRing.NormalizedMaxAngle - percentageRing.NormalizedMinAngle == 360)
@@ -512,7 +512,7 @@ public class RadialSlider : Control
 
     private static void OnValueChanged(DependencyObject d)
     {
-        var percentageRing = (RadialSlider)d;
+        RadialSlider? percentageRing = (RadialSlider)d;
         if (!double.IsNaN(percentageRing.Value))
         {
             if (percentageRing.StepSize > 0)
@@ -521,11 +521,11 @@ public class RadialSlider : Control
             }
 
             double middleOfScale = Radius - (percentageRing.ScaleWidth / 2);
-            TextBlock valueText = percentageRing.GetTemplateChild(ValueTextPartName) as TextBlock;
+            TextBlock? valueText = percentageRing.GetTemplateChild(ValueTextPartName) as TextBlock;
             percentageRing.ValueAngle = percentageRing.ValueToAngle(percentageRing.Value);
 
             // Trail
-            Path trail = percentageRing.GetTemplateChild(TrailPartName) as Path;
+            Path? trail = percentageRing.GetTemplateChild(TrailPartName) as Path;
             if (trail != null)
             {
                 if (percentageRing.ValueAngle > percentageRing.NormalizedMinAngle)
@@ -557,7 +557,7 @@ public class RadialSlider : Control
                             StartPoint = percentageRing.ScalePoint(percentageRing.NormalizedMinAngle, middleOfScale),
                         };
 
-                        var seg = new ArcSegment
+                        ArcSegment? seg = new ArcSegment
                         {
                             SweepDirection = SweepDirection.Clockwise,
                             IsLargeArc = percentageRing.ValueAngle > 180 + percentageRing.NormalizedMinAngle,
@@ -585,6 +585,7 @@ public class RadialSlider : Control
             }
         }
     }
+
     private void PercentageRingOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
     {
         ValueChanged?.Invoke(this, EventArgs.Empty);
@@ -627,7 +628,7 @@ public class RadialSlider : Control
 
         double angle = Math.Atan2(pt.X, pt.Y) / Degrees2Radians;
         double divider = Mod(NormalizedMaxAngle - NormalizedMinAngle, 360);
-        if (divider == 0)
+        if (Math.Abs(divider) < 1e-10)
         {
             divider = 360;
         }

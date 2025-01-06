@@ -89,7 +89,7 @@ public sealed partial class SitemapPage : Microsoft.UI.Xaml.Controls.Page
 
     private void MasterListView_OnItemClick(object sender, ItemClickEventArgs e)
     {
-        WidgetViewModel widgetViewModel = e.ClickedItem as WidgetViewModel;
+        WidgetViewModel? widgetViewModel = e.ClickedItem as WidgetViewModel;
         if (widgetViewModel == null)
         {
             return;
