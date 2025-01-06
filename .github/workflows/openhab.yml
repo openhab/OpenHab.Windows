@@ -21,7 +21,7 @@ on:
         type: "boolean"
         default: false
       create_release:
-        description: "Create release even if the branch is not main."
+        description: "Create release for non-main branch."
         type: "boolean"
         default: false
 
@@ -75,7 +75,7 @@ jobs:
     name: Build
     needs: configure
     with:
-      build_configuration: ${{input.BuildConfiguration}} #${{needs.configure.outputs.buildConfiguration}}
+      build_configuration: ${{ inputs.BuildConfiguration }} #${{needs.configure.outputs.buildConfiguration}}
       bundle_Platforms: ${{ needs.configure.outputs.bundlePlatforms}}
       build_number: ${{ needs.configure.outputs.buildNumber}}
     secrets: inherit
