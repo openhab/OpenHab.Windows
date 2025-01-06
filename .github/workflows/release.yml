@@ -53,3 +53,4 @@ jobs:
             title: ${{inputs.build_number}}
             files: |
               ${{env.BuildDirectory}}/**/*.msixbundle
+              ${{env.BuildDirectory}}/**/*.msixupload

@@ -12,7 +12,7 @@
 	<Identity
 		Name="openHABFoundatione.V.openHAB"
 		Publisher="CN=8A77D062-E996-4F32-9CC6-50568ABAFF8F"
-		Version="2024.12.15.0" />
+		Version="2025.1.6.0" />
 
 	<Properties>
 		<DisplayName>openHAB</DisplayName>
