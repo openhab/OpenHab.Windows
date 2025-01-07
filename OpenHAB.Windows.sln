@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "openHAB.Common", "src\openH
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "openHAB.Windows.Package", "src\openHAB.Windows.Package\openHAB.Windows.Package.wapproj", "{4E463E63-604D-4C3D-8A13-273B787C99B2}"
 EndProject
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "openHAB.Windows.Package.Beta", "src\openHAB.Windows.Package.Beta\openHAB.Windows.Package.Beta.wapproj", "{DC801784-7226-423E-AB0D-C34DFC8AB938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -105,6 +107,24 @@ Global
 		{4E463E63-604D-4C3D-8A13-273B787C99B2}.Release|x86.ActiveCfg = Release|x86
 		{4E463E63-604D-4C3D-8A13-273B787C99B2}.Release|x86.Build.0 = Release|x86
 		{4E463E63-604D-4C3D-8A13-273B787C99B2}.Release|x86.Deploy.0 = Release|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|arm64.ActiveCfg = Debug|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|arm64.Build.0 = Debug|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|arm64.Deploy.0 = Debug|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x64.ActiveCfg = Debug|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x64.Build.0 = Debug|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x64.Deploy.0 = Debug|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x86.ActiveCfg = Debug|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x86.Build.0 = Debug|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Debug|x86.Deploy.0 = Debug|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|arm64.ActiveCfg = Release|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|arm64.Build.0 = Release|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|arm64.Deploy.0 = Release|ARM64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x64.ActiveCfg = Release|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x64.Build.0 = Release|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x64.Deploy.0 = Release|x64
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x86.ActiveCfg = Release|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x86.Build.0 = Release|x86
+		{DC801784-7226-423E-AB0D-C34DFC8AB938}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
