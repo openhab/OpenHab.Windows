@@ -64,7 +64,7 @@ jobs:
             repo_token: "${{ secrets.GITHUB_TOKEN }}"
             prerelease: ${{inputs.beta_release}}
             automatic_release_tag: ${{inputs.build_number}}
-            title: ${{env.releaseName}}}}
+            title: ${{env.releaseName}}
             files: |
               ${{env.BuildDirectory}}/**/*.msixbundle
               ${{env.BuildDirectory}}/**/*.msixupload
