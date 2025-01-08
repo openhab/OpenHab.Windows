@@ -24,6 +24,10 @@ on:
         description: "Create release for non-main branch."
         type: "boolean"
         default: false
+      releaseName:
+        description: "The release name to use."
+        type: "string"
+        default: ""
 
 jobs:
   configure:
@@ -90,6 +94,7 @@ jobs:
       force_release: ${{ inputs.create_release }}
       beta_release: ${{ inputs.IsBetaRelease }}
       build_number: ${{ needs.configure.outputs.buildNumber }}
+      releaseName: ${{ inputs.releaseName }}
 
   # publish_beta:
   #   uses: ./.github/workflows/publish.yml

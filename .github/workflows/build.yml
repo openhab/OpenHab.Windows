@@ -17,6 +17,10 @@ on:
         type: string
         description: 'The build number to use'
         required: true
+      beta_release:
+        type: boolean
+        description: 'Specifies if a beta release should be created.'
+        required: true
 
 jobs:
   build:
