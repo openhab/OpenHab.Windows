@@ -49,7 +49,7 @@ jobs:
 
         - name: Set release nane
           run: |
-            if [ "${{inputs.releaseName}}" == "" ]; then
+            if [ -z "${{inputs.releaseName}}" ]; then
               echo "No release name provided, using build number"
               release_name="${{inputs.build_number}}"
             else
@@ -57,12 +57,15 @@ jobs:
               release_name="${{inputs.releaseName}}" >> $GITHUB_ENV
             fi
 
-            if[ "${{inputs.beta_release}}" == "true" ]; then
+            if [ "${{inputs.beta_release}}" == "true" ]; then
               echo "Beta release requested"
               release_name="Beta: ${release_name}"
             fi
 
             echo releaseName="$(release_name)" >> $GITHUB_ENV
+          env:
+            releaseName: ${{inputs.releaseName}}
+            beta_release: ${{inputs.beta_release}}
 
         - name: Create a Release
           id: create_release
