@@ -32,7 +32,7 @@ If you want to contribute to the Windows application, we are here to help you se
 
 ### Steps to Set Up:
 1. Download and install [Visual Studio Community Edition](https://www.visualstudio.com/downloads/).
-2. During installation, ensure to select Windows 10 SDK 10.0.19041.0 and Windows 11 SDK 10.0.22621.
+2. During installation, ensure to select Windows 10 SDK 10.0.20348.0 and Windows 11 SDK 10.0.26100.0.
 3. Check out the latest code from GitHub.
 4. Install pre-commit hook tooling by executing `setup_pre-commit.ps1`
 4. Open the project in Visual Studio (File -> Open -> Project/Solution).
