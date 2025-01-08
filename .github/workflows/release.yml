@@ -47,25 +47,25 @@ jobs:
           run: ls -la
           working-directory: '${{env.BuildDirectory}}'
 
-        - name: Set release nane
+        - name: Set release name
           run: |
-            if [ -z "${{inputs.releaseName}}" ]; then
+            if [ -z "${releaseName}" ]; then
               echo "No release name provided, using build number"
-              release_name="${{inputs.build_number}}"
+              release_name="${{ inputs.build_number }}"
             else
               echo "Using provided release name"
-              release_name="${{inputs.releaseName}}" >> $GITHUB_ENV
+              release_name="${releaseName}"
             fi
 
-            if [ "${{inputs.beta_release}}" == "true" ]; then
+            if [ "${beta_release}" == "true" ]; then
               echo "Beta release requested"
               release_name="Beta: ${release_name}"
             fi
 
-            echo "releaseName=$(release_name)" >> $GITHUB_ENV
+            echo "releaseName=${release_name}" >> $GITHUB_ENV
           env:
-            releaseName: ${{inputs.releaseName}}
-            beta_release: ${{inputs.beta_release}}
+            releaseName: ${{ inputs.releaseName }}
+            beta_release: ${{ inputs.beta_release }}
 
         - name: Create a Release
           id: create_release
