@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Windows.ApplicationModel;
 
 namespace openHAB.Core;
 
@@ -8,7 +9,7 @@ namespace openHAB.Core;
 /// </summary>
 public class AppPaths
 {
-    private const string _applicationName = "openHAB";
+    private static readonly string _applicationName = AppInfo.Current.DisplayInfo.DisplayName;
 
     /// <summary>
     /// Gets the directory path for application data.

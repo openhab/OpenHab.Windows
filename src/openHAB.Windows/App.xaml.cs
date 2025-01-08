@@ -70,11 +70,6 @@ public partial class App : Application
         _logger.LogInformation("=== Start Application ===");
         _appManager.SetProgramLanguage(null);
 
-        // TODO This code defaults the app to a single instance app. If you need multi instance app, remove this part.
-        // Read: https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/applifecycle#single-instancing-in-applicationonlaunched
-        // If this is the first instance launched, then register it as the "main" instance.
-        // If this isn't the first instance launched, then "main" will already be registered,
-        // so retrieve it.
         AppInstance mainInstance = AppInstance.FindOrRegisterForKey("main");
         AppActivationArguments activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
 
