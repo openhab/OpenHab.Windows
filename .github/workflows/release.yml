@@ -51,11 +51,18 @@ jobs:
           run: |
             if [ "${{inputs.releaseName}}" == "" ]; then
               echo "No release name provided, using build number"
-              echo releaseName="${{inputs.build_number}}" >> $GITHUB_ENV
+              release_name="${{inputs.build_number}}"
             else
               echo "Using provided release name"
-              export releaseName="${{inputs.releaseName}}" >> $GITHUB_ENV
+              release_name="${{inputs.releaseName}}" >> $GITHUB_ENV
             fi
+
+            if[ "${{inputs.beta_release}}" == "true" ]; then
+              echo "Beta release requested"
+              release_name="Beta: ${release_name}"
+            fi
+
+            echo releaseName="$(release_name)" >> $GITHUB_ENV
 
         - name: Create a Release
           id: create_release
