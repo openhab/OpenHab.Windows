@@ -62,7 +62,7 @@ jobs:
               release_name="Beta: ${release_name}"
             fi
 
-            echo releaseName="$(release_name)" >> $GITHUB_ENV
+            echo "releaseName=$(release_name)" >> $GITHUB_ENV
           env:
             releaseName: ${{inputs.releaseName}}
             beta_release: ${{inputs.beta_release}}
