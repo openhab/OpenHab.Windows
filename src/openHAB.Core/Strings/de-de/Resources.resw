@@ -308,9 +308,6 @@ Bitte wählen Sie den Demomodus oder die Lokale-/Remote-Verbindungsinformation z
   <data name="VersionNumber.Text" xml:space="preserve">
     <value>Version:</value>
   </data>
-  <data name="AppDisplayName" xml:space="preserve">
-    <value>openHAB</value>
-  </data>
   <data name="AppAutostart.Header" xml:space="preserve">
     <value>Autostart</value>
   </data>

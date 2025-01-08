@@ -56,13 +56,13 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
-    <EntryPointProjectUniqueName>..\openHAB.Windows\openHAB.Windows.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <EntryPointProjectUniqueName>..\openHAB.Windows\openHAB.Windows.csproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <AppxBundle>Always</AppxBundle>
@@ -106,9 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Properties\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\openHAB.Windows.Package\Images\SplashScreen.scale-100.png">
@@ -246,14 +243,12 @@
     <Content Include="..\openHAB.Windows.Package\Images\Wide310x150Logo.scale-400.png">
       <Link>Images\Wide310x150Logo.scale-400.png</Link>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\openHAB.Windows\openHAB.Windows.csproj">
-      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
-      <PublishProfile>Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
-    </ProjectReference>
+    <PRIResource Include="Properties\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\openHAB.Windows\openHAB.Windows.csproj" />
   </ItemGroup>
 </Project>
