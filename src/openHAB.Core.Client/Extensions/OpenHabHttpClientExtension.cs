@@ -5,6 +5,7 @@ using System.Net.Security;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using openHAB.Core.Client.Connection.Models;
 using openHAB.Core.Client.Options;
 
 namespace openHAB.Core.Client.Extensions;
@@ -29,14 +30,30 @@ public static class OpenHabHttpClientExtension
         services.AddHttpClient<OpenHABClient>(name, (sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<ConnectionOptions>>().Value;
-            var connection = getConnection(options);
+            Connection.Models.Connection connection = CreateConnection(getConnection, options);
+
             ConfigureHttpClient(client, connection);
         }).ConfigurePrimaryHttpMessageHandler(sp =>
         {
             var options = sp.GetRequiredService<IOptions<ConnectionOptions>>().Value;
-            var connection = getConnection(options);
+            Connection.Models.Connection connection = CreateConnection(getConnection, options);
             return CreateHttpClientHandler(connection);
         });
+    }
+
+    private static Connection.Models.Connection CreateConnection(Func<ConnectionOptions, Connection.Models.Connection> getConnection, ConnectionOptions options)
+    {
+        Connection.Models.Connection connection;
+        if (options.IsRunningInDemoMode.GetValueOrDefault())
+        {
+            connection = new DemoConnectionProfile().CreateConnection();
+        }
+        else
+        {
+            connection = getConnection(options);
+        }
+
+        return connection;
     }
 
     private static void ConfigureHttpClient(HttpClient client, Connection.Models.Connection connection)

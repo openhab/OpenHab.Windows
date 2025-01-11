@@ -120,12 +120,12 @@
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Grid.Column="2"
                        VerticalAlignment="Center" />
-            <AutoSuggestBox x:Name="TitleBarSearchBox"
+            <!--<AutoSuggestBox x:Name="TitleBarSearchBox"
                             Grid.Column="4"
                             QueryIcon="Find"
                             PlaceholderText="Search"
                             VerticalAlignment="Center"
-                            MaxWidth="600" />
+                            MaxWidth="600" />-->
         </Grid>
         <muxc:NavigationView x:Name="SitemapNavigation"
                              Grid.Row="1"

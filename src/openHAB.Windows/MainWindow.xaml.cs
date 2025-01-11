@@ -8,7 +8,6 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using openHAB.Core.Client.Models;
 using openHAB.Core.Messages;
 using openHAB.Windows.Messages;
@@ -164,11 +163,11 @@ public sealed partial class MainWindow : Window
         RightPaddingColumn.Width = new GridLength(this.AppWindow.TitleBar.RightInset / scaleAdjustment);
         LeftPaddingColumn.Width = new GridLength(this.AppWindow.TitleBar.LeftInset / scaleAdjustment);
 
-        GeneralTransform transform = TitleBarSearchBox.TransformToVisual(null);
-        Rect bounds = transform.TransformBounds(new Rect(0, 0,
-                                                         TitleBarSearchBox.ActualWidth,
-                                                         TitleBarSearchBox.ActualHeight));
-        RectInt32 SearchBoxRect = GetRect(bounds, scaleAdjustment);
+        //GeneralTransform transform = TitleBarSearchBox.TransformToVisual(null);
+        //Rect bounds = transform.TransformBounds(new Rect(0, 0,
+        //                                                 TitleBarSearchBox.ActualWidth,
+        //                                                 TitleBarSearchBox.ActualHeight));
+        //RectInt32 SearchBoxRect = GetRect(bounds, scaleAdjustment);
 
         //transform = PersonPic.TransformToVisual(null);
         //bounds = transform.TransformBounds(new Rect(0, 0,
@@ -176,7 +175,7 @@ public sealed partial class MainWindow : Window
         //                                            PersonPic.ActualHeight));
         //RectInt32 PersonPicRect = GetRect(bounds, scaleAdjustment);
 
-        var rectArray = new RectInt32[] { SearchBoxRect/*, PersonPicRect*/ };
+        var rectArray = new RectInt32[] { /*SearchBoxRect,/*, PersonPicRect*/ };
 
         InputNonClientPointerSource nonClientInputSrc =
             InputNonClientPointerSource.GetForWindowId(this.AppWindow.Id);

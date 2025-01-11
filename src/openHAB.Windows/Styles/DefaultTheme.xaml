@@ -43,7 +43,7 @@
         <Setter Property="Height"
                 Value="100" />
         <Setter Property="Background"
-                Value="{ThemeResource ControlStrokeColorOnAccentDefaultBrush }" />
+                Value="{ThemeResource ControlStrokeColorSecondaryBrush }" />
     </Style>
     <Style x:Key="WidgetGroup"
            TargetType="StackPanel">
@@ -53,7 +53,7 @@
     <Style x:Key="ContentDialog"
            TargetType="ContentDialog">
         <Setter Property="Background"
-                Value="{ThemeResource ControlStrokeColorOnAccentDefaultBrush}" />
+                Value="{ThemeResource ControlStrokeColorSecondaryBrush}" />
     </Style>
     <!-- Text Styles -->
     <Style x:Key="TitleStyle"
