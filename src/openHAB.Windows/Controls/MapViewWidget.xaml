@@ -17,7 +17,7 @@
 
         <ContentDialog x:Name="PopupDialog"
                        Title="{x:Bind Widget.Label}"
-                       Background="{StaticResource ContentDialog}"
+                       Style="{StaticResource ContentDialog}"
                        IsPrimaryButtonEnabled="True"
                        PrimaryButtonText="Close"
                        DefaultButton="Primary">

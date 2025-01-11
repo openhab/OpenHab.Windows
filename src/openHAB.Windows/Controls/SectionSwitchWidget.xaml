@@ -29,7 +29,7 @@
                       HorizontalContentAlignment="Center"
                       VerticalContentAlignment="Center"
                       Foreground="{x:Bind Widget.ValueColor, Mode=OneWay}"
-                      Background="{StaticResource ContentDialog}"
+                      Background="{ThemeResource ControlStrokeColorSecondaryBrush}"
                       ItemsSource="{x:Bind Widget.Mappings}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="model:WidgetMapping">
