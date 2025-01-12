@@ -19,14 +19,12 @@ For more information, visit the [official openHAB website](https://www.openhab.o
 ### Beta App
 The beta app offers early access to upcoming features and fixes, allowing users to test and provide feedback before these updates are officially released in the main application. This helps ensure a stable and polished experience for all users.
 
-[![Link to Windows Store](/docs/get_microsoft_store.png =173x)]
-(https://www.microsoft.com/store/apps/9N140MD0NJ6T)
+[![Link to Windows Store](/docs/get_microsoft_store.png =173x)](https://www.microsoft.com/store/apps/9N140MD0NJ6T)
 
 ### Production App
 The production app is the stable version of the openHAB Windows application, providing a reliable and tested experience for managing your smart home devices. It includes all the latest features and improvements that have been thoroughly vetted by the community and developers.
 
-[![Link to Windows Store](/docs/get_microsoft_store.png =173x)]
-(https://www.microsoft.com/store/apps/9NMQ39CTWXGT)
+[![Link to Windows Store](/docs/get_microsoft_store.png =173x)](https://www.microsoft.com/store/apps/9NMQ39CTWXGT)
 
 ## Code Analysis
 The project utilizes SonarQube, hosted by SonarCloud, to analyze the code for potential issues and ensure high code quality.
