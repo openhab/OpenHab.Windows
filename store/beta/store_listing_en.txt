@@ -1,0 +1,12 @@
+Description:
+
+This is a native Windows 10 and 11 Beta application for openHAB, offering upcoming features and fixes for testing before they are released in the main app. You can download it from the Microsoft Store at the following link: https://www.microsoft.com/store/apps/9NMQ39CTWXGT.
+
+The open Home Automation Bus (openHAB) project aims to provide a universal integration platform for all aspects of home automation. It is designed to be completely vendor-neutral and hardware/protocol-agnostic, ensuring compatibility with a wide range of devices and technologies. openHAB integrates various bus systems, hardware devices, and interface protocols, making it a versatile solution for your smart home needs.
+
+Supported technologies include, but are not limited to, KNX, Modbus, DMX, Philips Hue, PLCBus, Sonos, Plugwise, IHC/Elko, RFXCOM, Homematic, Koubachi, Pulseaudio, Samsung TV, Bluetooth, One-Wire, Novelan, Asterisk, and generic serial devices. This extensive support allows openHAB to serve as the central integration and control point of your Smart Home, providing seamless interaction between different systems and devices.
+
+You can find more information about openHAB and its capabilities on the official website: http://www.openhab.org/
+
+Update:
+The reworked app now features a refreshed design, offering a modern and intuitive user interface. With seamless integration with Windows 11, users can enjoy enhanced performance, improved security, and new functionalities such as notifications, light/dark theme, and more.
