@@ -15,7 +15,6 @@
                Stretch="Uniform" />
         <TextBlock x:Name="Label"
                    Margin="8"
-                   Foreground="{x:Bind LabelForeground, Mode=OneWay}"
                    Text="{x:Bind LabelText, Mode=OneWay}"
                    TextTrimming="WordEllipsis" />
     </StackPanel>
